@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/home-of-giving-design-system-f09eee0f-3c82-4148-bf2f-d162d2175e25/tokens/colors.css">
+<link rel="stylesheet" href="_ds/home-of-giving-design-system-f09eee0f-3c82-4148-bf2f-d162d2175e25/tokens/typography.css">
+<link rel="stylesheet" href="_ds/home-of-giving-design-system-f09eee0f-3c82-4148-bf2f-d162d2175e25/tokens/spacing.css">
+<link rel="stylesheet" href="_ds/home-of-giving-design-system-f09eee0f-3c82-4148-bf2f-d162d2175e25/tokens/effects.css">
+<link rel="stylesheet" href="_ds/home-of-giving-design-system-f09eee0f-3c82-4148-bf2f-d162d2175e25/styles.css">
+<script src="_ds/home-of-giving-design-system-f09eee0f-3c82-4148-bf2f-d162d2175e25/_ds_bundle.js"></script>
+<style>
+html{scroll-behavior:smooth}
+body{margin:0;background:#fff;font-family:'Plus Jakarta Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#003DA5;text-decoration:none}
+a:hover{color:#062E61}
+</style>
+</helmet>
+
+<div style="font-family:var(--font-sans);background:var(--color-bg-page)">
+
+<div style="position:sticky;top:0;z-index:60;background:#fff;border-bottom:1px solid var(--color-border-card)">
+  <div style="max-width:var(--container-max);margin:0 auto;padding:14px 32px;display:flex;align-items:center;justify-content:space-between;gap:32px">
+    <a href="Home of Giving Website.dc.html" style="display:flex;align-items:center;flex:none" aria-label="REMAX Home of Giving"><img src="assets/logo.svg" alt="REMAX Home of Giving" style="display:block;height:46px;width:auto"></a>
+    <div style="display:flex;align-items:center;gap:28px">
+      <a href="Home of Giving Website.dc.html" style="font-size:15px;font-weight:var(--fw-semibold);color:var(--color-text-heading)">Beranda</a>
+      <a href="Home of Giving Program.dc.html" style="font-size:15px;font-weight:var(--fw-semibold);color:var(--color-text-heading)">Program</a>
+      <a href="Home of Giving Riwayat Donasi.dc.html" style="font-size:15px;font-weight:var(--fw-semibold);color:var(--color-text-heading)">Riwayat Donasi</a>
+      <a href="Home of Giving Blog.dc.html" style="font-size:15px;font-weight:var(--fw-semibold);color:var(--color-brand-primary);border-bottom:2px solid var(--color-brand-accent);padding-bottom:2px">Blog</a>
+      <a href="Home of Giving Galeri.dc.html" style="font-size:15px;font-weight:var(--fw-semibold);color:var(--color-text-heading)">Galeri</a>
+    </div>
+    <x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.Button" variant="primary" size="sm" hint-size="180px,40px">Donasi Sekarang →</x-import>
+  </div>
+</div>
+
+<section style="background:var(--color-bg-soft);padding:56px 32px 72px">
+  <div style="max-width:var(--container-max);margin:0 auto">
+    <div style="display:flex;align-items:center;gap:8px;font-size:var(--fs-caption);font-weight:var(--fw-medium);color:var(--color-text-body);margin-bottom:28px">
+      <a href="Home of Giving Website.dc.html">Beranda</a><span>›</span><span>Blog</span>
+    </div>
+    <div style="font-family:var(--font-hand);font-weight:var(--fw-bold);font-size:var(--fs-eyebrow);line-height:1;color:var(--color-brand-primary)">Cerita &amp; Kabar</div>
+    <h1 style="margin:10px 0 18px;max-width:760px;font-size:var(--fs-h1);font-weight:var(--fw-extrabold);line-height:1.04;letter-spacing:-0.02em;color:var(--color-text-heading);text-transform:uppercase;text-wrap:balance">Apa yang berubah setelahnya</h1>
+    <p style="margin:0;max-width:560px;font-size:var(--fs-body-lg);line-height:var(--lh-body);color:var(--color-text-body);text-wrap:pretty">Catatan panitia dari lapangan: siapa yang menerima, bagaimana dana dipakai, dan pelajaran yang kami bawa ke siklus berikutnya.</p>
+
+    <a href="Home of Giving Blog.dc.html" style="display:grid;grid-template-columns:1.15fr 1fr;gap:0;margin-top:44px;background:var(--color-surface-card);border:1px solid var(--color-border-card);border-radius:24px;box-shadow:var(--shadow-card);overflow:hidden;color:inherit;transition:box-shadow 180ms var(--ease-standard),transform 180ms var(--ease-standard)" style-hover="box-shadow:var(--shadow-card-hover);transform:translateY(-2px)">
+      <div style="overflow:hidden;min-height:400px;background:var(--color-tint-blue)">
+        <img src="assets/photos/community-01-web.jpg" alt="Kunjungan panitia ke keluarga penerima manfaat di Cianjur" style="display:block;width:100%;height:100%;object-fit:cover;object-position:42% 45%">
+      </div>
+      <div style="padding:44px 44px 40px;display:flex;flex-direction:column;gap:16px;justify-content:center">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.Badge" tone="red" hint-size="110px,26px">Tulisan utama</x-import>
+          <x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.Badge" tone="blue" hint-size="150px,26px">Cerita Penerima</x-import>
+        </div>
+        <h2 style="margin:0;font-size:34px;font-weight:var(--fw-extrabold);line-height:1.12;letter-spacing:-0.01em;color:var(--color-text-heading);text-wrap:balance">Sehari bersama keluarga penerima di Cianjur</h2>
+        <p style="margin:0;font-size:var(--fs-body-lg);line-height:var(--lh-body);color:var(--color-text-body);text-wrap:pretty">Kami berangkat pukul lima pagi untuk mengantar bantuan renovasi. Yang paling diingat bukan angka donasinya, tapi kalimat pertama tuan rumah ketika pintu dibuka.</p>
+        <div style="display:flex;align-items:center;gap:14px;font-size:var(--fs-caption);color:var(--color-text-body);margin-top:4px">
+          <span style="font-weight:var(--fw-semibold);color:var(--color-text-heading)">Panitia Home of Giving</span><span>·</span><span>14 Agustus 2026</span><span>·</span><span>6 menit baca</span>
+        </div>
+        <div style="font-size:var(--fs-body);font-weight:var(--fw-bold);color:var(--color-brand-accent);margin-top:6px">Baca cerita ini →</div>
+      </div>
+    </a>
+  </div>
+</section>
+
+<section style="background:#fff;padding:64px 32px 96px">
+  <div style="max-width:var(--container-max);margin:0 auto">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:20px;padding-bottom:24px;border-bottom:1px solid var(--color-border-card)">
+      <h2 style="margin:0;font-size:var(--fs-h3);font-weight:var(--fw-bold);color:var(--color-text-heading)">Semua tulisan</h2>
+      <div style="display:flex;flex-wrap:wrap;gap:10px">
+        <sc-for list="{{ chips }}" as="chip" hint-placeholder-count="5">
+          <div onClick="{{ chip.pick }}" style="cursor:pointer;padding:9px 18px;border-radius:var(--radius-pill);font-size:14px;font-weight:var(--fw-bold);border:1.5px solid {{ chip.bd }};background:{{ chip.bg }};color:{{ chip.fg }};transition:transform 160ms var(--ease-standard)" style-hover="transform:translateY(-1px)">{{ chip.label }}</div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:36px 28px;margin-top:40px">
+      <sc-for list="{{ posts }}" as="p" hint-placeholder-count="6">
+        <a href="Home of Giving Blog.dc.html" style="display:flex;flex-direction:column;color:inherit;background:var(--color-surface-card);border:1px solid var(--color-border-card);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-card);transition:box-shadow 180ms var(--ease-standard),transform 180ms var(--ease-standard)" style-hover="box-shadow:var(--shadow-card-hover);transform:translateY(-2px)">
+          <div style="height:210px;overflow:hidden;background:var(--color-tint-blue)">
+            <div role="img" aria-label="{{ p.alt }}" style="width:100%;height:100%;background:{{ p.bg }}"></div>
+          </div>
+          <div style="padding:24px;display:flex;flex-direction:column;gap:10px;flex:1">
+            <div style="display:flex;align-items:center;gap:10px;font-size:12px;font-weight:var(--fw-bold);letter-spacing:0.08em;text-transform:uppercase;color:var(--color-brand-primary)">
+              <span>{{ p.category }}</span><span style="color:var(--color-border-card)">|</span><span style="color:var(--color-text-body);letter-spacing:0.04em">{{ p.date }}</span>
+            </div>
+            <h3 style="margin:0;font-size:21px;font-weight:var(--fw-bold);line-height:var(--lh-heading);color:var(--color-text-heading);text-wrap:pretty">{{ p.title }}</h3>
+            <p style="margin:0;font-size:15px;line-height:var(--lh-body);color:var(--color-text-body);text-wrap:pretty">{{ p.excerpt }}</p>
+            <div style="margin-top:auto;padding-top:14px;font-size:14px;font-weight:var(--fw-bold);color:var(--color-brand-accent)">Baca selengkapnya →</div>
+          </div>
+        </a>
+      </sc-for>
+    </div>
+
+    <div style="display:flex;justify-content:center;margin-top:48px">
+      <x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.Button" variant="secondary" hint-size="200px,50px">Muat tulisan lama</x-import>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--color-bg-soft);padding:88px 32px">
+  <div style="max-width:var(--container-max);margin:0 auto;display:grid;grid-template-columns:1.1fr 1fr;gap:48px;align-items:center;background:var(--color-surface-card);border:1px solid var(--color-border-card);border-radius:24px;box-shadow:var(--shadow-card);padding:48px 48px">
+    <div>
+      <div style="font-family:var(--font-hand);font-weight:var(--fw-bold);font-size:30px;line-height:1.1;color:var(--color-brand-primary);margin-bottom:12px">Kabar tiap siklus, langsung ke WhatsApp</div>
+      <p style="margin:0;font-size:var(--fs-body-lg);line-height:var(--lh-body);color:var(--color-text-body);text-wrap:pretty">Satu pesan per bulan: proyek yang dibuka, laporan yang tuntas, dan tanggal serah terima berikutnya. Tanpa broadcast harian.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.Button" variant="primary" hint-size="100%,50px">Gabung grup kabar →</x-import>
+      <a href="Home of Giving Galeri.dc.html" style="text-align:center;font-size:14px;font-weight:var(--fw-bold);color:var(--color-brand-primary)">Lihat galeri dokumentasi →</a>
+    </div>
+  </div>
+</section>
+
+<x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.Footer" logo-src="assets/logo.svg" hint-size="100%,240px"></x-import>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:1000}}">
+class Component extends DCLogic {
+  state = { cat: 'Semua' };
+  cats = ['Semua', 'Laporan', 'Cerita Penerima', 'Kegiatan', 'Transparansi'];
+
+  all = [
+    { title: 'Laporan siklus Juli: tiga proyek tuntas', category: 'Laporan', date: '28 Jul 2026', excerpt: 'Rincian penggunaan dana untuk renovasi rumah ibadah, perpustakaan mini, dan bibit pohon kawasan Puncak.', image: 'assets/photos/community-03-web.jpg', pos: '35% 50%', alt: 'Dokumentasi serah terima donasi' },
+    { title: 'Kenapa nama donatur kami samarkan', category: 'Transparansi', date: '2 Agu 2026', excerpt: 'Prinsip pencatatan donasi Home of Giving: tercatat lengkap di internal, disamarkan saat dipublikasikan.', image: 'assets/photos/community-02-web.jpg', pos: '60% 40%', alt: 'Panitia mencatat donasi bersama relawan' },
+    { title: 'Perpustakaan mini SDN 03: dari rak kosong ke 480 buku', category: 'Cerita Penerima', date: '21 Jul 2026', excerpt: 'Guru kelas empat bercerita soal jam istirahat yang kini dipakai membaca, bukan berkeliaran di lorong.', image: 'assets/photos/community-01-web.jpg', pos: '50% 40%', alt: 'Anak-anak membaca buku di perpustakaan mini' },
+    { title: 'Charity Run agent RE/MAX: 240 peserta, satu tujuan', category: 'Kegiatan', date: '9 Jul 2026', excerpt: 'Catatan panitia dari Senayan — bagaimana biaya acara ditekan agar seluruh donasi tetap utuh.', image: 'assets/photos/community-02-web.jpg', pos: '45% 45%', alt: 'Relawan berkumpul sebelum kegiatan' },
+    { title: 'Cara panitia memilih satu penerima manfaat', category: 'Transparansi', date: '24 Jun 2026', excerpt: 'Survei lapangan, verifikasi lembaga, dan alasan kami tidak membagi donasi ke banyak penerima sekaligus.', image: 'assets/photos/community-03-web.jpg', pos: '55% 45%', alt: 'Panitia melakukan survei kebutuhan penerima' },
+    { title: 'Enam bulan Home of Giving: yang berhasil dan yang belum', category: 'Laporan', date: '30 Mei 2026', excerpt: 'Rekap paruh pertama 2026: Rp 640 juta tersalurkan, dua target belum tercapai, dan rencana perbaikannya.', image: 'assets/photos/community-01-web.jpg', pos: '40% 50%', alt: 'Kegiatan bersama anak penerima manfaat' }
+  ];
+
+  renderVals() {
+    const cat = this.state.cat;
+    return {
+      posts: (cat === 'Semua' ? this.all : this.all.filter(p => p.category === cat))
+        .map(p => ({ ...p, bg: p.pos + '/cover no-repeat url(' + p.image + ')' })),
+      chips: this.cats.map(label => {
+        const on = label === cat;
+        return {
+          label,
+          bg: on ? 'var(--color-brand-primary)' : '#fff',
+          fg: on ? '#fff' : 'var(--color-text-heading)',
+          bd: on ? 'var(--color-brand-primary)' : 'var(--color-border-card)',
+          pick: () => this.setState({ cat: label })
+        };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/home-of-giving-design-system-f09eee0f-3c82-4148-bf2f-d162d2175e25/tokens/colors.css">
+<link rel="stylesheet" href="_ds/home-of-giving-design-system-f09eee0f-3c82-4148-bf2f-d162d2175e25/tokens/typography.css">
+<link rel="stylesheet" href="_ds/home-of-giving-design-system-f09eee0f-3c82-4148-bf2f-d162d2175e25/tokens/spacing.css">
+<link rel="stylesheet" href="_ds/home-of-giving-design-system-f09eee0f-3c82-4148-bf2f-d162d2175e25/tokens/effects.css">
+<link rel="stylesheet" href="_ds/home-of-giving-design-system-f09eee0f-3c82-4148-bf2f-d162d2175e25/styles.css">
+<script src="_ds/home-of-giving-design-system-f09eee0f-3c82-4148-bf2f-d162d2175e25/_ds_bundle.js"></script>
+<style>
+html{scroll-behavior:smooth}
+body{margin:0;background:#fff;font-family:'Plus Jakarta Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#003DA5;text-decoration:none}
+a:hover{color:#062E61}
+</style>
+</helmet>
+
+<div style="font-family:var(--font-sans);background:var(--color-bg-page)">
+
+<div style="position:sticky;top:0;z-index:60;background:#fff;border-bottom:1px solid var(--color-border-card)">
+  <div style="max-width:var(--container-max);margin:0 auto;padding:14px 32px;display:flex;align-items:center;justify-content:space-between;gap:32px">
+    <a href="Home of Giving Website.dc.html" style="display:flex;align-items:center;flex:none" aria-label="REMAX Home of Giving"><img src="assets/logo.svg" alt="REMAX Home of Giving" style="display:block;height:46px;width:auto"></a>
+    <div style="display:flex;align-items:center;gap:28px">
+      <a href="Home of Giving Website.dc.html" style="font-size:15px;font-weight:var(--fw-semibold);color:var(--color-text-heading)">Beranda</a>
+      <a href="Home of Giving Program.dc.html" style="font-size:15px;font-weight:var(--fw-semibold);color:var(--color-text-heading)">Program</a>
+      <a href="Home of Giving Riwayat Donasi.dc.html" style="font-size:15px;font-weight:var(--fw-semibold);color:var(--color-brand-primary);border-bottom:2px solid var(--color-brand-accent);padding-bottom:2px">Riwayat Donasi</a>
+      <a href="Home of Giving Blog.dc.html" style="font-size:15px;font-weight:var(--fw-semibold);color:var(--color-text-heading)">Blog</a>
+      <a href="Home of Giving Galeri.dc.html" style="font-size:15px;font-weight:var(--fw-semibold);color:var(--color-text-heading)">Galeri</a>
+    </div>
+    <x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.Button" variant="primary" size="sm" hint-size="180px,40px">Donasi Sekarang →</x-import>
+  </div>
+</div>
+
+<section style="position:relative;overflow:hidden;background:var(--color-brand-navy);color:#fff;padding:56px 32px 100px">
+  <div style="position:absolute;right:-120px;top:-160px;width:480px;height:480px;border-radius:50%;background:rgba(255,255,255,.06)"></div>
+  <div style="position:relative;max-width:var(--container-max);margin:0 auto">
+    <div style="display:flex;align-items:center;gap:8px;font-size:var(--fs-caption);font-weight:var(--fw-medium);opacity:.8;margin-bottom:28px">
+      <a href="Home of Giving Website.dc.html" style="color:#fff">Beranda</a><span>›</span><span style="opacity:.7">Riwayat Donasi</span>
+    </div>
+    <div style="font-family:var(--font-hand);font-weight:var(--fw-bold);font-size:var(--fs-eyebrow);line-height:1;opacity:.9">Riwayat &amp; transparansi donasi</div>
+    <h1 style="margin:10px 0 16px;max-width:760px;font-size:var(--fs-h1);font-weight:var(--fw-extrabold);line-height:1.04;letter-spacing:-0.02em;text-transform:uppercase;text-wrap:balance">Setiap rupiah tercatat</h1>
+    <p style="margin:0;max-width:560px;font-size:var(--fs-body-lg);line-height:var(--lh-body);opacity:.86;text-wrap:pretty">Daftar donasi masuk yang sudah diverifikasi admin, beserta catatan penyalurannya. Nama donatur selalu disamarkan sebelum dipublikasikan.</p>
+  </div>
+</section>
+
+<section style="position:relative;z-index:2;background:var(--color-bg-page);padding:0 32px">
+  <div style="max-width:var(--container-max);margin:0 auto">
+    <div style="margin-top:-52px;background:var(--color-surface-card);border:1px solid var(--color-border-card);border-radius:24px;box-shadow:var(--shadow-card-hover);padding:34px 36px;display:grid;grid-template-columns:repeat(4,1fr);gap:24px;justify-items:center">
+      <x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.StatCounter" value="312" label="Transaksi terverifikasi" hint-size="180px,78px"></x-import>
+      <x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.StatCounter" value="1,2 M" label="Total donasi (Rp)" tone="red" hint-size="180px,78px"></x-import>
+      <x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.StatCounter" value="14" label="Proyek tersalurkan" hint-size="180px,78px"></x-import>
+      <x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.StatCounter" value="100%" label="Dana diteruskan" hint-size="180px,78px"></x-import>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--color-bg-page);padding:72px 32px 96px">
+  <div style="max-width:var(--container-max);margin:0 auto;display:grid;grid-template-columns:1.55fr 1fr;gap:32px;align-items:start">
+
+    <div style="background:var(--color-surface-card);border:1px solid var(--color-border-card);border-radius:24px;box-shadow:var(--shadow-card);padding:32px 32px 26px">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:18px;margin-bottom:22px">
+        <h2 style="margin:0;font-size:var(--fs-h3);font-weight:var(--fw-bold);color:var(--color-text-heading)">Donasi masuk</h2>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <sc-for list="{{ projectChips }}" as="chip" hint-placeholder-count="4">
+            <div onClick="{{ chip.pick }}" style="cursor:pointer;padding:7px 15px;border-radius:var(--radius-pill);font-size:13px;font-weight:var(--fw-bold);border:1.5px solid {{ chip.bd }};background:{{ chip.bg }};color:{{ chip.fg }}">{{ chip.label }}</div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:88px 1fr 1fr auto;gap:16px;padding-bottom:12px;border-bottom:1.5px solid var(--color-border-card);font-size:12px;font-weight:var(--fw-bold);letter-spacing:0.1em;text-transform:uppercase;color:var(--color-text-body)">
+        <div>Tanggal</div><div>Donatur</div><div>Proyek</div><div style="text-align:right">Nominal</div>
+      </div>
+
+      <sc-for list="{{ rows }}" as="r" hint-placeholder-count="8">
+        <div style="display:grid;grid-template-columns:88px 1fr 1fr auto;gap:16px;align-items:center;padding:15px 0;border-bottom:1px solid var(--color-border-card)">
+          <div style="font-size:13px;color:var(--color-text-body);font-weight:var(--fw-medium)">{{ r.date }}</div>
+          <div>
+            <div style="font-size:15px;font-weight:var(--fw-semibold);color:var(--color-text-heading)">{{ r.name }}</div>
+            <div style="font-size:12px;color:var(--color-text-body);margin-top:2px">{{ r.city }}</div>
+          </div>
+          <div style="font-size:13px;color:var(--color-text-body);line-height:1.35">{{ r.project }}</div>
+          <div style="text-align:right">
+            <div style="font-size:15px;font-weight:var(--fw-bold);color:var(--color-brand-primary)">{{ r.amount }}</div>
+            <div style="font-size:12px;color:var(--color-brand-accent);font-weight:var(--fw-semibold);margin-top:2px">{{ r.status }}</div>
+          </div>
+        </div>
+      </sc-for>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-top:22px">
+        <div style="font-size:var(--fs-caption);color:var(--color-text-body)">Menampilkan {{ shown }} dari {{ total }} transaksi</div>
+        <sc-if value="{{ hasMore }}" hint-placeholder-val="{{ true }}">
+          <div style="flex:none;display:flex;white-space:nowrap">
+            <x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.Button" variant="secondary" size="sm" on-click="{{ loadMore }}" hint-size="180px,42px">Muat lebih banyak</x-import>
+          </div>
+        </sc-if>
+      </div>
+      <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--color-border-card);font-size:var(--fs-caption);line-height:var(--lh-body);color:var(--color-text-body)">Nama donatur disamarkan atas permintaan panitia. Donasi hanya masuk daftar ini setelah bukti transfer diverifikasi admin.</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <div style="background:var(--color-surface-card);border:1px solid var(--color-border-card);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);padding:28px">
+        <div style="font-size:var(--fs-caption);font-weight:var(--fw-bold);letter-spacing:0.12em;text-transform:uppercase;color:var(--color-text-body);margin-bottom:22px">Catatan penyaluran</div>
+        <div style="display:flex;flex-direction:column">
+          <sc-for list="{{ payouts }}" as="d" hint-placeholder-count="4">
+            <div style="display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:stretch">
+              <div style="width:10px;display:flex;flex-direction:column;align-items:center;padding-top:5px">
+                <span style="width:10px;height:10px;border-radius:50%;background:{{ d.dot }};flex:none"></span>
+                <span style="width:1.5px;flex:1;background:{{ d.line }}"></span>
+              </div>
+              <div style="padding-bottom:{{ d.pad }}">
+                <div style="font-size:12px;font-weight:var(--fw-bold);letter-spacing:0.08em;text-transform:uppercase;color:var(--color-text-body)">{{ d.date }}</div>
+                <div style="font-size:16px;font-weight:var(--fw-bold);color:var(--color-text-heading);line-height:var(--lh-heading);margin-top:4px">{{ d.title }}</div>
+                <div style="font-size:14px;color:var(--color-text-body);margin-top:4px;line-height:var(--lh-body)">{{ d.detail }}</div>
+                <div style="font-size:15px;font-weight:var(--fw-bold);color:var(--color-brand-primary);margin-top:6px">{{ d.amount }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="margin-top:22px;padding-top:20px;border-top:1px solid var(--color-border-card);display:flex;flex-direction:column;gap:10px">
+          <x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.Button" variant="secondary" size="sm" hint-size="100%,42px">Unduh laporan lengkap (PDF)</x-import>
+          <a href="Home of Giving Detail Proyek.dc.html" style="text-align:center;font-size:14px;font-weight:var(--fw-bold);color:var(--color-brand-primary)">Lihat contoh laporan proyek →</a>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.Footer" logo-src="assets/logo.svg" hint-size="100%,240px"></x-import>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:1000}}">
+class Component extends DCLogic {
+  state = { project: 'Semua proyek', limit: 8 };
+
+  projects = ['Semua proyek', 'Banjir Bekasi', 'Beasiswa', 'Gizi Anak Panti'];
+
+  all = [
+    { date: '18 Agu', name: 'Rat*** S.', city: 'Bekasi', project: 'Bantuan Banjir Bekasi', amount: 'Rp 2.000.000', status: 'Terverifikasi', tag: 'Banjir Bekasi' },
+    { date: '17 Agu', name: 'BO C*** Bandung', city: 'Bandung', project: 'Bantuan Banjir Bekasi', amount: 'Rp 5.000.000', status: 'Terverifikasi', tag: 'Banjir Bekasi' },
+    { date: '16 Agu', name: 'Yul*** H.', city: 'Jakarta Selatan', project: 'Paket Gizi Anak Panti', amount: 'Rp 750.000', status: 'Terverifikasi', tag: 'Gizi Anak Panti' },
+    { date: '15 Agu', name: 'And*** P.', city: 'Kelapa Gading', project: 'Beasiswa Anak Agent RE/MAX', amount: 'Rp 1.500.000', status: 'Terverifikasi', tag: 'Beasiswa' },
+    { date: '15 Agu', name: 'Muh*** F.', city: 'Surabaya', project: 'Beasiswa Anak Agent RE/MAX', amount: 'Rp 500.000', status: 'Terverifikasi', tag: 'Beasiswa' },
+    { date: '14 Agu', name: 'BO P*** Serpong', city: 'Tangerang', project: 'Bantuan Banjir Bekasi', amount: 'Rp 7.500.000', status: 'Terverifikasi', tag: 'Banjir Bekasi' },
+    { date: '13 Agu', name: 'Chr*** L.', city: 'Semarang', project: 'Paket Gizi Anak Panti', amount: 'Rp 1.000.000', status: 'Terverifikasi', tag: 'Gizi Anak Panti' },
+    { date: '12 Agu', name: 'Ded*** W.', city: 'Bekasi', project: 'Bantuan Banjir Bekasi', amount: 'Rp 300.000', status: 'Terverifikasi', tag: 'Banjir Bekasi' },
+    { date: '11 Agu', name: 'Nur*** A.', city: 'Depok', project: 'Beasiswa Anak Agent RE/MAX', amount: 'Rp 2.500.000', status: 'Terverifikasi', tag: 'Beasiswa' },
+    { date: '10 Agu', name: 'BO M*** Kuningan', city: 'Jakarta Pusat', project: 'Bantuan Banjir Bekasi', amount: 'Rp 10.000.000', status: 'Terverifikasi', tag: 'Banjir Bekasi' },
+    { date: '09 Agu', name: 'Ste*** K.', city: 'Medan', project: 'Paket Gizi Anak Panti', amount: 'Rp 600.000', status: 'Terverifikasi', tag: 'Gizi Anak Panti' },
+    { date: '08 Agu', name: 'Fit*** R.', city: 'Bandung', project: 'Beasiswa Anak Agent RE/MAX', amount: 'Rp 1.250.000', status: 'Terverifikasi', tag: 'Beasiswa' },
+    { date: '07 Agu', name: 'Hen*** T.', city: 'Bali', project: 'Bantuan Banjir Bekasi', amount: 'Rp 4.000.000', status: 'Terverifikasi', tag: 'Banjir Bekasi' },
+    { date: '06 Agu', name: 'Lin*** O.', city: 'Jakarta Barat', project: 'Paket Gizi Anak Panti', amount: 'Rp 450.000', status: 'Terverifikasi', tag: 'Gizi Anak Panti' }
+  ];
+
+  payouts = [
+    { date: '2 September 2026', title: 'Yayasan Sahabat Anak', detail: 'Paket sembako & kebutuhan darurat untuk 120 keluarga, Bogor.', amount: 'Rp 100.000.000', dot: 'var(--color-brand-accent)' },
+    { date: '12 Juli 2026', title: 'Masjid Al-Ikhlas, Cianjur', detail: 'Renovasi atap dan area wudu; laporan dan 12 foto tersedia.', amount: 'Rp 80.000.000', dot: 'var(--color-brand-primary)' },
+    { date: '28 Juni 2026', title: 'SDN 03 Cianjur', detail: 'Perpustakaan mini: rak, 480 buku, dan meja baca.', amount: 'Rp 45.000.000', dot: 'var(--color-brand-primary)' },
+    { date: '30 Mei 2026', title: 'Kelompok Tani Puncak', detail: '1.200 bibit pohon untuk area resapan kawasan Puncak.', amount: 'Rp 25.000.000', dot: 'var(--color-brand-navy)' }
+  ];
+
+  renderVals() {
+    const { project, limit } = this.state;
+    const filtered = project === 'Semua proyek' ? this.all : this.all.filter(r => r.tag === project);
+    const rows = filtered.slice(0, limit);
+
+    return {
+      rows,
+      shown: rows.length,
+      total: filtered.length,
+      hasMore: filtered.length > rows.length,
+      loadMore: () => this.setState(s => ({ limit: s.limit + 6 })),
+      payouts: this.payouts.map((d, i) => ({
+        ...d,
+        line: i === this.payouts.length - 1 ? 'transparent' : 'var(--color-border-card)',
+        pad: i === this.payouts.length - 1 ? '0' : '22px'
+      })),
+      projectChips: this.projects.map(label => {
+        const on = label === project;
+        return {
+          label,
+          bg: on ? 'var(--color-brand-primary)' : '#fff',
+          fg: on ? '#fff' : 'var(--color-text-heading)',
+          bd: on ? 'var(--color-brand-primary)' : 'var(--color-border-card)',
+          pick: () => this.setState({ project: label, limit: 8 })
+        };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

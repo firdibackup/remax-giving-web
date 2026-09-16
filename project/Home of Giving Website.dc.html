@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/home-of-giving-design-system-f09eee0f-3c82-4148-bf2f-d162d2175e25/tokens/colors.css">
+<link rel="stylesheet" href="_ds/home-of-giving-design-system-f09eee0f-3c82-4148-bf2f-d162d2175e25/tokens/typography.css">
+<link rel="stylesheet" href="_ds/home-of-giving-design-system-f09eee0f-3c82-4148-bf2f-d162d2175e25/tokens/spacing.css">
+<link rel="stylesheet" href="_ds/home-of-giving-design-system-f09eee0f-3c82-4148-bf2f-d162d2175e25/tokens/effects.css">
+<link rel="stylesheet" href="_ds/home-of-giving-design-system-f09eee0f-3c82-4148-bf2f-d162d2175e25/styles.css">
+<script src="_ds/home-of-giving-design-system-f09eee0f-3c82-4148-bf2f-d162d2175e25/_ds_bundle.js"></script>
+<style>
+html{scroll-behavior:smooth}
+body{margin:0;background:#fff;font-family:'Plus Jakarta Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#003DA5;text-decoration:none}
+a:hover{color:#062E61}
+@keyframes hogBob{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
+</style>
+</helmet>
+
+<div ref="{{ rootRef }}" style="font-family:var(--font-sans);background:var(--color-bg-page)">
+
+<div ref="{{ navRef }}" style="position:sticky;top:0;z-index:60;background:#fff;border-bottom:1px solid var(--color-border-card)">
+  <div style="max-width:var(--container-max);margin:0 auto;padding:14px 32px;display:flex;align-items:center;justify-content:space-between;gap:32px">
+    <a href="#beranda" style="display:flex;align-items:center;flex:none" aria-label="REMAX Home of Giving"><img src="assets/logo.svg" alt="REMAX Home of Giving" style="display:block;height:46px;width:auto"></a>
+    <div style="display:flex;align-items:center;gap:28px">
+      <a href="#proyek" style="font-size:15px;font-weight:var(--fw-semibold);color:var(--color-text-heading)">Proyek</a>
+      <a href="#transparansi" style="font-size:15px;font-weight:var(--fw-semibold);color:var(--color-text-heading)">Transparansi</a>
+      <a href="Home of Giving Program.dc.html" style="font-size:15px;font-weight:var(--fw-semibold);color:var(--color-text-heading)">Program</a>
+      <a href="Home of Giving Riwayat Donasi.dc.html" style="font-size:15px;font-weight:var(--fw-semibold);color:var(--color-text-heading)">Riwayat Donasi</a>
+      <a href="Home of Giving Blog.dc.html" style="font-size:15px;font-weight:var(--fw-semibold);color:var(--color-text-heading)">Blog</a>
+      <a href="Home of Giving Galeri.dc.html" style="font-size:15px;font-weight:var(--fw-semibold);color:var(--color-text-heading)">Galeri</a>
+    </div>
+    <x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.Button" variant="primary" size="sm" on-click="{{ goDonate }}" hint-size="180px,40px">Donasi Sekarang →</x-import>
+  </div>
+</div>
+
+<section id="beranda" style="position:relative;overflow:hidden;background:var(--color-bg-soft);padding:76px 32px 104px;scroll-margin-top:80px">
+  <div data-px="0.05" style="position:absolute;top:-180px;right:-160px;width:560px;height:560px;border-radius:50%;background:var(--color-tint-blue)"></div>
+  <div data-px="0.03" style="position:absolute;left:-90px;bottom:-120px;width:260px;height:260px;border-radius:50%;background:var(--color-tint-red)"></div>
+  <div style="position:relative;max-width:var(--container-max);margin:0 auto;display:grid;grid-template-columns:1.02fr 1fr;gap:64px;align-items:center">
+    <div>
+      <div data-reveal="0" style="font-family:var(--font-hand);font-weight:var(--fw-bold);font-size:var(--fs-eyebrow);line-height:1;color:var(--color-brand-accent)">Kebaikan dimulai dari rumah</div>
+      <h1 data-reveal="90" style="margin:10px 0 20px;font-size:var(--fs-hero);font-weight:var(--fw-extrabold);line-height:1.02;letter-spacing:-0.02em;color:var(--color-text-heading);text-transform:uppercase;text-wrap:balance">Giving Starts<br>From Home.</h1>
+      <p data-reveal="170" style="margin:0 0 30px;max-width:470px;font-size:var(--fs-body-lg);line-height:var(--lh-body);color:var(--color-text-body);text-wrap:pretty">REMAX Home of Giving menyalurkan donasi agent, rekan, dan mitra RE/MAX Indonesia ke satu penerima manfaat per proyek — dengan bukti penyaluran yang bisa Anda lacak sampai tuntas.</p>
+      <div data-reveal="240" style="display:flex;flex-wrap:wrap;gap:14px;align-items:center">
+        <x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.Button" variant="primary" on-click="{{ goDonate }}" hint-size="210px,50px">Donasi Sekarang →</x-import>
+        <x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.Button" variant="secondary" on-click="{{ goProject }}" hint-size="210px,50px">Lihat proyek berjalan</x-import>
+      </div>
+      <div data-reveal="320" style="display: none; align-items: center; gap: 10px; margin-top: 32px; font-size: var(--fs-caption); font-weight: var(--fw-medium); color: var(--color-text-body)">
+        <span style="width:8px;height:8px;border-radius:50%;background:var(--color-brand-accent);flex:none"></span>
+        <span>Satu proyek · satu penerima · laporan dan dokumentasi selalu dipublikasikan</span>
+      </div>
+    </div>
+    <div style="position:relative">
+      <div style="border-radius:24px;overflow:hidden;height:490px;box-shadow:var(--shadow-card);background:var(--color-tint-blue)">
+        <img data-px="0.1" src="assets/photos/community-01-web.jpg" alt="Relawan Home of Giving bersama anak penerima manfaat" style="display:block;width:100%;height:126%;margin-top:-13%;object-fit:cover;object-position:52% 42%">
+      </div>
+      <div data-px="-0.07" style="position:absolute;left:-44px;bottom:-42px;width:296px;background:var(--color-surface-card);border:1px solid var(--color-border-card);border-radius:var(--radius-lg);box-shadow:var(--shadow-card-hover);padding:20px">
+        <div style="display:flex;gap:8px;margin-bottom:12px">
+          <x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.Badge" tone="red" hint-size="120px,26px">Proyek berjalan</x-import>
+        </div>
+        <div style="font-size:17px;font-weight:var(--fw-bold);color:var(--color-text-heading);line-height:var(--lh-heading);margin-bottom:14px">Bantuan Banjir Bekasi</div>
+        <x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.ProgressBar" percent="{{ pct.banjir }}" hint-size="100%,34px"></x-import>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:14px;padding-top:14px;border-top:1px solid var(--color-border-card)">
+          <span style="font-size:16px;font-weight:var(--fw-bold);color:var(--color-brand-primary)">Rp 68 jt</span>
+          <span style="font-size:var(--fs-caption);color:var(--color-text-body)">target Rp 100 jt</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="background:#fff;padding:104px 32px 96px">
+  <div style="max-width:940px;margin:0 auto;text-align:center">
+    <div data-reveal="0" style="font-size:var(--fs-caption);font-weight:var(--fw-bold);letter-spacing:0.16em;text-transform:uppercase;color:var(--color-text-body)">Total donasi terkumpul</div>
+    <div data-reveal="80" style="display:flex;align-items:flex-start;justify-content:center;gap:10px;margin:14px 0 6px;font-weight:var(--fw-extrabold);line-height:1;color:var(--color-brand-primary);letter-spacing:-0.03em">
+      <span style="font-size:clamp(40px,6vw,74px)">Rp</span>
+      <span data-count="1.2" data-dec="1" style="font-size:clamp(52px,9vw,112px)">1,2</span>
+      <span style="font-size:clamp(40px,6vw,74px)">Miliar</span>
+      <span style="font-size:clamp(28px,4vw,48px);color:var(--color-brand-accent)">+</span>
+    </div>
+    <div data-reveal="160" style="font-family:var(--font-hand);font-weight:var(--fw-semibold);font-size:30px;color:var(--color-brand-navy);opacity:.85">“Sedikit dari kita, berarti banyak bagi mereka.”</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:56px;padding-top:44px;border-top:1px solid var(--color-border-card);justify-items:center">
+      <div data-reveal="0"><x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.StatCounter" value="312" label="Donasi terverifikasi" hint-size="200px,78px"></x-import></div>
+      <div data-reveal="110"><x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.StatCounter" value="120" label="Total terbantu" tone="red" hint-size="200px,78px"></x-import></div>
+      <div data-reveal="220"><x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.StatCounter" value="14" label="Proyek tuntas" hint-size="200px,78px"></x-import></div>
+    </div>
+  </div>
+</section>
+
+<section id="proyek" style="background:var(--color-bg-soft);padding:96px 32px;scroll-margin-top:80px">
+  <div style="max-width:var(--container-max);margin:0 auto">
+    <div data-reveal="0" style="margin-bottom:40px">
+      <div style="font-family:var(--font-hand);font-weight:var(--fw-bold);font-size:var(--fs-eyebrow);line-height:1;color:var(--color-brand-accent)">Proyek yang sedang berlangsung</div>
+      <h2 style="margin:8px 0 0;font-size:var(--fs-h2);font-weight:var(--fw-extrabold);color:var(--color-text-heading);text-transform:uppercase;letter-spacing:-0.01em">Satu proyek, satu penerima</h2>
+    </div>
+    <div data-reveal="90" style="display:grid;grid-template-columns:1.04fr 1fr;background:var(--color-surface-card);border:1px solid var(--color-border-card);border-radius:24px;box-shadow:var(--shadow-card);overflow:hidden">
+      <div style="overflow:hidden;min-height:440px;background:var(--color-tint-blue)">
+        <img data-px="0.08" src="assets/photos/community-03-web.jpg" alt="Kegiatan penyaluran bantuan" style="display:block;width:100%;height:124%;margin-top:-12%;object-fit:cover;object-position:center 45%">
+      </div>
+      <div style="padding:44px 44px 40px;display:flex;flex-direction:column;gap:18px">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.Badge" tone="red" hint-size="150px,26px">Berjalan · sisa 9 hari</x-import>
+          <x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.Badge" tone="blue" hint-size="90px,26px">Bencana</x-import>
+        </div>
+        <h3 style="margin:0;font-size:32px;font-weight:var(--fw-extrabold);line-height:var(--lh-heading);color:var(--color-text-heading);letter-spacing:-0.01em">Bantuan Banjir Bekasi</h3>
+        <p style="margin:0;font-size:var(--fs-body);line-height:var(--lh-body);color:var(--color-text-body);text-wrap:pretty">Paket sembako dan kebutuhan darurat untuk 120 keluarga terdampak banjir, disalurkan langsung ke Yayasan Sahabat Anak, Bogor. Penyerahan dihadiri panitia dan perwakilan RE/MAX.</p>
+        <div>
+          <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px">
+            <span style="font-size:28px;font-weight:var(--fw-extrabold);color:var(--color-brand-primary)">Rp 68.000.000</span>
+            <span style="font-size:var(--fs-caption);color:var(--color-text-body)">dari target Rp 100.000.000</span>
+          </div>
+          <x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.ProgressBar" percent="{{ pct.banjir }}" show-label="{{ false }}" hint-size="100%,14px"></x-import>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px 20px;font-size:var(--fs-caption);color:var(--color-text-body);padding-top:4px">
+          <span><strong style="color:var(--color-text-heading);font-weight:var(--fw-bold)">41</strong> donatur</span>
+          <span>Siklus 1–31 Agustus 2026</span>
+          <span>Penerima: Yayasan Sahabat Anak, Bogor</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:6px">
+          <x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.Button" variant="primary" on-click="{{ goDonate }}" hint-size="230px,50px">Donasi via WhatsApp →</x-import>
+          <a href="Home of Giving Detail Proyek.dc.html" style="display:inline-flex;align-items:center;padding:0 24px;height:50px;border:1.5px solid var(--color-brand-primary);border-radius:var(--radius-md);color:var(--color-brand-primary);font-size:var(--fs-body);font-weight:var(--fw-bold);transition:box-shadow 160ms var(--ease-standard),transform 160ms var(--ease-standard)" style-hover="transform:translateY(-1px);box-shadow:var(--shadow-card)">Detail proyek</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="transparansi" style="position:relative;overflow:hidden;background:var(--color-brand-primary);color:#fff;padding:104px 32px;scroll-margin-top:80px">
+  <div style="position:relative;max-width:var(--container-max);margin:0 auto;display:grid;grid-template-columns:1.1fr 0.9fr;gap:64px;align-items:start">
+    <div>
+      <div data-reveal="0" style="display:flex;margin-bottom:16px">
+        <x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.Badge" tone="red" hint-size="130px,26px">Transparansi</x-import>
+      </div>
+      <h2 data-reveal="70" style="margin:0 0 16px;font-size:var(--fs-h2);font-weight:var(--fw-extrabold);text-transform:uppercase;letter-spacing:-0.01em;line-height:var(--lh-heading)">Setiap rupiah bisa dilacak</h2>
+      <p data-reveal="140" style="margin:0 0 40px;max-width:520px;font-size:var(--fs-body-lg);line-height:var(--lh-body);opacity:.88;text-wrap:pretty">Donasi tidak digabung ke satu kas besar. Setiap proyek punya satu penerima, satu laporan penggunaan dana, dan satu album dokumentasi yang bisa dibuka siapa saja.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div data-reveal="0" style="border:1px solid rgba(255,255,255,.24);border-radius:var(--radius-lg);padding:24px">
+          <div style="font-size:15px;font-weight:var(--fw-extrabold);color:#fff;opacity:.5;margin-bottom:10px">01</div>
+          <div style="font-size:17px;font-weight:var(--fw-bold);margin-bottom:8px">Panitia memilih penerima</div>
+          <div style="font-size:14px;line-height:var(--lh-body);opacity:.82">Survei kebutuhan, verifikasi lembaga atau keluarga penerima, lalu target donasi ditetapkan.</div>
+        </div>
+        <div data-reveal="90" style="border:1px solid rgba(255,255,255,.24);border-radius:var(--radius-lg);padding:24px">
+          <div style="font-size:15px;font-weight:var(--fw-extrabold);color:#fff;opacity:.5;margin-bottom:10px">02</div>
+          <div style="font-size:17px;font-weight:var(--fw-bold);margin-bottom:8px">Donasi masuk &amp; diverifikasi</div>
+          <div style="font-size:14px;line-height:var(--lh-body);opacity:.82">Transfer dikonfirmasi admin sebelum masuk papan donatur. Nama donatur selalu disamarkan.</div>
+        </div>
+        <div data-reveal="180" style="border:1px solid rgba(255,255,255,.24);border-radius:var(--radius-lg);padding:24px">
+          <div style="font-size:15px;font-weight:var(--fw-extrabold);color:#fff;opacity:.5;margin-bottom:10px">03</div>
+          <div style="font-size:17px;font-weight:var(--fw-bold);margin-bottom:8px">Dana diserahkan langsung</div>
+          <div style="font-size:14px;line-height:var(--lh-body);opacity:.82">Penyerahan dilakukan di lokasi penerima, dicatat tanggalnya, dan didokumentasikan.</div>
+        </div>
+        <div data-reveal="270" style="border:1px solid rgba(255,255,255,.24);border-radius:var(--radius-lg);padding:24px">
+          <div style="font-size:15px;font-weight:var(--fw-extrabold);color:#fff;opacity:.5;margin-bottom:10px">04</div>
+          <div style="font-size:17px;font-weight:var(--fw-bold);margin-bottom:8px">Laporan dibuka untuk publik</div>
+          <div style="font-size:14px;line-height:var(--lh-body);opacity:.82">Rincian penggunaan dana, foto serah terima, dan laporan PDF tersedia di halaman proyek.</div>
+        </div>
+      </div>
+    </div>
+    <div style="position:relative;padding-bottom:64px">
+      <div style="border-radius:24px;overflow:hidden;height:520px;box-shadow:var(--shadow-card-hover)">
+        <img data-px="0.09" src="assets/photos/community-02-web.jpg" alt="Serah terima donasi kepada penerima manfaat" style="display:block;width:100%;height:126%;margin-top:-13%;object-fit:cover;object-position:center 40%">
+      </div>
+      <div data-px="-0.06" style="position:absolute;left:-40px;bottom:0;width:300px;background:var(--color-surface-card);border-radius:var(--radius-lg);box-shadow:var(--shadow-card-hover);padding:22px">
+        <div style="font-size:var(--fs-caption);font-weight:var(--fw-bold);letter-spacing:0.12em;text-transform:uppercase;color:var(--color-brand-accent);margin-bottom:10px">Proyek tuntas</div>
+        <div style="font-size:17px;font-weight:var(--fw-bold);color:var(--color-text-heading);margin-bottom:6px">Renovasi Rumah Ibadah</div>
+        <div style="font-size:14px;line-height:var(--lh-body);color:var(--color-text-body)">Rp 80.000.000 diserahkan ke Masjid Al-Ikhlas, Cianjur · laporan dan 12 foto tersedia.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="program" style="background:#fff;padding:104px 32px;scroll-margin-top:80px">
+  <div style="max-width:var(--container-max);margin:0 auto">
+    <div data-reveal="0" style="text-align:center;margin-bottom:52px">
+      <div style="font-family:var(--font-hand);font-weight:var(--fw-bold);font-size:var(--fs-eyebrow);line-height:1;color:var(--color-brand-accent)">Program &amp; Target Donasi</div>
+      <h2 style="margin:8px 0 0;font-size:var(--fs-h2);font-weight:var(--fw-extrabold);color:var(--color-text-heading);text-transform:uppercase;letter-spacing:-0.01em">Bersama menciptakan dampak nyata</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:28px;justify-items:center;align-items:start">
+      <div data-px="0.03"><x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.CampaignCard" image="assets/photos/community-01-web.jpg" category="Bencana" title="Bantuan Banjir Bekasi" raised="Rp68.000.000" target="Rp100.000.000" percent="{{ pct.banjir }}" on-donate="{{ goDonate }}" hint-size="320px,540px"></x-import></div>
+      <div data-px="0.075"><x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.CampaignCard" image="assets/photos/community-02-web.jpg" category="Pendidikan" title="Beasiswa Anak Agent RE/MAX" raised="Rp12.000.000" target="Rp50.000.000" percent="{{ pct.beasiswa }}" on-donate="{{ goDonate }}" hint-size="320px,540px"></x-import></div>
+      <div data-px="0.03"><x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.CampaignCard" image="assets/photos/community-03-web.jpg" category="Sosial" title="Renovasi Rumah Ibadah" raised="Rp80.000.000" target="Rp80.000.000" percent="{{ pct.ibadah }}" on-donate="{{ goDonate }}" hint-size="320px,540px"></x-import></div>
+    </div>
+    <div data-reveal="0" style="text-align:center;margin-top:44px">
+      <a href="Home of Giving Program.dc.html" style="font-size:var(--fs-body);font-weight:var(--fw-bold);color:var(--color-brand-primary)">Lihat semua 14 proyek →</a>
+    </div>
+  </div>
+</section>
+
+<section id="riwayat" style="background:var(--color-bg-soft);padding:96px 32px;scroll-margin-top:80px">
+  <div style="max-width:var(--container-max);margin:0 auto;display:grid;grid-template-columns:1.35fr 1fr;gap:32px;align-items:start">
+    <div data-reveal="0" style="background:var(--color-surface-card);border:1px solid var(--color-border-card);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);padding:32px 32px 26px">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:22px">
+        <h3 style="margin:0;font-size:var(--fs-h3);font-weight:var(--fw-bold);color:var(--color-text-heading)">Donatur terbaru</h3>
+        <a href="Home of Giving Riwayat Donasi.dc.html" style="font-size:14px;font-weight:var(--fw-bold);color:var(--color-brand-accent)">Riwayat lengkap →</a>
+      </div>
+      <div style="display:flex;flex-direction:column">
+        <div style="display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;padding:14px 0;border-top:1px solid var(--color-border-card)">
+          <div><div style="font-size:var(--fs-body);font-weight:var(--fw-semibold);color:var(--color-text-heading)">Rat*** S.</div><div style="font-size:var(--fs-caption);color:var(--color-text-body);margin-top:2px">Bekasi · Banjir Bekasi · 18 Agu</div></div>
+          <div style="font-size:var(--fs-body);font-weight:var(--fw-bold);color:var(--color-brand-primary)">Rp 2.000.000</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;padding:14px 0;border-top:1px solid var(--color-border-card)">
+          <div><div style="font-size:var(--fs-body);font-weight:var(--fw-semibold);color:var(--color-text-heading)">BO C*** Bandung</div><div style="font-size:var(--fs-caption);color:var(--color-text-body);margin-top:2px">Bandung · Banjir Bekasi · 17 Agu</div></div>
+          <div style="font-size:var(--fs-body);font-weight:var(--fw-bold);color:var(--color-brand-primary)">Rp 5.000.000</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;padding:14px 0;border-top:1px solid var(--color-border-card)">
+          <div><div style="font-size:var(--fs-body);font-weight:var(--fw-semibold);color:var(--color-text-heading)">And*** P.</div><div style="font-size:var(--fs-caption);color:var(--color-text-body);margin-top:2px">Kelapa Gading · Beasiswa · 15 Agu</div></div>
+          <div style="font-size:var(--fs-body);font-weight:var(--fw-bold);color:var(--color-brand-primary)">Rp 1.500.000</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;padding:14px 0;border-top:1px solid var(--color-border-card)">
+          <div><div style="font-size:var(--fs-body);font-weight:var(--fw-semibold);color:var(--color-text-heading)">Muh*** F.</div><div style="font-size:var(--fs-caption);color:var(--color-text-body);margin-top:2px">Surabaya · Beasiswa · 15 Agu</div></div>
+          <div style="font-size:var(--fs-body);font-weight:var(--fw-bold);color:var(--color-brand-primary)">Rp 500.000</div>
+        </div>
+      </div>
+      <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--color-border-card);font-size:var(--fs-caption);color:var(--color-text-body)">312 transaksi tercatat · nama donatur selalu disamarkan sebelum dipublikasikan.</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <div data-reveal="120" style="background:var(--color-surface-card);border:1px solid var(--color-border-card);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);padding:28px">
+        <div style="font-size:var(--fs-caption);font-weight:var(--fw-bold);letter-spacing:0.12em;text-transform:uppercase;color:var(--color-text-body);margin-bottom:20px">Agenda berikutnya</div>
+        <div style="display:flex;gap:16px;align-items:flex-start">
+          <div style="flex:none;width:64px;border-radius:var(--radius-md);background:var(--color-brand-navy);color:#fff;text-align:center;padding:10px 0">
+            <div style="font-size:12px;font-weight:var(--fw-bold);letter-spacing:0.1em;opacity:.75">SEP</div>
+            <div style="font-size:26px;font-weight:var(--fw-extrabold);line-height:1.1">04</div>
+          </div>
+          <div>
+            <div style="font-size:17px;font-weight:var(--fw-bold);color:var(--color-text-heading);line-height:var(--lh-heading)">Serah terima donasi Banjir Bekasi</div>
+            <div style="font-size:14px;color:var(--color-text-body);margin-top:4px">10.00 WIB · Yayasan Sahabat Anak, Bogor</div>
+          </div>
+        </div>
+        <div style="margin-top:20px">
+          <x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.Button" variant="secondary" size="sm" on-click="{{ goDonate }}" hint-size="200px,42px">Ikut serta via WhatsApp</x-import>
+        </div>
+        <div style="display:flex;gap:16px;align-items:flex-start;margin-top:24px;padding-top:20px;border-top:1px solid var(--color-border-card)">
+          <div style="flex:none;width:64px;border-radius:var(--radius-md);border:1px solid var(--color-border-card);color:var(--color-text-heading);text-align:center;padding:9px 0">
+            <div style="font-size:12px;font-weight:var(--fw-bold);letter-spacing:0.1em;color:var(--color-text-body)">SEP</div>
+            <div style="font-size:24px;font-weight:var(--fw-extrabold);line-height:1.1">21</div>
+          </div>
+          <div>
+            <div style="font-size:16px;font-weight:var(--fw-bold);color:var(--color-text-heading);line-height:var(--lh-heading)">Charity Run Agent RE/MAX</div>
+            <div style="font-size:14px;color:var(--color-text-body);margin-top:4px">06.00 WIB · Senayan, Jakarta</div>
+          </div>
+        </div>
+      </div>
+      <div data-reveal="200" style="background:var(--color-tint-blue);border-radius:var(--radius-lg);padding:24px">
+        <div style="font-family:var(--font-hand);font-weight:var(--fw-bold);font-size:26px;line-height:1.1;color:var(--color-brand-primary);margin-bottom:8px">Ingin ikut menyalurkan?</div>
+        <div style="font-size:14px;line-height:var(--lh-body);color:var(--color-text-body)">Panitia membuka satu proyek baru setiap bulan. Hubungi kami untuk mengusulkan penerima manfaat.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="cerita" style="background:#fff;padding:104px 32px;scroll-margin-top:80px">
+  <div style="max-width:var(--container-max);margin:0 auto">
+    <div data-reveal="0" style="display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:44px">
+      <div>
+        <div style="font-family:var(--font-hand);font-weight:var(--fw-bold);font-size:var(--fs-eyebrow);line-height:1;color:var(--color-brand-primary)">Cerita &amp; Dokumentasi</div>
+        <h2 style="margin:8px 0 0;font-size:var(--fs-h2);font-weight:var(--fw-extrabold);color:var(--color-text-heading);text-transform:uppercase;letter-spacing:-0.01em">Apa yang berubah setelahnya</h2>
+      </div>
+      <a href="Home of Giving Galeri.dc.html" style="flex:none;font-size:var(--fs-body);font-weight:var(--fw-bold);color:var(--color-brand-primary)">Galeri dokumentasi →</a>
+    </div>
+    <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:24px;align-items:start">
+      <div>
+        <div style="border-radius:var(--radius-lg);overflow:hidden;height:300px;background:var(--color-tint-blue)">
+          <img data-px="0.06" src="assets/photos/community-01-web.jpg" alt="Kunjungan ke keluarga penerima manfaat" style="display:block;width:100%;height:122%;margin-top:-11%;object-fit:cover;object-position:40% 45%">
+        </div>
+        <div style="font-size:var(--fs-caption);color:var(--color-text-body);margin-top:16px">14 Agustus 2026 · Panitia</div>
+        <div style="font-size:22px;font-weight:var(--fw-bold);color:var(--color-text-heading);line-height:var(--lh-heading);margin-top:6px">Sehari bersama keluarga penerima di Cianjur</div>
+        <div style="font-size:var(--fs-body);line-height:var(--lh-body);color:var(--color-text-body);margin-top:8px;text-wrap:pretty">Cerita singkat perjalanan penyaluran, siapa yang menerima, dan apa yang berubah setelah bantuan sampai.</div>
+      </div>
+      <div style="margin-top:28px">
+        <div style="border-radius:var(--radius-lg);overflow:hidden;height:230px;background:var(--color-tint-blue)">
+          <img data-px="0.05" src="assets/photos/community-02-web.jpg" alt="Dokumentasi kegiatan bersama anak-anak" style="display:block;width:100%;height:124%;margin-top:-12%;object-fit:cover;object-position:60% 40%">
+        </div>
+        <div style="font-size:var(--fs-caption);color:var(--color-text-body);margin-top:14px">2 Agustus 2026</div>
+        <div style="font-size:17px;font-weight:var(--fw-bold);color:var(--color-text-heading);line-height:var(--lh-heading);margin-top:4px">Kenapa nama donatur kami samarkan</div>
+      </div>
+      <div style="margin-top:56px">
+        <div style="border-radius:var(--radius-lg);overflow:hidden;height:230px;background:var(--color-tint-blue)">
+          <img data-px="0.05" src="assets/photos/community-03-web.jpg" alt="Dokumentasi serah terima donasi" style="display:block;width:100%;height:124%;margin-top:-12%;object-fit:cover;object-position:35% 50%">
+        </div>
+        <div style="font-size:var(--fs-caption);color:var(--color-text-body);margin-top:14px">28 Juli 2026</div>
+        <div style="font-size:17px;font-weight:var(--fw-bold);color:var(--color-text-heading);line-height:var(--lh-heading);margin-top:4px">Laporan siklus Juli: 3 proyek tuntas</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="position:relative;overflow:hidden;background:var(--color-brand-navy);padding:112px 32px">
+  <div data-px="0.12" style="position:absolute;left:-70px;top:60px;width:220px;height:280px;border-radius:24px;overflow:hidden;opacity:.5">
+    <img src="assets/photos/community-03-web.jpg" alt="" style="display:block;width:100%;height:100%;object-fit:cover">
+  </div>
+  <div data-px="-0.1" style="position:absolute;right:-60px;bottom:40px;width:240px;height:300px;border-radius:24px;overflow:hidden;opacity:.5">
+    <img src="assets/photos/community-02-web.jpg" alt="" style="display:block;width:100%;height:100%;object-fit:cover">
+  </div>
+  <div style="position:relative;max-width:760px;margin:0 auto;text-align:center;color:#fff">
+    <div data-reveal="0" style="font-family:var(--font-hand);font-weight:var(--fw-bold);font-size:var(--fs-eyebrow);line-height:1;color:#fff;opacity:.8">Together we give</div>
+    <h2 data-reveal="80" style="margin:10px 0 18px;font-size:var(--fs-h1);font-weight:var(--fw-extrabold);text-transform:uppercase;line-height:1.05;letter-spacing:-0.02em">Satu donasi.<br><span style="color:var(--color-brand-accent)">Banyak harapan.</span></h2>
+    <p data-reveal="150" style="margin:0 auto 30px;max-width:520px;font-size:var(--fs-body-lg);line-height:var(--lh-body);opacity:.85">Donasi berikutnya menentukan proyek mana yang bisa kami buka bulan depan.</p>
+    <div data-reveal="220" style="display:flex;justify-content:center">
+      <x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.Button" variant="primary" size="lg" on-click="{{ goDonate }}" hint-size="240px,56px">Donasi Sekarang →</x-import>
+    </div>
+    <div data-reveal="290" style="margin-top:20px;font-size:var(--fs-caption);opacity:.7">atau chat panitia untuk konfirmasi transfer &amp; pertanyaan program</div>
+  </div>
+</section>
+
+<x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.Footer" logo-src="assets/logo.svg" hint-size="100%,240px"></x-import>
+
+<sc-if value="{{ showWa }}" hint-placeholder-val="{{ true }}">
+<div style="position:fixed;right:24px;bottom:24px;z-index:70;display:flex;align-items:center;gap:10px;background:var(--color-brand-primary);color:#fff;border-radius:var(--radius-pill);padding:14px 22px;box-shadow:0 10px 30px rgba(6,46,97,.28);font-size:15px;font-weight:var(--fw-bold);cursor:pointer" style-hover="transform:translateY(-1px)">
+  <span style="width:10px;height:10px;border-radius:50%;background:#fff"></span>
+  <span>Chat panitia</span>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;parallaxIntensity&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1,&quot;min&quot;:0,&quot;max&quot;:1.6,&quot;step&quot;:0.1,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Gerak&quot;},&quot;revealOnScroll&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Gerak&quot;},&quot;showFloatingWa&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Konten&quot;}}">
+class Component extends DCLogic {
+  rootRef = React.createRef();
+  navRef = React.createRef();
+  state = { live: false };
+  pending = [];
+  pctOff = { banjir: 0, beasiswa: 0, ibadah: 0 };
+  pctOn = { banjir: 68, beasiswa: 24, ibadah: 100 };
+  goDonate = () => this.scrollTo('proyek');
+  goProject = () => this.scrollTo('proyek');
+
+  componentDidMount() {
+    this.timer = setTimeout(() => this.setState({ live: true }), 500);
+    this.initMotion();
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.timer);
+    if (this.onScroll) window.removeEventListener('scroll', this.onScroll);
+    if (this.onResize) {
+      window.removeEventListener('resize', this.onResize);
+      window.removeEventListener('load', this.onResize);
+    }
+    if (this.raf) cancelAnimationFrame(this.raf);
+  }
+
+  initMotion() {
+    const root = this.rootRef.current;
+    if (!root) return;
+    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const k = reduce ? 0 : (this.props.parallaxIntensity ?? 1);
+    const layers = Array.prototype.slice.call(root.querySelectorAll('[data-px]')).map(el => ({
+      el: el,
+      f: (parseFloat(el.getAttribute('data-px')) || 0) * k,
+      top: 0,
+      h: 0
+    }));
+
+    // measured once (and on resize) so the scroll loop only writes — no layout thrash
+    const measure = () => {
+      for (let i = 0; i < layers.length; i++) layers[i].el.style.transform = 'none';
+      const sy = window.pageYOffset || 0;
+      for (let i = 0; i < layers.length; i++) {
+        const r = layers[i].el.getBoundingClientRect();
+        layers[i].top = r.top + sy;
+        layers[i].h = r.height;
+      }
+    };
+
+    const apply = () => {
+      this.raf = null;
+      const sy = window.pageYOffset || 0;
+      const vh = window.innerHeight || 800;
+      for (let i = 0; i < layers.length; i++) {
+        const L = layers[i];
+        const off = (L.top - sy + L.h / 2 - vh / 2) * -L.f;
+        L.el.style.transform = 'translate3d(0,' + off.toFixed(1) + 'px,0)';
+      }
+      const nav = this.navRef.current;
+      if (nav) nav.style.boxShadow = sy > 8 ? 'var(--shadow-card)' : 'none';
+      // reveal sweep runs every scroll frame, so a fast/jump scroll can never orphan a section
+      for (let i = this.pending.length - 1; i >= 0; i--) {
+        const el = this.pending[i];
+        if (el.getBoundingClientRect().top < vh * 0.9) {
+          this.pending.splice(i, 1);
+          if (el.hasAttribute('data-count')) { this.countUp(el, false); continue; }
+          el.style.opacity = '1';
+          el.style.transform = 'none';
+        }
+      }
+    };
+
+    this.onScroll = () => { if (this.raf == null) this.raf = requestAnimationFrame(apply); };
+    this.onResize = () => { measure(); apply(); };
+    window.addEventListener('scroll', this.onScroll, { passive: true });
+    window.addEventListener('resize', this.onResize);
+    window.addEventListener('load', this.onResize);
+    measure();
+    apply();
+
+    const counter = root.querySelector('[data-count]');
+    const items = Array.prototype.slice.call(root.querySelectorAll('[data-reveal]'));
+    const canReveal = this.props.revealOnScroll !== false && !reduce && 'IntersectionObserver' in window;
+
+    if (!canReveal) {
+      if (counter) this.countUp(counter, true);
+      return;
+    }
+
+    const vh0 = window.innerHeight || 800;
+    const pending = items.filter(el => {
+      // already scrolled past (hash link, restored scroll position): show immediately
+      if (el.getBoundingClientRect().top < vh0 * 0.9) return false;
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(24px)';
+      el.style.transition = 'opacity 700ms var(--ease-standard), transform 700ms var(--ease-standard)';
+      el.style.transitionDelay = (parseInt(el.getAttribute('data-reveal'), 10) || 0) + 'ms';
+      return true;
+    });
+    items.length = 0;
+    pending.forEach(el => items.push(el));
+    if (counter) {
+      if (counter.getBoundingClientRect().top < vh0 * 0.9) this.countUp(counter, true);
+      else counter.textContent = '0,0';
+    }
+
+    this.io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        const el = e.target;
+        this.io.unobserve(el);
+        if (el.hasAttribute('data-count')) { this.countUp(el, false); return; }
+        el.style.opacity = '1';
+        el.style.transform = 'none';
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+
+    items.forEach(el => this.io.observe(el));
+    if (counter && counter.textContent === '0,0') this.io.observe(counter);
+  }
+
+  fmt(v, dec) {
+    const parts = v.toFixed(dec).split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return parts.join(',');
+  }
+
+  countUp(el, instant) {
+    const target = parseFloat(el.getAttribute('data-count')) || 0;
+    const dec = parseInt(el.getAttribute('data-dec'), 10) || 0;
+    if (instant) { el.textContent = this.fmt(target, dec); return; }
+    const dur = 1500;
+    const t0 = performance.now();
+    const step = now => {
+      const p = Math.min(1, (now - t0) / dur);
+      const e = 1 - Math.pow(1 - p, 3);
+      el.textContent = this.fmt(target * e, dec);
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  scrollTo(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const top = el.getBoundingClientRect().top + (window.pageYOffset || 0) - 76;
+    window.scrollTo({ top, behavior: 'smooth' });
+  }
+
+  renderVals() {
+    return {
+      rootRef: this.rootRef,
+      navRef: this.navRef,
+      showWa: this.props.showFloatingWa !== false,
+      pct: this.state.live ? this.pctOn : this.pctOff,
+      goDonate: this.goDonate,
+      goProject: this.goProject
+    };
+  }
+}
+</script>
+</body>
+</html>

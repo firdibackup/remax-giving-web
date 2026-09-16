@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/home-of-giving-design-system-f09eee0f-3c82-4148-bf2f-d162d2175e25/tokens/colors.css">
+<link rel="stylesheet" href="_ds/home-of-giving-design-system-f09eee0f-3c82-4148-bf2f-d162d2175e25/tokens/typography.css">
+<link rel="stylesheet" href="_ds/home-of-giving-design-system-f09eee0f-3c82-4148-bf2f-d162d2175e25/tokens/spacing.css">
+<link rel="stylesheet" href="_ds/home-of-giving-design-system-f09eee0f-3c82-4148-bf2f-d162d2175e25/tokens/effects.css">
+<link rel="stylesheet" href="_ds/home-of-giving-design-system-f09eee0f-3c82-4148-bf2f-d162d2175e25/styles.css">
+<script src="_ds/home-of-giving-design-system-f09eee0f-3c82-4148-bf2f-d162d2175e25/_ds_bundle.js"></script>
+<style>
+html{scroll-behavior:smooth}
+body{margin:0;background:#fff;font-family:'Plus Jakarta Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#003DA5;text-decoration:none}
+a:hover{color:#062E61}
+</style>
+</helmet>
+
+<div style="font-family:var(--font-sans);background:var(--color-bg-page)">
+
+<div style="position:sticky;top:0;z-index:60;background:#fff;border-bottom:1px solid var(--color-border-card)">
+  <div style="max-width:var(--container-max);margin:0 auto;padding:14px 32px;display:flex;align-items:center;justify-content:space-between;gap:32px">
+    <a href="Home of Giving Website.dc.html" style="display:flex;align-items:center;flex:none" aria-label="REMAX Home of Giving"><img src="assets/logo.svg" alt="REMAX Home of Giving" style="display:block;height:46px;width:auto"></a>
+    <div style="display:flex;align-items:center;gap:28px">
+      <a href="Home of Giving Website.dc.html" style="font-size:15px;font-weight:var(--fw-semibold);color:var(--color-text-heading)">Beranda</a>
+      <a href="Home of Giving Program.dc.html" style="font-size:15px;font-weight:var(--fw-semibold);color:var(--color-brand-primary);border-bottom:2px solid var(--color-brand-accent);padding-bottom:2px">Program</a>
+      <a href="Home of Giving Riwayat Donasi.dc.html" style="font-size:15px;font-weight:var(--fw-semibold);color:var(--color-text-heading)">Riwayat Donasi</a>
+      <a href="Home of Giving Blog.dc.html" style="font-size:15px;font-weight:var(--fw-semibold);color:var(--color-text-heading)">Blog</a>
+      <a href="Home of Giving Galeri.dc.html" style="font-size:15px;font-weight:var(--fw-semibold);color:var(--color-text-heading)">Galeri</a>
+    </div>
+    <x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.Button" variant="primary" size="sm" hint-size="180px,40px">Donasi Sekarang →</x-import>
+  </div>
+</div>
+
+<section style="position:relative;overflow:hidden;background:var(--color-bg-soft);padding:64px 32px 72px">
+  <div style="position:absolute;top:-200px;right:-140px;width:520px;height:520px;border-radius:50%;background:var(--color-tint-blue)"></div>
+  <div style="position:relative;max-width:var(--container-max);margin:0 auto">
+    <div style="display:flex;align-items:center;gap:8px;font-size:var(--fs-caption);font-weight:var(--fw-medium);color:var(--color-text-body);margin-bottom:28px">
+      <a href="Home of Giving Website.dc.html">Beranda</a><span>›</span><span>Program &amp; Target Donasi</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1.15fr 1fr;gap:56px;align-items:end">
+      <div>
+        <div style="font-family:var(--font-hand);font-weight:var(--fw-bold);font-size:var(--fs-eyebrow);line-height:1;color:var(--color-brand-accent)">Program &amp; Target Donasi</div>
+        <h1 style="margin:10px 0 18px;font-size:var(--fs-h1);font-weight:var(--fw-extrabold);line-height:1.04;letter-spacing:-0.02em;color:var(--color-text-heading);text-transform:uppercase;text-wrap:balance">Bersama menciptakan dampak nyata</h1>
+        <p style="margin:0;max-width:520px;font-size:var(--fs-body-lg);line-height:var(--lh-body);color:var(--color-text-body);text-wrap:pretty">Setiap siklus donasi punya satu penerima manfaat dan satu target yang jelas. Di halaman ini Anda bisa melihat semua proyek — yang sedang berjalan maupun yang sudah tuntas beserta laporannya.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;justify-items:center">
+        <x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.StatCounter" value="3" label="Proyek berjalan" tone="red" hint-size="140px,78px"></x-import>
+        <x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.StatCounter" value="14" label="Proyek tuntas" hint-size="140px,78px"></x-import>
+        <x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.StatCounter" value="5" label="Kategori program" hint-size="140px,78px"></x-import>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="background:#fff;padding:56px 32px 96px">
+  <div style="max-width:var(--container-max);margin:0 auto">
+
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:24px;padding-bottom:24px;border-bottom:1px solid var(--color-border-card)">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div style="font-size:var(--fs-caption);font-weight:var(--fw-bold);letter-spacing:0.14em;text-transform:uppercase;color:var(--color-text-body)">Kategori</div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px">
+          <sc-for list="{{ catChips }}" as="chip" hint-placeholder-count="6">
+            <div onClick="{{ chip.pick }}" style="cursor:pointer;padding:9px 18px;border-radius:var(--radius-pill);font-size:14px;font-weight:var(--fw-bold);border:1.5px solid {{ chip.bd }};background:{{ chip.bg }};color:{{ chip.fg }};transition:transform 160ms var(--ease-standard)" style-hover="transform:translateY(-1px)">{{ chip.label }}</div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div style="font-size:var(--fs-caption);font-weight:var(--fw-bold);letter-spacing:0.14em;text-transform:uppercase;color:var(--color-text-body)">Status</div>
+        <div style="display:flex;gap:6px;padding:5px;background:var(--color-bg-soft);border-radius:var(--radius-pill)">
+          <sc-for list="{{ statusChips }}" as="chip" hint-placeholder-count="3">
+            <div onClick="{{ chip.pick }}" style="cursor:pointer;padding:8px 20px;border-radius:var(--radius-pill);font-size:14px;font-weight:var(--fw-bold);background:{{ chip.bg }};color:{{ chip.fg }};box-shadow:{{ chip.sh }}">{{ chip.label }}</div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin:22px 0 32px;font-size:var(--fs-body);color:var(--color-text-body)">Menampilkan <strong style="color:var(--color-text-heading);font-weight:var(--fw-bold)">{{ shownCount }}</strong> proyek {{ filterNote }}</div>
+
+    <div style="display:grid;grid-template-columns:repeat(3,320px);justify-content:center;gap:36px 28px">
+      <sc-for list="{{ programs }}" as="p" hint-placeholder-count="6">
+        <div style="display:flex;flex-direction:column;gap:12px;width:320px">
+          <x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.CampaignCard" image="{{ p.image }}" category="{{ p.category }}" title="{{ p.title }}" raised="{{ p.raised }}" target="{{ p.target }}" percent="{{ p.percent }}" hint-size="320px,540px"></x-import>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 4px">
+            <span style="font-size:13px;color:var(--color-text-body)">{{ p.meta }}</span>
+            <a href="Home of Giving Detail Proyek.dc.html" style="font-size:13px;font-weight:var(--fw-bold);color:var(--color-brand-primary);flex:none">Detail →</a>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:64px 24px;text-align:center;background:var(--color-bg-soft);border-radius:var(--radius-lg)">
+        <div style="font-size:20px;font-weight:var(--fw-bold);color:var(--color-text-heading);margin-bottom:8px">Belum ada proyek di filter ini</div>
+        <div style="font-size:var(--fs-body);color:var(--color-text-body)">Coba pilih kategori lain, atau usulkan penerima manfaat baru untuk siklus berikutnya.</div>
+      </div>
+    </sc-if>
+
+  </div>
+</section>
+
+<section style="background:var(--color-bg-soft);padding:96px 32px">
+  <div style="max-width:var(--container-max);margin:0 auto">
+    <div style="margin-bottom:40px">
+      <div style="font-family:var(--font-hand);font-weight:var(--fw-bold);font-size:var(--fs-eyebrow);line-height:1;color:var(--color-brand-accent)">Target donasi 2026</div>
+      <h2 style="margin:8px 0 0;font-size:var(--fs-h2);font-weight:var(--fw-extrabold);color:var(--color-text-heading);text-transform:uppercase;letter-spacing:-0.01em">Sejauh mana kita berjalan</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1.25fr;gap:32px;align-items:start">
+      <div style="background:var(--color-surface-card);border:1px solid var(--color-border-card);border-radius:24px;box-shadow:var(--shadow-card);padding:34px 32px">
+        <div style="font-size:var(--fs-caption);font-weight:var(--fw-bold);letter-spacing:0.12em;text-transform:uppercase;color:var(--color-text-body);margin-bottom:14px">Total tahun ini</div>
+        <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px">
+          <span style="font-size:44px;font-weight:var(--fw-extrabold);color:var(--color-brand-primary);letter-spacing:-0.02em">Rp 1,2 M</span>
+        </div>
+        <div style="font-size:var(--fs-body);color:var(--color-text-body);margin-bottom:22px">dari target tahunan Rp 1,5 Miliar</div>
+        <x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.ProgressBar" percent="{{ yearPct }}" hint-size="100%,34px"></x-import>
+        <div style="margin-top:26px;padding-top:22px;border-top:1px solid var(--color-border-card);font-size:14px;line-height:var(--lh-body);color:var(--color-text-body)">Panitia membuka satu proyek baru setiap bulan. Sisa target dialokasikan untuk empat siklus terakhir tahun ini.</div>
+      </div>
+      <div style="background:var(--color-surface-card);border:1px solid var(--color-border-card);border-radius:24px;box-shadow:var(--shadow-card);padding:34px 32px">
+        <div style="font-size:var(--fs-caption);font-weight:var(--fw-bold);letter-spacing:0.12em;text-transform:uppercase;color:var(--color-text-body);margin-bottom:24px">Penyaluran per kategori</div>
+        <div style="display:flex;flex-direction:column;gap:22px">
+          <sc-for list="{{ categoryStats }}" as="c" hint-placeholder-count="5">
+            <div>
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:8px">
+                <span style="font-size:var(--fs-body);font-weight:var(--fw-semibold);color:var(--color-text-heading)">{{ c.label }}</span>
+                <span style="font-size:14px;color:var(--color-text-body)">{{ c.amount }} · <strong style="color:var(--color-brand-accent);font-weight:var(--fw-bold)">{{ c.share }}</strong></span>
+              </div>
+              <div style="height:8px;border-radius:999px;background:var(--color-tint-blue);overflow:hidden">
+                <div style="height:100%;border-radius:999px;background:{{ c.color }};width:{{ c.width }};transition:width 600ms var(--ease-standard)"></div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--color-brand-primary);color:#fff;padding:88px 32px">
+  <div style="max-width:880px;margin:0 auto;text-align:center">
+    <div style="font-family:var(--font-hand);font-weight:var(--fw-bold);font-size:var(--fs-eyebrow);line-height:1;opacity:.85">Usulkan penerima manfaat</div>
+    <h2 style="margin:10px 0 16px;font-size:var(--fs-h2);font-weight:var(--fw-extrabold);text-transform:uppercase;line-height:1.06;letter-spacing:-0.01em">Kenal seseorang yang perlu dibantu?</h2>
+    <p style="margin:0 auto 28px;max-width:520px;font-size:var(--fs-body-lg);line-height:var(--lh-body);opacity:.88">Agent, rekan, dan mitra RE/MAX bisa mengajukan calon penerima. Panitia akan mensurvei dan menjadwalkannya pada siklus berikutnya.</p>
+    <div style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap">
+      <x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.Button" variant="primary" hint-size="230px,50px">Ajukan lewat WhatsApp →</x-import>
+    </div>
+  </div>
+</section>
+
+<x-import component-from-global-scope="HomeOfGivingDesignSystem_f09eee.Footer" logo-src="assets/logo.svg" hint-size="100%,240px"></x-import>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:1000}}">
+class Component extends DCLogic {
+  state = { cat: 'Semua', status: 'Semua', live: false };
+
+  all = [
+    { title: 'Bantuan Banjir Bekasi', category: 'Bencana', status: 'Berjalan', image: 'assets/photos/community-01-web.jpg', raised: 'Rp68.000.000', target: 'Rp100.000.000', percent: 68, meta: 'Sisa 9 hari · 41 donatur' },
+    { title: 'Beasiswa Anak Agent RE/MAX', category: 'Pendidikan', status: 'Berjalan', image: 'assets/photos/community-02-web.jpg', raised: 'Rp12.000.000', target: 'Rp50.000.000', percent: 24, meta: 'Sisa 24 hari · 18 donatur' },
+    { title: 'Paket Gizi Anak Panti', category: 'Kesehatan', status: 'Berjalan', image: 'assets/photos/community-03-web.jpg', raised: 'Rp9.500.000', target: 'Rp30.000.000', percent: 32, meta: 'Sisa 17 hari · 12 donatur' },
+    { title: 'Renovasi Rumah Ibadah', category: 'Sosial', status: 'Tuntas', image: 'assets/photos/community-03-web.jpg', raised: 'Rp80.000.000', target: 'Rp80.000.000', percent: 100, meta: 'Tersalurkan 12 Jul 2026' },
+    { title: 'Perpustakaan Mini SDN 03 Cianjur', category: 'Pendidikan', status: 'Tuntas', image: 'assets/photos/community-02-web.jpg', raised: 'Rp45.000.000', target: 'Rp45.000.000', percent: 100, meta: 'Tersalurkan 28 Jun 2026' },
+    { title: 'Bibit Pohon Kawasan Puncak', category: 'Lingkungan', status: 'Tuntas', image: 'assets/photos/community-01-web.jpg', raised: 'Rp25.000.000', target: 'Rp25.000.000', percent: 100, meta: 'Tersalurkan 30 Mei 2026' },
+    { title: 'Bantuan Kursi Roda', category: 'Kesehatan', status: 'Tuntas', image: 'assets/photos/community-03-web.jpg', raised: 'Rp18.000.000', target: 'Rp18.000.000', percent: 100, meta: 'Tersalurkan 22 Apr 2026' },
+    { title: 'Sembako Ramadan 200 Keluarga', category: 'Sosial', status: 'Tuntas', image: 'assets/photos/community-01-web.jpg', raised: 'Rp60.000.000', target: 'Rp60.000.000', percent: 100, meta: 'Tersalurkan 18 Mar 2026' },
+    { title: 'Bantuan Gempa Cianjur', category: 'Bencana', status: 'Tuntas', image: 'assets/photos/community-02-web.jpg', raised: 'Rp95.000.000', target: 'Rp95.000.000', percent: 100, meta: 'Tersalurkan 5 Feb 2026' }
+  ];
+
+  cats = ['Semua', 'Bencana', 'Pendidikan', 'Sosial', 'Kesehatan', 'Lingkungan'];
+  statuses = ['Semua', 'Berjalan', 'Tuntas'];
+
+  catStats = [
+    { label: 'Bencana', amount: 'Rp 420 jt', share: '35%', pct: 100, color: 'var(--color-brand-accent)' },
+    { label: 'Pendidikan', amount: 'Rp 312 jt', share: '26%', pct: 74, color: 'var(--color-brand-primary)' },
+    { label: 'Sosial', amount: 'Rp 240 jt', share: '20%', pct: 57, color: 'var(--color-brand-primary)' },
+    { label: 'Kesehatan', amount: 'Rp 145 jt', share: '12%', pct: 34, color: 'var(--color-brand-primary)' },
+    { label: 'Lingkungan', amount: 'Rp 83 jt', share: '7%', pct: 20, color: 'var(--color-brand-navy)' }
+  ];
+
+  componentDidMount() {
+    this.t = setTimeout(() => this.setState({ live: true }), 400);
+  }
+  componentWillUnmount() { clearTimeout(this.t); }
+
+  renderVals() {
+    const { cat, status, live } = this.state;
+    const list = this.all.filter(p =>
+      (cat === 'Semua' || p.category === cat) && (status === 'Semua' || p.status === status));
+
+    const catChips = this.cats.map(label => {
+      const on = label === cat;
+      return {
+        label,
+        on,
+        bg: on ? 'var(--color-brand-primary)' : '#fff',
+        fg: on ? '#fff' : 'var(--color-text-heading)',
+        bd: on ? 'var(--color-brand-primary)' : 'var(--color-border-card)',
+        pick: () => this.setState({ cat: label })
+      };
+    });
+
+    const statusChips = this.statuses.map(label => {
+      const on = label === status;
+      return {
+        label,
+        bg: on ? '#fff' : 'transparent',
+        fg: on ? 'var(--color-brand-primary)' : 'var(--color-text-body)',
+        sh: on ? 'var(--shadow-card)' : 'none',
+        pick: () => this.setState({ status: label })
+      };
+    });
+
+    const note = cat === 'Semua'
+      ? (status === 'Semua' ? 'dari semua kategori' : status.toLowerCase())
+      : 'kategori ' + cat + (status === 'Semua' ? '' : ' · ' + status.toLowerCase());
+
+    return {
+      programs: list,
+      shownCount: list.length,
+      isEmpty: list.length === 0,
+      filterNote: note,
+      catChips,
+      statusChips,
+      yearPct: live ? 80 : 0,
+      categoryStats: this.catStats.map(c => ({ ...c, width: (live ? c.pct : 0) + '%' }))
+    };
+  }
+}
+</script>
+</body>
+</html>
