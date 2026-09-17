@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { BASE_PATH } from "@/lib/base-path";
 import { DonationCta } from "@/components/brand/donation-cta";
 import { Reveal } from "@/components/brand/reveal";
 
@@ -6,10 +7,10 @@ function FinalCta() {
   return (
     <section className="relative overflow-hidden bg-brand-navy px-5 py-20 sm:px-8 sm:py-28">
       <div className="pointer-events-none absolute top-16 -left-16 hidden h-[280px] w-[220px] overflow-hidden rounded-3xl opacity-50 sm:block">
-        <Image src="/photos/community-03-web.jpg" alt="" fill className="object-cover" />
+        <Image src={`${BASE_PATH}/photos/community-03-web.jpg`} alt="" fill className="object-cover" />
       </div>
       <div className="pointer-events-none absolute -right-14 bottom-10 hidden h-[300px] w-[240px] overflow-hidden rounded-3xl opacity-50 sm:block">
-        <Image src="/photos/community-02-web.jpg" alt="" fill className="object-cover" />
+        <Image src={`${BASE_PATH}/photos/community-02-web.jpg`} alt="" fill className="object-cover" />
       </div>
 
       <div className="relative mx-auto max-w-[760px] text-center text-white">

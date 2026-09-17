@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { BASE_PATH } from "@/lib/base-path";
 import { DonationCta } from "./donation-cta";
 
 const navLinks = [
@@ -29,7 +30,7 @@ function Navbar() {
           aria-label="REMAX Home of Giving"
         >
           <Image
-            src="/logo.svg"
+            src={`${BASE_PATH}/logo.svg`}
             alt="REMAX Home of Giving"
             width={160}
             height={46}

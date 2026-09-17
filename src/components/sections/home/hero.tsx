@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { BASE_PATH } from "@/lib/base-path";
 import { BrandButton } from "@/components/brand/button";
 import { BrandBadge } from "@/components/brand/badge";
 import { DonationCta } from "@/components/brand/donation-cta";
@@ -19,7 +20,7 @@ function Hero({ featured }: { featured: PublicCampaignCard | null }) {
         </div>
         <div className="relative">
           <div className="h-[320px] overflow-hidden rounded-3xl bg-brand-tint-blue shadow-brand-card sm:h-[490px]">
-            <Image src="/photos/community-01-web.jpg" alt="Relawan Home of Giving bersama anak penerima manfaat" width={800} height={980} className="h-full w-full object-cover" style={{ objectPosition: "52% 42%" }} priority />
+            <Image src={`${BASE_PATH}/photos/community-01-web.jpg`} alt="Relawan Home of Giving bersama anak penerima manfaat" width={800} height={980} className="h-full w-full object-cover" style={{ objectPosition: "52% 42%" }} priority />
           </div>
           {featured && (
             <div className="relative mx-auto -mt-10 w-[calc(100%-32px)] max-w-[296px] rounded-2xl border border-brand-border bg-white p-5 shadow-brand-card-hover sm:absolute sm:-bottom-10 sm:-left-11 sm:mt-0 sm:w-[296px]">
