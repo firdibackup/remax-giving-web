@@ -61,7 +61,7 @@ export default async function AdminLoginPage({
 
           <div className="rounded-2xl border border-brand-border bg-white p-6 shadow-[0_16px_44px_rgba(6,46,97,0.08)] sm:p-9">
             <h2 className="text-3xl font-extrabold tracking-[-0.035em] text-brand-navy mb-4">
-              Selamat datang Cantik
+              Selamat datang di REMAX Home of Giving
             </h2>
 
             {error === "akses" && (

@@ -58,11 +58,22 @@ export async function getDashboardData(): Promise<{
   ]);
 
   if (summaryResult.error || !summaryResult.data) {
-    throw new Error("Ringkasan dashboard tidak dapat dimuat.");
+    console.error("[admin/dashboard] hog_admin_dashboard_summary failed:", summaryResult.error);
+    throw new Error(
+      `Ringkasan dashboard tidak dapat dimuat: ${summaryResult.error?.message ?? "data kosong"}`,
+    );
   }
 
   if (donationsResult.error || campaignsResult.error) {
-    throw new Error("Daftar donasi terbaru tidak dapat dimuat.");
+    console.error(
+      "[admin/dashboard] daftar donasi/campaign gagal:",
+      donationsResult.error ?? campaignsResult.error,
+    );
+    throw new Error(
+      `Daftar donasi terbaru tidak dapat dimuat: ${
+        (donationsResult.error ?? campaignsResult.error)?.message ?? "unknown"
+      }`,
+    );
   }
 
   const campaignTitles = new Map(
