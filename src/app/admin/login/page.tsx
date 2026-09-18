@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, BadgeCheck, ShieldCheck } from "lucide-react";
 import { LoginForm } from "@/components/admin/login-form";
+import { BASE_PATH } from "@/lib/base-path";
 
 export default async function AdminLoginPage({
   searchParams,
@@ -16,7 +17,7 @@ export default async function AdminLoginPage({
         <div className="absolute -top-28 -right-24 size-80 rounded-full border-[56px] border-white/5" />
         <div className="absolute -bottom-40 -left-32 size-[420px] rounded-full border-[72px] border-brand-blue/55" />
         <Image
-          src="/logo.svg"
+          src={`${BASE_PATH}/logo.svg`}
           alt="REMAX Home of Giving"
           width={180}
           height={84}
@@ -43,7 +44,7 @@ export default async function AdminLoginPage({
         <div className="w-full max-w-[440px]">
           <div className="mb-10 flex items-center justify-between lg:hidden">
             <Image
-              src="/logo.svg"
+              src={`${BASE_PATH}/logo.svg`}
               alt="REMAX Home of Giving"
               width={150}
               height={70}

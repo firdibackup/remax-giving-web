@@ -26,6 +26,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { BASE_PATH } from "@/lib/base-path";
 import type { AdminSession } from "@/lib/auth/admin";
 
 const navigation = [
@@ -106,7 +107,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           className="flex items-center gap-3"
         >
           <Image
-            src="/logo.svg"
+            src={`${BASE_PATH}/logo.svg`}
             alt="REMAX Home of Giving"
             width={128}
             height={60}
