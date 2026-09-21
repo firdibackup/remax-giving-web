@@ -21,7 +21,7 @@ const overrides: Record<string, Partial<ProjectDetail>> = {
     badgeLabel: "Selesai",
     descriptionParagraphs: [
       "Banjir pertengahan Juli merendam 6 RW di Bekasi Utara hingga ketinggian satu meter. Ratusan keluarga kehilangan perabot, dokumen, dan persediaan makanan; sebagian anak berhenti sekolah karena seragam dan buku ikut hanyut.",
-      "Panitia Home of Giving melakukan survei lapangan bersama Yayasan Sahabat Anak dan memutuskan menyalurkan seluruh donasi siklus Agustus ke satu penerima agar bantuannya utuh dan bisa dipertanggungjawabkan: 120 keluarga terdampak, dengan prioritas keluarga yang memiliki anak usia sekolah.",
+      "pengurus Home of Giving melakukan survei lapangan bersama Yayasan Sahabat Anak dan memutuskan menyalurkan seluruh donasi siklus Agustus ke satu penerima agar bantuannya utuh dan bisa dipertanggungjawabkan: 120 keluarga terdampak, dengan prioritas keluarga yang memiliki anak usia sekolah.",
     ],
     quote: {
       text: "“Yang paling kami butuhkan bukan uang tunai, tapi kepastian anak-anak bisa kembali ke sekolah minggu depan.”",
@@ -69,15 +69,18 @@ function buildDefaultDetail(c: Campaign): ProjectDetail {
 
   return {
     slug: c.slug,
-    badgeLabel: override.badgeLabel ?? (c.status === "tuntas" ? "Selesai" : `Berjalan · sisa ${c.meta.split("·")[0]?.replace("Sisa", "").trim() || "beberapa hari"}`),
-    descriptionParagraphs:
-      override.descriptionParagraphs ?? [
-        `${c.title} adalah proyek Home of Giving untuk satu penerima manfaat agar bantuannya utuh dan mudah dipertanggungjawabkan.`,
-        `Panitia melakukan survei kebutuhan sebelum menetapkan target donasi sebesar ${c.target}. Setiap donasi yang masuk dikonfirmasi dan dicatat sebelum ditampilkan di papan donatur.`,
-      ],
+    badgeLabel:
+      override.badgeLabel ??
+      (c.status === "tuntas"
+        ? "Selesai"
+        : `Berjalan · sisa ${c.meta.split("·")[0]?.replace("Sisa", "").trim() || "beberapa hari"}`),
+    descriptionParagraphs: override.descriptionParagraphs ?? [
+      `${c.title} adalah proyek Home of Giving untuk satu penerima manfaat agar bantuannya utuh dan mudah dipertanggungjawabkan.`,
+      `pengurus melakukan survei kebutuhan sebelum menetapkan target donasi sebesar ${c.target}. Setiap donasi yang masuk dikonfirmasi dan dicatat sebelum ditampilkan di papan donatur.`,
+    ],
     quote: override.quote,
     summary: override.summary ?? {
-      recipient: c.recipient ?? "Ditentukan setelah survei panitia",
+      recipient: c.recipient ?? "Ditentukan setelah survei pengurus",
       location: c.location ?? "Indonesia",
       status: c.status === "tuntas" ? "Selesai" : "Sedang berjalan",
     },

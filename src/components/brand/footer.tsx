@@ -3,6 +3,7 @@ import Link from "next/link";
 import { BASE_PATH } from "@/lib/base-path";
 
 const footerLinks = [
+  { href: "/tentang", label: "Tentang" },
   { href: "/program", label: "Program" },
   { href: "/riwayat-donasi", label: "Transparansi" },
   { href: "/blog", label: "Blog" },

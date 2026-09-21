@@ -1,6 +1,7 @@
 import "server-only";
 
 import { cache } from "react";
+import { isCampaignExpired } from "@/lib/campaign-status";
 import { createClient } from "@/lib/supabase/server";
 import {
   formatCurrency,
@@ -12,6 +13,7 @@ import {
 } from "@/lib/format";
 import type {
   PublicBlogPostRow,
+  PublicCampaignAllocationRow,
   PublicCampaignMediaRow,
   PublicCampaignRow,
   PublicDonationLedgerRow,
@@ -37,6 +39,7 @@ export type PublicCampaignCard = {
   imageAlt: string;
   status: PublicCampaignRow["status"];
   statusLabel: string;
+  donationOpen: boolean;
   featured: boolean;
   raisedAmount: number;
   targetAmount: number;
@@ -122,7 +125,9 @@ function storageUrl(bucket: string | null, path: string | null): string | null {
   }
 
   const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  return base ? `${base.replace(/\/+$/, "")}/storage/v1/object/public/${bucket}/${path}` : null;
+  return base
+    ? `${base.replace(/\/+$/, "")}/storage/v1/object/public/${bucket}/${path}`
+    : null;
 }
 
 export function resolvePublicMediaUrl(
@@ -133,32 +138,26 @@ export function resolvePublicMediaUrl(
   return externalUrl || storageUrl(bucket, path);
 }
 
-function campaignStatusLabel(status: PublicCampaignRow["status"]): string {
-  const labels: Record<PublicCampaignRow["status"], string> = {
-    draft: "Draf",
-    scheduled: "Terjadwal",
-    running: "Berjalan",
-    closed: "Donasi ditutup",
-    disbursed: "Selesai",
-    reported: "Laporan tersedia",
-    cancelled: "Dibatalkan",
-    archived: "Diarsipkan",
-  };
-
-  return labels[status];
+// Public campaigns collapse to two meaningful states: donations open ("Berjalan")
+// or finished ("Donasi telah selesai"). A running campaign whose end date has
+// passed counts as finished automatically.
+function isDonationOpen(row: PublicCampaignRow): boolean {
+  return row.status === "running" && !isCampaignExpired(row.ends_on);
 }
 
 function campaignMeta(row: PublicCampaignRow): string {
-  if (row.status === "running") {
-    const remaining = row.days_remaining === null ? "Periode terbuka" : `Sisa ${row.days_remaining} hari`;
-    return `${remaining} · ${row.verified_donation_count} donatur`;
-  }
+  if (!isDonationOpen(row)) return "Donasi telah selesai";
 
-  return campaignStatusLabel(row.status);
+  const remaining =
+    row.days_remaining === null
+      ? "Periode terbuka"
+      : `Sisa ${row.days_remaining} hari`;
+  return `${remaining} · ${row.verified_donation_count} donatur`;
 }
 
 function mapCampaign(row: PublicCampaignRow): PublicCampaignCard {
   const location = row.beneficiary_location || "";
+  const donationOpen = isDonationOpen(row);
   const image = resolvePublicMediaUrl(
     row.cover_external_url,
     row.cover_storage_bucket,
@@ -173,7 +172,8 @@ function mapCampaign(row: PublicCampaignRow): PublicCampaignCard {
     imagePos: row.cover_focal_position || "50% 50%",
     imageAlt: row.cover_alt_text || row.title,
     status: row.status,
-    statusLabel: campaignStatusLabel(row.status),
+    statusLabel: donationOpen ? "Berjalan" : "Donasi telah selesai",
+    donationOpen,
     featured: row.is_featured,
     raisedAmount: row.raised_amount_idr,
     targetAmount: row.target_amount_idr,
@@ -186,7 +186,8 @@ function mapCampaign(row: PublicCampaignRow): PublicCampaignCard {
     cycle: formatDateRange(row.starts_on, row.ends_on),
     recipient: row.beneficiary_name || "Penerima manfaat",
     location,
-    summary: row.summary || "Dukungan ditujukan langsung kepada penerima manfaat.",
+    summary:
+      row.summary || "Dukungan ditujukan langsung kepada penerima manfaat.",
     totalBeneficiaries: row.total_beneficiaries ?? 0,
     storyParagraphs: row.story_paragraphs || [],
     quote: row.quote_text
@@ -230,7 +231,7 @@ function mapBlog(row: PublicBlogPostRow): PublicBlogItem {
       ) || FALLBACK_BLOG_IMAGE,
     imagePos: row.cover_focal_position || "50% 50%",
     imageAlt: row.cover_alt_text || row.title,
-    author: row.author_name || "Panitia Home of Giving",
+    author: row.author_name || "pengurus Home of Giving",
     readTime: formatReadMinutes(row.read_minutes),
     featured: row.is_featured,
   };
@@ -249,14 +250,20 @@ export const getPublicCtaConfig = cache(async (): Promise<PublicCtaConfig> => {
   }
 
   const raw = error ? null : data?.value;
-  const value = raw && typeof raw === "object" && !Array.isArray(raw)
-    ? raw as Record<string, unknown>
-    : {};
-  const label = typeof value.label === "string" && value.label.trim() ? value.label.trim() : "Chat panitia";
-  const message = typeof value.message === "string" && value.message.trim()
-    ? value.message.trim()
-    : "Halo, saya ingin berdonasi melalui REMAX Home of Giving.";
-  const phone = typeof value.phone === "string" ? value.phone.replace(/[^\d]/g, "") : "";
+  const value =
+    raw && typeof raw === "object" && !Array.isArray(raw)
+      ? (raw as Record<string, unknown>)
+      : {};
+  const label =
+    typeof value.label === "string" && value.label.trim()
+      ? value.label.trim()
+      : "Chat pengurus";
+  const message =
+    typeof value.message === "string" && value.message.trim()
+      ? value.message.trim()
+      : "Halo, saya ingin berdonasi melalui REMAX Home of Giving.";
+  const phone =
+    typeof value.phone === "string" ? value.phone.replace(/[^\d]/g, "") : "";
 
   return {
     label,
@@ -265,52 +272,65 @@ export const getPublicCtaConfig = cache(async (): Promise<PublicCtaConfig> => {
   };
 });
 
-export const getPublicCampaigns = cache(async (): Promise<PublicCampaignCard[]> => {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("hog_campaigns")
-    .select("*")
-    .order("published_at", { ascending: false });
+export const getPublicCampaigns = cache(
+  async (): Promise<PublicCampaignCard[]> => {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("hog_campaigns")
+      .select("*")
+      .order("published_at", { ascending: false });
 
-  if (error) {
-    throwPublicDataError("campaign list");
-  }
+    if (error) {
+      throwPublicDataError("campaign list");
+    }
 
-  return (data || [])
-    .map(mapCampaign)
-    .sort((a, b) => Number(b.status === "running") - Number(a.status === "running") || Number(b.featured) - Number(a.featured));
-});
+    return (data || [])
+      .map(mapCampaign)
+      .sort(
+        (a, b) =>
+          Number(b.donationOpen) - Number(a.donationOpen) ||
+          Number(b.featured) - Number(a.featured),
+      );
+  },
+);
 
 export const getPublicSiteStats = cache(async (): Promise<SiteStatsRow> => {
   const supabase = await createClient();
-  const { data, error } = await supabase.from("hog_site_stats").select("*").maybeSingle();
+  const { data, error } = await supabase
+    .from("hog_site_stats")
+    .select("*")
+    .maybeSingle();
 
   if (error) {
     throwPublicDataError("site statistics");
   }
 
-  return data || {
-    total_raised_idr: 0,
-    verified_donation_count: 0,
-    running_campaign_count: 0,
-    completed_campaign_count: 0,
-    total_beneficiaries: 0,
-  };
+  return (
+    data || {
+      total_raised_idr: 0,
+      verified_donation_count: 0,
+      running_campaign_count: 0,
+      completed_campaign_count: 0,
+      total_beneficiaries: 0,
+    }
+  );
 });
 
-export const getPublicDonations = cache(async (): Promise<PublicDonationItem[]> => {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("hog_donation_ledger")
-    .select("*")
-    .order("donated_on", { ascending: false });
+export const getPublicDonations = cache(
+  async (): Promise<PublicDonationItem[]> => {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("hog_donation_ledger")
+      .select("*")
+      .order("donated_on", { ascending: false });
 
-  if (error) {
-    throwPublicDataError("donation ledger");
-  }
+    if (error) {
+      throwPublicDataError("donation ledger");
+    }
 
-  return (data || []).map(mapDonation);
-});
+    return (data || []).map(mapDonation);
+  },
+);
 
 export const getPublicReports = cache(async () => {
   const supabase = await createClient();
@@ -344,86 +364,99 @@ export const getPublicBlogPosts = cache(async (): Promise<PublicBlogItem[]> => {
   return posts.sort((a, b) => Number(b.featured) - Number(a.featured));
 });
 
-export const getPublicGallery = cache(async (): Promise<{
-  media: PublicGalleryItem[];
-  albums: PublicGalleryAlbum[];
-}> => {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("hog_gallery_media")
-    .select("*")
-    .eq("media_type", "image")
-    .order("sort_order", { ascending: true });
+export const getPublicGallery = cache(
+  async (): Promise<{
+    media: PublicGalleryItem[];
+    albums: PublicGalleryAlbum[];
+  }> => {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("hog_gallery_media")
+      .select("*")
+      .eq("media_type", "image")
+      .order("sort_order", { ascending: true });
 
-  if (error) {
-    throwPublicDataError("gallery");
-  }
-
-  const uniqueRows = new Map<string, PublicGalleryMediaRow>();
-
-  for (const row of data || []) {
-    const current = uniqueRows.get(row.id);
-    if (!current || (!current.campaign_slug && row.campaign_slug)) {
-      uniqueRows.set(row.id, row);
+    if (error) {
+      throwPublicDataError("gallery");
     }
-  }
 
-  const media = Array.from(uniqueRows.values()).flatMap((row) => {
-    const src = resolvePublicMediaUrl(row.external_url, row.storage_bucket, row.storage_path);
-    if (!src) return [];
+    const uniqueRows = new Map<string, PublicGalleryMediaRow>();
 
-    const meta = [row.location_label, row.captured_on ? formatShortDate(row.captured_on) : null]
-      .filter(Boolean)
-      .join(" · ");
+    for (const row of data || []) {
+      const current = uniqueRows.get(row.id);
+      if (!current || (!current.campaign_slug && row.campaign_slug)) {
+        uniqueRows.set(row.id, row);
+      }
+    }
 
-    return [{
-      id: row.id,
-      src,
-      pos: row.focal_position || "50% 50%",
-      alt: row.alt_text || row.caption || "Dokumentasi Home of Giving",
-      album: row.album_label || "Dokumentasi",
-      caption: row.caption || "Dokumentasi Home of Giving",
-      meta,
-      span: row.layout_span === "normal" ? undefined : row.layout_span,
-      campaignSlug: row.campaign_slug,
-      campaignTitle: row.campaign_title,
-    } satisfies PublicGalleryItem];
-  });
+    const media = Array.from(uniqueRows.values()).flatMap((row) => {
+      const src = resolvePublicMediaUrl(
+        row.external_url,
+        row.storage_bucket,
+        row.storage_path,
+      );
+      if (!src) return [];
 
-  const grouped = new Map<string, PublicGalleryItem[]>();
-  for (const item of media) {
-    const items = grouped.get(item.album) || [];
-    items.push(item);
-    grouped.set(item.album, items);
-  }
+      const meta = [
+        row.location_label,
+        row.captured_on ? formatShortDate(row.captured_on) : null,
+      ]
+        .filter(Boolean)
+        .join(" · ");
 
-  const albums = Array.from(grouped.entries()).map(([title, items]) => ({
-    slug: items.find((item) => item.campaignSlug)?.campaignSlug || null,
-    title,
-    image: items[0].src,
-    imagePos: items[0].pos,
-    photoCount: items.length,
-    period: items.map((item) => item.meta).find(Boolean) || "Dokumentasi",
-    description: items[0].caption,
-  }));
+      return [
+        {
+          id: row.id,
+          src,
+          pos: row.focal_position || "50% 50%",
+          alt: row.alt_text || row.caption || "Dokumentasi Home of Giving",
+          album: row.album_label || "Dokumentasi",
+          caption: row.caption || "Dokumentasi Home of Giving",
+          meta,
+          span: row.layout_span === "normal" ? undefined : row.layout_span,
+          campaignSlug: row.campaign_slug,
+          campaignTitle: row.campaign_title,
+        } satisfies PublicGalleryItem,
+      ];
+    });
 
-  return { media, albums };
-});
+    const grouped = new Map<string, PublicGalleryItem[]>();
+    for (const item of media) {
+      const items = grouped.get(item.album) || [];
+      items.push(item);
+      grouped.set(item.album, items);
+    }
 
-export const getPublicAnnualGoal = cache(async (year: number): Promise<number | null> => {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("hog_annual_goals")
-    .select("target_amount_idr")
-    .eq("year", year)
-    .maybeSingle();
+    const albums = Array.from(grouped.entries()).map(([title, items]) => ({
+      slug: items.find((item) => item.campaignSlug)?.campaignSlug || null,
+      title,
+      image: items[0].src,
+      imagePos: items[0].pos,
+      photoCount: items.length,
+      period: items.map((item) => item.meta).find(Boolean) || "Dokumentasi",
+      description: items[0].caption,
+    }));
 
-  if (error) {
-    throwPublicDataError("annual goal");
-  }
+    return { media, albums };
+  },
+);
 
-  return data?.target_amount_idr ?? null;
-});
+export const getPublicAnnualGoal = cache(
+  async (year: number): Promise<number | null> => {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("hog_annual_goals")
+      .select("target_amount_idr")
+      .eq("year", year)
+      .maybeSingle();
+
+    if (error) {
+      throwPublicDataError("annual goal");
+    }
+
+    return data?.target_amount_idr ?? null;
+  },
+);
 
 export const getPublicCampaignDetail = cache(async (slug: string) => {
   const supabase = await createClient();
@@ -441,32 +474,49 @@ export const getPublicCampaignDetail = cache(async (slug: string) => {
     return null;
   }
 
-  const [donationsResult, mediaResult, reportsResult] = await Promise.all([
-    supabase
-      .from("hog_donation_ledger")
-      .select("*")
-      .eq("campaign_id", campaignRow.id)
-      .order("donated_on", { ascending: false }),
-    supabase
-      .from("hog_campaign_media")
-      .select("*")
-      .eq("campaign_id", campaignRow.id)
-      .order("sort_order", { ascending: true }),
-    supabase
-      .from("hog_reports")
-      .select("*")
-      .eq("campaign_id", campaignRow.id)
-      .order("published_at", { ascending: false }),
-  ]);
+  const [donationsResult, mediaResult, reportsResult, allocationsResult] =
+    await Promise.all([
+      supabase
+        .from("hog_donation_ledger")
+        .select("*")
+        .eq("campaign_id", campaignRow.id)
+        .order("donated_on", { ascending: false }),
+      supabase
+        .from("hog_campaign_media")
+        .select("*")
+        .eq("campaign_id", campaignRow.id)
+        .order("sort_order", { ascending: true }),
+      supabase
+        .from("hog_reports")
+        .select("*")
+        .eq("campaign_id", campaignRow.id)
+        .order("published_at", { ascending: false }),
+      supabase
+        .from("hog_campaign_allocations")
+        .select("*")
+        .eq("campaign_id", campaignRow.id)
+        .order("sort_order", { ascending: true }),
+    ]);
 
-  if (donationsResult.error || mediaResult.error || reportsResult.error) {
+  if (
+    donationsResult.error ||
+    mediaResult.error ||
+    reportsResult.error ||
+    allocationsResult.error
+  ) {
     throwPublicDataError("campaign related data");
   }
 
-  const media = (mediaResult.data || []).flatMap((row: PublicCampaignMediaRow) => {
-    const src = resolvePublicMediaUrl(row.external_url, row.storage_bucket, row.storage_path);
-    return src ? [{ ...row, src }] : [];
-  });
+  const media = (mediaResult.data || []).flatMap(
+    (row: PublicCampaignMediaRow) => {
+      const src = resolvePublicMediaUrl(
+        row.external_url,
+        row.storage_bucket,
+        row.storage_path,
+      );
+      return src ? [{ ...row, src }] : [];
+    },
+  );
 
   return {
     campaign: mapCampaign(campaignRow),
@@ -476,6 +526,14 @@ export const getPublicCampaignDetail = cache(async (slug: string) => {
       ...row,
       url: row.external_url || storageUrl(row.storage_bucket, row.storage_path),
     })),
+    allocations: (allocationsResult.data || []).map(
+      (row: PublicCampaignAllocationRow) => ({
+        id: row.id,
+        label: row.label,
+        amount_idr: row.amount_idr,
+        note: row.note,
+      }),
+    ),
   };
 });
 

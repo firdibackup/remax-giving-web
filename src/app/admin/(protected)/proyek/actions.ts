@@ -12,7 +12,7 @@ import {
   readBoolean,
   readInteger,
   readOptionalText,
-  readParagraphs,
+  readStoryHtml,
   readText,
   slugify,
   toFriendlyError,
@@ -135,7 +135,7 @@ function buildCampaignPayload(formData: FormData): CampaignPayload | { error: st
     beneficiary_location: readOptionalText(formData, "beneficiary_location"),
     status,
     summary: readOptionalText(formData, "summary"),
-    story_paragraphs: readParagraphs(formData, "story_paragraphs"),
+    story_paragraphs: readStoryHtml(formData, "story_paragraphs"),
     quote_text: readOptionalText(formData, "quote_text"),
     quote_author: readOptionalText(formData, "quote_author"),
     target_amount_idr: targetAmount,
@@ -471,6 +471,80 @@ export async function deleteCampaigns(formData: FormData) {
   }
 
   redirect(`/admin/proyek${encodeNotice({ success: summary })}`);
+}
+
+export async function updateCampaignAllocations(formData: FormData) {
+  await requireAdmin();
+  const campaignId = readText(formData, "campaign_id");
+  const redirectBase = `/admin/proyek/${campaignId}`;
+
+  if (!campaignId) {
+    redirect(`/admin/proyek${encodeNotice({ error: "Proyek tidak ditemukan." })}`);
+  }
+
+  const labels = formData.getAll("allocation_label").map((value) => String(value).trim());
+  const amounts = formData.getAll("allocation_amount").map((value) => String(value).trim());
+  const notes = formData.getAll("allocation_note").map((value) => String(value).trim());
+
+  const rows: Array<{
+    campaign_id: string;
+    label: string;
+    amount_idr: number;
+    note: string | null;
+    sort_order: number;
+    is_published: boolean;
+  }> = [];
+
+  for (let index = 0; index < labels.length; index += 1) {
+    const label = labels[index];
+    if (!label) {
+      continue;
+    }
+
+    const rawAmount = amounts[index] ?? "";
+    if (rawAmount !== "" && !/^\d+$/.test(rawAmount)) {
+      redirect(`${redirectBase}${encodeNotice({ error: `Nominal untuk "${label}" harus berupa angka bulat tidak negatif.` })}`);
+    }
+
+    rows.push({
+      campaign_id: campaignId,
+      label,
+      amount_idr: rawAmount === "" ? 0 : Number(rawAmount),
+      note: notes[index] ? notes[index] : null,
+      sort_order: rows.length,
+      is_published: true,
+    });
+  }
+
+  const supabase = await createClient();
+  const { data: campaign } = await supabase
+    .from("hog_admin_campaigns")
+    .select("slug")
+    .eq("id", campaignId)
+    .maybeSingle();
+
+  const { error: deleteError } = await supabase
+    .from("hog_admin_campaign_allocations")
+    .delete()
+    .eq("campaign_id", campaignId);
+
+  if (deleteError) {
+    redirect(`${redirectBase}${encodeNotice({ error: toFriendlyError(deleteError.message, "Rincian penggunaan dana gagal disimpan.") })}`);
+  }
+
+  if (rows.length > 0) {
+    const { error: insertError } = await supabase
+      .from("hog_admin_campaign_allocations")
+      .insert(rows);
+
+    if (insertError) {
+      redirect(`${redirectBase}${encodeNotice({ error: toFriendlyError(insertError.message, "Rincian penggunaan dana gagal disimpan.") })}`);
+    }
+  }
+
+  revalidateCampaignSurfaces(campaign?.slug);
+  revalidatePath(redirectBase);
+  redirect(`${redirectBase}${encodeNotice({ success: `${formatNumber(rows.length)} baris rincian penggunaan dana tersimpan.` })}`);
 }
 
 export async function uploadCampaignCover(formData: FormData) {

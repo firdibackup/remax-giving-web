@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Check } from "lucide-react";
 import { BrandBadge } from "@/components/brand/badge";
 import { BrandButton } from "@/components/brand/button";
 import { DonationCta } from "@/components/brand/donation-cta";
@@ -9,26 +10,33 @@ import { BrandProgressBar } from "@/components/brand/progress-bar";
 import { Reveal } from "@/components/brand/reveal";
 import { BrandStatCounter } from "@/components/brand/stat-counter";
 import { ProgramDocumentation } from "@/components/program-documentation";
+import { formatCurrency } from "@/lib/format";
 import { getPublicCampaignDetail } from "@/lib/public-data";
+import { STORY_PROSE_CLASS, storyParagraphsToHtml } from "@/lib/story";
 
 function cycleDays(start: string | null, end: string | null) {
   if (!start || !end) return 0;
   return Math.max(
     1,
     Math.round(
-      (new Date(`${end}T00:00:00`).getTime() - new Date(`${start}T00:00:00`).getTime()) /
+      (new Date(`${end}T00:00:00`).getTime() -
+        new Date(`${start}T00:00:00`).getTime()) /
         86_400_000,
     ) + 1,
   );
 }
 
-export async function generateMetadata({ params }: PageProps<"/program/[slug]">): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps<"/program/[slug]">): Promise<Metadata> {
   const { slug } = await params;
   const detail = await getPublicCampaignDetail(slug);
 
   if (!detail) return { title: "Program tidak ditemukan" };
 
-  const socialImage = detail.campaign.image.startsWith("http") ? [detail.campaign.image] : undefined;
+  const socialImage = detail.campaign.image.startsWith("http")
+    ? [detail.campaign.image]
+    : undefined;
 
   return {
     title: `${detail.campaign.title} | REMAX Home of Giving`,
@@ -41,17 +49,25 @@ export async function generateMetadata({ params }: PageProps<"/program/[slug]">)
   };
 }
 
-export default async function ProjectDetailPage({ params }: PageProps<"/program/[slug]">) {
+export default async function ProjectDetailPage({
+  params,
+}: PageProps<"/program/[slug]">) {
   const { slug } = await params;
   const detail = await getPublicCampaignDetail(slug);
 
   if (!detail) notFound();
 
-  const { campaign, donations, media, reports } = detail;
+  const { campaign, donations, media, reports, allocations } = detail;
   const report = reports.find((item) => item.url);
-  const descriptionParagraphs = campaign.storyParagraphs.length > 0
-    ? campaign.storyParagraphs
-    : [campaign.summary];
+  const allocationsTotal = allocations.reduce(
+    (sum, item) => sum + item.amount_idr,
+    0,
+  );
+  const storyHtml = storyParagraphsToHtml(
+    campaign.storyParagraphs.length > 0
+      ? campaign.storyParagraphs
+      : [campaign.summary],
+  );
   const documentation = media
     .filter((item) => item.media_type === "image")
     .slice(0, 8)
@@ -63,6 +79,7 @@ export default async function ProjectDetailPage({ params }: PageProps<"/program/
       pos: item.focal_position || "50% 50%",
     }));
   const days = cycleDays(campaign.startsOn, campaign.endsOn);
+  const donationOpen = campaign.donationOpen;
 
   return (
     <>
@@ -79,14 +96,20 @@ export default async function ProjectDetailPage({ params }: PageProps<"/program/
         </div>
         <div className="relative mx-auto max-w-[1200px] px-5 py-12 text-white sm:px-8 sm:py-[60px]">
           <div className="mb-7 flex flex-wrap items-center gap-2 font-sans text-xs font-medium opacity-80 sm:mb-8">
-            <Link href="/" className="text-white">Beranda</Link>
+            <Link href="/" className="text-white">
+              Beranda
+            </Link>
             <span>›</span>
-            <Link href="/program" className="text-white">Program</Link>
+            <Link href="/program" className="text-white">
+              Program
+            </Link>
             <span>›</span>
             <span className="opacity-70">{campaign.title}</span>
           </div>
           <div className="mb-4 flex flex-wrap gap-2">
-            <BrandBadge tone="red">{campaign.statusLabel}</BrandBadge>
+            <BrandBadge tone={donationOpen ? "blue" : "red"}>
+              {campaign.statusLabel}
+            </BrandBadge>
           </div>
           <h1 className="mb-3 max-w-[760px] text-3xl leading-[1.05] font-extrabold tracking-tight uppercase text-balance sm:text-[clamp(32px,4vw,48px)]">
             {campaign.title}
@@ -96,6 +119,29 @@ export default async function ProjectDetailPage({ params }: PageProps<"/program/
               {campaign.cycle} · Penerima: {campaign.recipient}
             </div>
           )}
+          <div className="mt-7 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:items-center">
+            {donationOpen ? (
+              <>
+                <DonationCta campaignTitle={campaign.title} size="lg" />
+                <span className="font-sans text-sm font-medium text-white/70">
+                  Donasi langsung via WhatsApp pengurus
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="inline-flex h-[52px] items-center gap-2 rounded-[12px] bg-white/10 px-6 font-sans text-base font-bold text-white ring-1 ring-white/20">
+                  <Check className="h-[18px] w-[18px]" strokeWidth={2.5} />
+                  Donasi telah selesai
+                </span>
+                <Link
+                  href="/program"
+                  className="font-sans text-sm font-bold text-white/80 underline-offset-4 hover:underline"
+                >
+                  Lihat proyek lain →
+                </Link>
+              </>
+            )}
+          </div>
         </div>
       </section>
 
@@ -104,18 +150,32 @@ export default async function ProjectDetailPage({ params }: PageProps<"/program/
           <div className="-mt-8 rounded-3xl border border-brand-border bg-white p-6 shadow-brand-card-hover sm:-mt-10 sm:p-9">
             <div className="mb-3 flex flex-wrap items-baseline justify-between gap-3">
               <div className="flex items-baseline gap-2.5">
-                <span className="text-3xl font-extrabold tracking-tight text-brand-blue sm:text-[38px]">{campaign.raised}</span>
-                <span className="font-sans text-base text-brand-text-body">terkumpul</span>
+                <span className="text-3xl font-extrabold tracking-tight text-brand-blue sm:text-[38px]">
+                  {campaign.raised}
+                </span>
+                <span className="font-sans text-base text-brand-text-body">
+                  terkumpul
+                </span>
               </div>
               <span className="font-sans text-base font-semibold text-brand-text-body">
-                target {campaign.target} · <span className="font-bold text-brand-red">{campaign.percent}%</span>
+                target {campaign.target} ·{" "}
+                <span className="font-bold text-brand-red">
+                  {campaign.percent}%
+                </span>
               </span>
             </div>
             <BrandProgressBar percent={campaign.percent} showLabel={false} />
             <div className="mt-7 grid grid-cols-3 justify-items-center gap-4 border-t border-brand-border pt-6.5 sm:gap-5">
-              <BrandStatCounter value={String(campaign.donorCount)} label="Donatur" />
+              <BrandStatCounter
+                value={String(campaign.donorCount)}
+                label="Donatur"
+              />
               <BrandStatCounter value={String(days)} label="Hari siklus" />
-              <BrandStatCounter value={String(campaign.totalBeneficiaries)} label="Total terbantu" tone="red" />
+              <BrandStatCounter
+                value={String(campaign.totalBeneficiaries)}
+                label="Total terbantu"
+                tone="red"
+              />
             </div>
           </div>
         </div>
@@ -124,30 +184,50 @@ export default async function ProjectDetailPage({ params }: PageProps<"/program/
       <section className="bg-white px-5 pt-14 sm:px-8 sm:pt-20">
         <div className="mx-auto grid max-w-[1200px] items-start gap-10 lg:grid-cols-[1.45fr_1fr] lg:gap-14">
           <Reveal>
-            <h2 className="mb-4 text-xl font-bold text-brand-navy">Deskripsi &amp; latar belakang</h2>
-            {descriptionParagraphs.map((paragraph, index) => (
-              <p key={index} className="mb-3.5 text-base leading-relaxed text-brand-text-body text-pretty last:mb-0 sm:text-lg">
-                {paragraph}
-              </p>
-            ))}
+            <h2 className="mb-4 text-xl font-bold text-brand-navy">
+              Deskripsi &amp; latar belakang
+            </h2>
+            <div
+              className={STORY_PROSE_CLASS}
+              dangerouslySetInnerHTML={{ __html: storyHtml }}
+            />
             {campaign.quote && (
               <div className="mt-6 rounded-2xl bg-brand-tint-blue px-6 py-5 ring-1 ring-brand-border">
-                <div className="font-hand text-xl leading-snug text-brand-navy sm:text-2xl">{campaign.quote.text}</div>
-                <div className="mt-2.5 font-sans text-xs font-semibold text-brand-text-body">{campaign.quote.author}</div>
+                <div className="font-hand text-xl leading-snug text-brand-navy sm:text-2xl">
+                  {campaign.quote.text}
+                </div>
+                <div className="mt-2.5 font-sans text-xs font-semibold text-brand-text-body">
+                  {campaign.quote.author}
+                </div>
               </div>
             )}
           </Reveal>
           <Reveal delay={120}>
             <div className="rounded-2xl border border-brand-border bg-white p-6.5 shadow-brand-card">
-              <div className="mb-4.5 font-sans text-xs font-bold tracking-[0.12em] text-brand-text-body uppercase">Ringkasan proyek</div>
+              <div className="mb-4.5 font-sans text-xs font-bold tracking-[0.12em] text-brand-text-body uppercase">
+                Ringkasan proyek
+              </div>
               <div className="flex flex-col">
                 <SummaryRow label="Penerima" value={campaign.recipient} />
-                <SummaryRow label="Lokasi" value={campaign.location || "Tidak dicantumkan"} />
-                <SummaryRow label="Status" value={campaign.statusLabel} last accent />
+                <SummaryRow
+                  label="Lokasi"
+                  value={campaign.location || "Tidak dicantumkan"}
+                />
+                <SummaryRow
+                  label="Status"
+                  value={campaign.statusLabel}
+                  last
+                  accent
+                />
               </div>
               {report?.url && (
                 <div className="mt-5">
-                  <BrandButton variant="secondary" size="sm" className="w-full" href={report.url}>
+                  <BrandButton
+                    variant="secondary"
+                    size="sm"
+                    className="w-full"
+                    href={report.url}
+                  >
                     Unduh laporan (PDF)
                   </BrandButton>
                 </div>
@@ -158,60 +238,156 @@ export default async function ProjectDetailPage({ params }: PageProps<"/program/
       </section>
 
       <section className="bg-white px-5 py-14 sm:px-8 sm:py-24">
-        <div className="mx-auto max-w-[920px]">
+        <div
+          className={`mx-auto grid items-start gap-6 lg:gap-8 ${allocations.length > 0 ? "max-w-[1200px] lg:grid-cols-2" : "max-w-[920px]"}`}
+        >
           <Reveal>
             <div className="rounded-2xl border border-brand-border bg-white p-7 shadow-brand-card sm:p-9">
               <div className="mb-5 flex flex-wrap items-baseline justify-between gap-4">
-                <h2 className="text-xl font-bold text-brand-navy">Donatur proyek ini</h2>
-                <span className="font-sans text-xs text-brand-text-body">{campaign.donorCount} donatur · nama disamarkan</span>
+                <h2 className="text-xl font-bold text-brand-navy">
+                  Donatur proyek ini
+                </h2>
+                <span className="font-sans text-xs text-brand-text-body">
+                  {campaign.donorCount} donatur · nama disamarkan
+                </span>
               </div>
               <div className="flex flex-col">
-                {donations.length > 0 ? donations.slice(0, 8).map((donation) => (
-                  <div key={donation.id} className="grid grid-cols-[1fr_auto] items-center gap-4 border-t border-brand-border py-3.5">
-                    <div className="min-w-0">
-                      <div className="font-sans text-base font-semibold text-brand-navy">{donation.name}</div>
-                      <div className="mt-0.5 font-sans text-xs text-brand-text-body">{donation.date}</div>
+                {donations.length > 0 ? (
+                  donations.slice(0, 8).map((donation) => (
+                    <div
+                      key={donation.id}
+                      className="grid grid-cols-[1fr_auto] items-center gap-4 border-t border-brand-border py-3.5"
+                    >
+                      <div className="min-w-0">
+                        <div className="font-sans text-base font-semibold text-brand-navy">
+                          {donation.name}
+                        </div>
+                        <div className="mt-0.5 font-sans text-xs text-brand-text-body">
+                          {donation.date}
+                        </div>
+                      </div>
+                      <div className="font-sans text-base font-bold text-brand-blue">
+                        {donation.amount}
+                      </div>
                     </div>
-                    <div className="font-sans text-base font-bold text-brand-blue">{donation.amount}</div>
-                  </div>
-                )) : (
+                  ))
+                ) : (
                   <div className="border-t border-brand-border py-6 font-sans text-sm text-brand-text-body">
-                    Donatur akan tampil setelah donasi tercatat untuk proyek ini.
+                    Donatur akan tampil setelah donasi tercatat untuk proyek
+                    ini.
                   </div>
                 )}
               </div>
               <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-brand-border pt-4.5">
-                <Link href="/riwayat-donasi" className="font-sans text-base font-bold text-brand-red">Lihat semua donatur →</Link>
-                <span className="font-sans text-xs text-brand-text-body">Ada data yang keliru? <span className="font-semibold">Lapor ke panitia</span></span>
+                <Link
+                  href="/riwayat-donasi"
+                  className="font-sans text-base font-bold text-brand-red"
+                >
+                  Lihat semua donatur →
+                </Link>
+                <span className="font-sans text-xs text-brand-text-body">
+                  Ada data yang keliru?{" "}
+                  <span className="font-semibold">Lapor ke pengurus</span>
+                </span>
               </div>
             </div>
           </Reveal>
+
+          {allocations.length > 0 && (
+            <Reveal delay={120}>
+              <div className="rounded-2xl border border-brand-border bg-white p-7 shadow-brand-card sm:p-9">
+                <div className="mb-5 flex flex-wrap items-baseline justify-between gap-4">
+                  <h2 className="text-xl font-bold text-brand-navy">
+                    Rincian penggunaan dana
+                  </h2>
+                  <span className="font-sans text-xs text-brand-text-body">
+                    Total {formatCurrency(allocationsTotal)}
+                  </span>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-sm">
+                    <thead className="text-[11px] tracking-[0.08em] text-brand-text-body uppercase">
+                      <tr>
+                        <th className="pb-3 pr-3 font-bold">Alokasi</th>
+                        <th className="pb-3 pr-3 text-right font-bold">
+                          Nominal
+                        </th>
+                        <th className="pb-3 font-bold">Keterangan</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {allocations.map((item) => (
+                        <tr
+                          key={item.id}
+                          className="border-t border-brand-border align-top"
+                        >
+                          <td className="py-3 pr-3 font-semibold text-brand-navy">
+                            {item.label}
+                          </td>
+                          <td className="py-3 pr-3 text-right font-semibold whitespace-nowrap text-brand-navy tabular-nums">
+                            {formatCurrency(item.amount_idr)}
+                          </td>
+                          <td className="py-3 text-brand-text-body">
+                            {item.note || "-"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot>
+                      <tr className="border-t border-brand-border">
+                        <td className="pt-4 pr-3 font-bold text-brand-navy">
+                          Total
+                        </td>
+                        <td className="pt-4 pr-3 text-right font-bold whitespace-nowrap text-brand-blue tabular-nums">
+                          {formatCurrency(allocationsTotal)}
+                        </td>
+                        <td className="pt-4" />
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+            </Reveal>
+          )}
         </div>
       </section>
 
-      {documentation.length > 0 && <ProgramDocumentation items={documentation} />}
+      {documentation.length > 0 && (
+        <ProgramDocumentation items={documentation} />
+      )}
 
       <section className="relative overflow-hidden bg-brand-blue px-5 py-16 sm:px-8 sm:py-24">
         <div className="relative mx-auto max-w-[720px] text-center text-white">
           <Reveal>
             <div className="font-hand text-2xl leading-none font-bold opacity-85 sm:text-[32px]">
-              {campaign.status === "running" ? "Proyek ini masih berjalan" : "Kebaikan terus berlanjut"}
+              {donationOpen
+                ? "Proyek ini masih berjalan"
+                : "Kebaikan terus berlanjut"}
             </div>
           </Reveal>
           <Reveal delay={80}>
             <h2 className="mt-2.5 mb-4 text-2xl leading-[1.06] font-extrabold tracking-tight uppercase sm:text-[clamp(28px,4vw,40px)]">
-              Bantu hadirkan<br />dampak nyata
+              Bantu hadirkan
+              <br />
+              dampak nyata
             </h2>
           </Reveal>
           <Reveal delay={150}>
             <p className="mx-auto mb-7 max-w-[480px] text-base leading-relaxed opacity-88 sm:text-lg">
-              Hubungi panitia melalui WhatsApp untuk berdonasi dan memperoleh informasi proyek ini.
+              {donationOpen
+                ? "Hubungi pengurus melalui WhatsApp untuk berdonasi dan memperoleh informasi proyek ini."
+                : "Donasi untuk proyek ini telah ditutup. Terima kasih atas dukungan Anda — pantau proyek lain yang masih berjalan."}
             </p>
           </Reveal>
           <Reveal delay={220}>
             <div className="flex flex-wrap justify-center gap-3.5">
-              <DonationCta campaignTitle={campaign.title} size="lg" />
-              <Link href="/program" className="inline-flex h-[56px] items-center rounded-[12px] border-[1.5px] border-white/60 px-6.5 font-sans text-base font-bold text-white transition-colors hover:bg-white/12">
+              {donationOpen && (
+                <DonationCta campaignTitle={campaign.title} size="lg" />
+              )}
+              <Link
+                href="/program"
+                className="inline-flex h-[56px] items-center rounded-[12px] border-[1.5px] border-white/60 px-6.5 font-sans text-base font-bold text-white transition-colors hover:bg-white/12"
+              >
                 Lihat semua proyek
               </Link>
             </div>
@@ -234,9 +410,15 @@ function SummaryRow({
   accent?: boolean;
 }) {
   return (
-    <div className={`flex justify-between gap-4 py-2.5 text-sm ${last ? "" : "border-b border-brand-border"}`}>
+    <div
+      className={`flex justify-between gap-4 py-2.5 text-sm ${last ? "" : "border-b border-brand-border"}`}
+    >
       <span className="text-brand-text-body">{label}</span>
-      <span className={`text-right font-semibold ${accent ? "font-bold text-brand-red" : "text-brand-navy"}`}>{value}</span>
+      <span
+        className={`text-right font-semibold ${accent ? "font-bold text-brand-red" : "text-brand-navy"}`}
+      >
+        {value}
+      </span>
     </div>
   );
 }

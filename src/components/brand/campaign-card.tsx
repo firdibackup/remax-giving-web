@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Check } from "lucide-react";
 import { DonationCta } from "@/components/brand/donation-cta";
 import { cn } from "@/lib/utils";
 
@@ -12,6 +13,7 @@ interface CampaignCardProps {
   target: string;
   percent: number;
   meta?: string;
+  donatable?: boolean;
   className?: string;
 }
 
@@ -24,6 +26,7 @@ function CampaignCard({
   target,
   percent,
   meta,
+  donatable = true,
   className,
 }: CampaignCardProps) {
   return (
@@ -44,7 +47,7 @@ function CampaignCard({
         />
       </div>
       <div className="flex flex-1 flex-col gap-3 p-5">
-        <Link href={`/program/${slug}`} className="font-sans text-lg leading-snug font-bold text-brand-navy hover:text-brand-blue transition-colors">
+        <Link href={`/program/${slug}`} className="line-clamp-2 min-h-[2.75em] font-sans text-lg leading-snug font-bold text-brand-navy hover:text-brand-blue transition-colors">
           {title}
         </Link>
         <div>
@@ -62,13 +65,20 @@ function CampaignCard({
           </div>
         </div>
         {meta && <div className="font-sans text-xs text-brand-text-body">{meta}</div>}
-        <DonationCta
-          campaignTitle={title}
-          size="sm"
-          className="mt-1 w-full"
-        >
-          Donasi Sekarang
-        </DonationCta>
+        {donatable ? (
+          <DonationCta
+            campaignTitle={title}
+            size="sm"
+            className="mt-1 w-full"
+          >
+            Donasi Sekarang
+          </DonationCta>
+        ) : (
+          <div className="mt-1 inline-flex h-[42px] w-full items-center justify-center gap-1.5 rounded-[12px] bg-brand-bg-soft font-sans text-sm font-bold text-brand-text-body">
+            <Check className="h-4 w-4" strokeWidth={2.5} />
+            Donasi telah selesai
+          </div>
+        )}
       </div>
     </div>
   );

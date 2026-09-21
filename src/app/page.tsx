@@ -28,17 +28,12 @@ export default async function Home() {
       <ImpactStats stats={stats} />
       <FeaturedProject campaign={featured} />
       {/* <Transparency /> */}
-      <ProgramPreview
-        campaigns={campaigns
-          .filter((campaign) => campaign.status === "running")
-          .slice(0, 3)}
-        total={campaigns.length}
-      />
+      <ProgramPreview campaigns={campaigns} total={campaigns.length} />
       <HistoryPreview
         donations={donations.slice(0, 4)}
         totalDonations={stats.verified_donation_count}
       />
-      <Stories posts={posts.slice(0, 3)} />
+      {/* <Stories posts={posts.slice(0, 3)} /> */}
       <FinalCta />
     </>
   );

@@ -761,7 +761,9 @@ async function run(db, label, sql) {
     console.error(`     ${error.message}`);
     if (error.position) {
       const position = Number(error.position);
-      console.error(`     near: ${JSON.stringify(sql.slice(Math.max(0, position - 160), position + 160))}`);
+      console.error(
+        `     near: ${JSON.stringify(sql.slice(Math.max(0, position - 160), position + 160))}`,
+      );
     }
     throw error;
   }
@@ -808,15 +810,22 @@ async function applySequence(db, prefix, sequence) {
 }
 
 async function checkSharedIsolation(db, label) {
-  await check(db, `${label}: tabel backend lain tetap utuh`, `select (
+  await check(
+    db,
+    `${label}: tabel backend lain tetap utuh`,
+    `select (
     (select count(*) from public.other_app_records where value = 'tetap-aman') = 1
     and (select count(*) from storage.buckets where id = 'other-app-assets') = 1
     and (select count(*) from pg_policies where schemaname = 'storage' and policyname = 'other_app_policy') = 1
-  ) as ok`);
+  ) as ok`,
+  );
 }
 
 async function checkFinalObjects(db, label) {
-  await check(db, `${label}: object dan kolom obsolete tidak ada`, `select (
+  await check(
+    db,
+    `${label}: object dan kolom obsolete tidak ada`,
+    `select (
     not exists (
       select 1
       from pg_class c
@@ -858,9 +867,13 @@ async function checkFinalObjects(db, label) {
     and to_regtype('home_of_giving.beneficiary_kind') is null
     and to_regtype('home_of_giving.event_status') is null
     and to_regtype('home_of_giving.disbursement_status') is null
-  ) as ok`);
+  ) as ok`,
+  );
 
-  await check(db, `${label}: hanya RPC donasi 5 arg yang tersisa`, `select (
+  await check(
+    db,
+    `${label}: hanya RPC donasi 5 arg yang tersisa`,
+    `select (
     count(*) = 1
     and count(*) filter (
       where pg_get_function_identity_arguments(p.oid) =
@@ -870,9 +883,13 @@ async function checkFinalObjects(db, label) {
   from pg_proc p
   join pg_namespace n on n.oid = p.pronamespace
   where n.nspname = 'public'
-    and p.proname = 'hog_admin_record_donation'`);
+    and p.proname = 'hog_admin_record_donation'`,
+  );
 
-  await check(db, `${label}: RPC workflow lama tidak ada`, `select not exists (
+  await check(
+    db,
+    `${label}: RPC workflow lama tidak ada`,
+    `select not exists (
     select 1
     from pg_proc p
     join pg_namespace n on n.oid = p.pronamespace
@@ -886,9 +903,13 @@ async function checkFinalObjects(db, label) {
         'admin_reject_donation', 'admin_void_donation',
         'admin_verify_disbursement', 'admin_publish_disbursement'
       )
-  ) as ok`);
+  ) as ok`,
+  );
 
-  await check(db, `${label}: penerima manfaat tersimpan langsung pada proyek`, `select (
+  await check(
+    db,
+    `${label}: penerima manfaat tersimpan langsung pada proyek`,
+    `select (
     (select count(*) from information_schema.columns
       where table_schema = 'home_of_giving' and table_name = 'campaigns'
         and column_name in ('beneficiary_name', 'beneficiary_location')) = 2
@@ -897,9 +918,13 @@ async function checkFinalObjects(db, label) {
       where status in ('running', 'closed', 'disbursed', 'reported')
         and btrim(coalesce(beneficiary_name, '')) = ''
     )
-  ) as ok`);
+  ) as ok`,
+  );
 
-  await check(db, `${label}: WhatsApp bersifat global`, `select (
+  await check(
+    db,
+    `${label}: WhatsApp bersifat global`,
+    `select (
     count(*) = 1
     and bool_and(is_public)
     and bool_and(jsonb_typeof(value) = 'object')
@@ -912,9 +937,13 @@ async function checkFinalObjects(db, label) {
     )
   ) as ok
   from home_of_giving.site_settings
-  where key = 'whatsapp_cta'`);
+  where key = 'whatsapp_cta'`,
+  );
 
-  await check(db, `${label}: seluruh donasi langsung verified`, `select (
+  await check(
+    db,
+    `${label}: seluruh donasi langsung verified`,
+    `select (
     not exists (
       select 1 from home_of_giving.donations
       where status <> 'verified' or verified_at is null
@@ -929,9 +958,13 @@ async function checkFinalObjects(db, label) {
         and c.relname = 'donations'
         and a.attname = 'status'
     )
-  ) as ok`);
+  ) as ok`,
+  );
 
-  await check(db, `${label}: agregat dan akses admin donation hanya verified`, `select (
+  await check(
+    db,
+    `${label}: agregat dan akses admin donation hanya verified`,
+    `select (
     not exists (
       select 1
       from home_of_giving.campaign_stats s
@@ -962,9 +995,13 @@ async function checkFinalObjects(db, label) {
           )) > 0
       )
     )
-  ) as ok`);
+  ) as ok`,
+  );
 
-  await check(db, `${label}: report campaign memakai delete restrict`, `select (
+  await check(
+    db,
+    `${label}: report campaign memakai delete restrict`,
+    `select (
     count(*) = 1
     and bool_and(constraint_row.confdeltype = 'r')
   ) as ok
@@ -974,9 +1011,13 @@ async function checkFinalObjects(db, label) {
    and attribute_row.attnum = any (constraint_row.conkey)
   where constraint_row.conrelid = 'home_of_giving.reports'::regclass
     and constraint_row.contype = 'f'
-    and attribute_row.attname = 'campaign_id'`);
+    and attribute_row.attname = 'campaign_id'`,
+  );
 
-  await check(db, `${label}: bucket laporan privat dan admin-only`, `select (
+  await check(
+    db,
+    `${label}: bucket laporan privat dan admin-only`,
+    `select (
     exists (
       select 1
       from storage.buckets
@@ -1010,15 +1051,23 @@ async function checkFinalObjects(db, label) {
           or position('home-of-giving-private-reports' in coalesce(with_check, '')) > 0
         )
     )
-  ) as ok`);
+  ) as ok`,
+  );
 
-  await check(db, `${label}: status reported tidak bergantung publikasi report`, `select (
+  await check(
+    db,
+    `${label}: status reported tidak bergantung publikasi report`,
+    `select (
     position('home_of_giving.reports' in pg_get_functiondef(
       'home_of_giving_private.enforce_campaign_rules()'::regprocedure
     )) = 0
-  ) as ok`);
+  ) as ok`,
+  );
 
-  await check(db, `${label}: archive simplifikasi tetap privat`, `select (
+  await check(
+    db,
+    `${label}: archive simplifikasi tetap privat`,
+    `select (
     not has_schema_privilege('anon', 'home_of_giving_private', 'USAGE')
     and not has_table_privilege(
       'anon',
@@ -1037,16 +1086,24 @@ async function checkFinalObjects(db, label) {
         and policyname = 'admin_read'
         and roles = array['authenticated']::name[]
     )
-  ) as ok`);
+  ) as ok`,
+  );
 
-  await check(db, `${label}: semua tabel aplikasi memakai RLS`, `select count(*) = 0 as ok
+  await check(
+    db,
+    `${label}: semua tabel aplikasi memakai RLS`,
+    `select count(*) = 0 as ok
   from pg_class c
   join pg_namespace n on n.oid = c.relnamespace
   where n.nspname in ('home_of_giving', 'home_of_giving_private')
     and c.relkind in ('r', 'p')
-    and not c.relrowsecurity`);
+    and not c.relrowsecurity`,
+  );
 
-  await check(db, `${label}: seluruh view aplikasi security invoker`, `select count(*) = 0 as ok
+  await check(
+    db,
+    `${label}: seluruh view aplikasi security invoker`,
+    `select count(*) = 0 as ok
   from pg_class c
   join pg_namespace n on n.oid = c.relnamespace
   where c.relkind = 'v'
@@ -1054,13 +1111,18 @@ async function checkFinalObjects(db, label) {
     and coalesce(
       (select option_value from pg_options_to_table(c.reloptions) where option_name = 'security_invoker'),
       'false'
-    ) <> 'true'`);
+    ) <> 'true'`,
+  );
 
-  await check(db, `${label}: anon tidak memiliki grant tulis`, `select count(*) = 0 as ok
+  await check(
+    db,
+    `${label}: anon tidak memiliki grant tulis`,
+    `select count(*) = 0 as ok
   from information_schema.role_table_grants
   where grantee = 'anon'
     and (table_schema = 'home_of_giving' or (table_schema = 'public' and table_name like 'hog_%'))
-    and privilege_type in ('INSERT', 'UPDATE', 'DELETE', 'TRUNCATE')`);
+    and privilege_type in ('INSERT', 'UPDATE', 'DELETE', 'TRUNCATE')`,
+  );
 }
 
 async function validateFreshInstall() {
@@ -1069,14 +1131,18 @@ async function validateFreshInstall() {
   await run(db, "fresh bootstrap Supabase stub", bootstrap);
   await applySequence(db, "fresh", freshSequence);
 
-  await check(db, "fresh: seed canonical dan statistik konsisten", `select (
+  await check(
+    db,
+    "fresh: seed canonical dan statistik konsisten",
+    `select (
     (select count(*) from home_of_giving.campaigns) = 3
     and (select count(*) from home_of_giving.campaigns where published_at is not null) = 3
     and (select count(*) from home_of_giving.campaigns where status = 'draft' and needs_review) = 0
     and (select count(*) from home_of_giving.donations) = 14
     and (select coalesce(sum(amount_idr), 0) from home_of_giving.donations) = 37350000
     and (select total_raised_idr from home_of_giving.site_stats) = 37350000
-  ) as ok`);
+  ) as ok`,
+  );
 
   await checkFinalObjects(db, "fresh");
   await checkSharedIsolation(db, "fresh");
@@ -1084,13 +1150,17 @@ async function validateFreshInstall() {
   console.log("\n== FRESH INSTALL: RERUN IDEMPOTENT 01-07 ==");
   await applySequence(db, "fresh rerun", idempotentSequence);
 
-  await check(db, "fresh rerun: seed tidak berduplikasi", `select (
+  await check(
+    db,
+    "fresh rerun: seed tidak berduplikasi",
+    `select (
     (select count(*) from home_of_giving.campaigns) = 3
     and (select count(*) from home_of_giving.donations) = 14
     and (select count(*) from home_of_giving.media_assets) = 11
     and (select count(*) from home_of_giving.blog_posts) = 7
     and (select count(*) from home_of_giving.campaign_media) = 5
-  ) as ok`);
+  ) as ok`,
+  );
   await checkSharedIsolation(db, "fresh rerun");
 
   const nonAdminId = "11111111-1111-1111-1111-111111111111";
@@ -1102,26 +1172,46 @@ async function validateFreshInstall() {
     values ('${adminId}', 'Super Admin');`);
 
   await withRole(db, "anon", null, async () => {
-    await check(db, "anon: dapat membaca ledger aman", `select count(*) = 14 as ok from public.hog_donation_ledger`);
-    await expectFailure("anon: admin view ditolak", () => db.query("select count(*) from public.hog_admin_donations"));
-    await expectFailure("anon: admin RPC ditolak", () => db.query("select public.hog_admin_dashboard_summary()"));
-    await expectFailure("anon: tulis aplikasi ditolak", () => db.exec(
-      "insert into home_of_giving.blog_categories (slug, name) values ('forbidden', 'Forbidden')",
-    ));
-    await expectFailure("anon: identitas privat ditolak", () => db.query(
-      "select count(*) from home_of_giving_private.donor_identities",
-    ));
+    await check(
+      db,
+      "anon: dapat membaca ledger aman",
+      `select count(*) = 14 as ok from public.hog_donation_ledger`,
+    );
+    await expectFailure("anon: admin view ditolak", () =>
+      db.query("select count(*) from public.hog_admin_donations"),
+    );
+    await expectFailure("anon: admin RPC ditolak", () =>
+      db.query("select public.hog_admin_dashboard_summary()"),
+    );
+    await expectFailure("anon: tulis aplikasi ditolak", () =>
+      db.exec(
+        "insert into home_of_giving.blog_categories (slug, name) values ('forbidden', 'Forbidden')",
+      ),
+    );
+    await expectFailure("anon: identitas privat ditolak", () =>
+      db.query("select count(*) from home_of_giving_private.donor_identities"),
+    );
   });
 
   await withRole(db, "authenticated", nonAdminId, async () => {
-    await check(db, "non-admin: admin view kosong", `select count(*) = 0 as ok from public.hog_admin_campaigns`);
-    await check(db, "non-admin: whoami bukan admin", `select is_admin = false as ok from public.hog_admin_whoami()`);
-    await expectFailure("non-admin: dashboard admin ditolak", () => db.query(
-      "select public.hog_admin_dashboard_summary()",
-    ));
-    await expectFailure("non-admin: mutation admin ditolak", () => db.exec(
-      "insert into public.hog_admin_blog_categories (slug, name) values ('forbidden-auth', 'Forbidden Auth')",
-    ));
+    await check(
+      db,
+      "non-admin: admin view kosong",
+      `select count(*) = 0 as ok from public.hog_admin_campaigns`,
+    );
+    await check(
+      db,
+      "non-admin: whoami bukan admin",
+      `select is_admin = false as ok from public.hog_admin_whoami()`,
+    );
+    await expectFailure("non-admin: dashboard admin ditolak", () =>
+      db.query("select public.hog_admin_dashboard_summary()"),
+    );
+    await expectFailure("non-admin: mutation admin ditolak", () =>
+      db.exec(
+        "insert into public.hog_admin_blog_categories (slug, name) values ('forbidden-auth', 'Forbidden Auth')",
+      ),
+    );
   });
 
   let donationWithoutEvidence;
@@ -1131,48 +1221,75 @@ async function validateFreshInstall() {
   let campaignId;
 
   await withRole(db, "authenticated", adminId, async () => {
-    await check(db, "admin: seluruh proyek dapat dibaca", `select count(*) = 3 as ok from public.hog_admin_campaigns`);
-    await check(db, "admin: whoami terverifikasi", `select is_admin and user_id = '${adminId}'::uuid as ok
-      from public.hog_admin_whoami()`);
+    await check(
+      db,
+      "admin: seluruh proyek dapat dibaca",
+      `select count(*) = 3 as ok from public.hog_admin_campaigns`,
+    );
+    await check(
+      db,
+      "admin: whoami terverifikasi",
+      `select is_admin and user_id = '${adminId}'::uuid as ok
+      from public.hog_admin_whoami()`,
+    );
 
-    campaignId = (await db.query(
-      "select id from public.hog_admin_campaigns where slug = 'paket-gizi-anak-panti'",
-    )).rows[0].id;
+    campaignId = (
+      await db.query(
+        "select id from public.hog_admin_campaigns where slug = 'paket-gizi-anak-panti'",
+      )
+    ).rows[0].id;
 
-    donationWithoutEvidence = (await db.query(
-      `select public.hog_admin_record_donation(
+    donationWithoutEvidence = (
+      await db.query(
+        `select public.hog_admin_record_donation(
         $1::uuid, 'Siti Rahmawati', 500000::bigint, current_date, null
       ) as id`,
-      [campaignId],
-    )).rows[0].id;
+        [campaignId],
+      )
+    ).rows[0].id;
 
-    donationWithEvidence = (await db.query(
-      `select public.hog_admin_record_donation(
+    donationWithEvidence = (
+      await db.query(
+        `select public.hog_admin_record_donation(
         $1::uuid, 'Siti Rahmawati', 250000::bigint, current_date, 'donations/test/bukti.pdf'
       ) as id`,
-      [campaignId],
-    )).rows[0].id;
+        [campaignId],
+      )
+    ).rows[0].id;
 
-    await check(db, "admin: donasi tanpa bukti langsung verified dan termasking deterministik", `select (
+    await check(
+      db,
+      "admin: donasi tanpa bukti langsung verified dan termasking deterministik",
+      `select (
       data ->> 'public_name' = 'Sit*** R.'
       and data ->> 'full_name' = 'Siti Rahmawati'
       and data ->> 'status' = 'verified'
       and jsonb_array_length(data -> 'evidence_paths') = 0
     ) as ok
-    from (select public.hog_admin_donation_detail($1::uuid) as data) detail`, [donationWithoutEvidence]);
+    from (select public.hog_admin_donation_detail($1::uuid) as data) detail`,
+      [donationWithoutEvidence],
+    );
 
-    await check(db, "admin: bukti opsional tersimpan tanpa tahap verifikasi", `select (
+    await check(
+      db,
+      "admin: bukti opsional tersimpan tanpa tahap verifikasi",
+      `select (
       data ->> 'public_name' = 'Sit*** R.'
       and data ->> 'status' = 'verified'
       and data -> 'evidence_paths' = '["donations/test/bukti.pdf"]'::jsonb
     ) as ok
-    from (select public.hog_admin_donation_detail($1::uuid) as data) detail`, [donationWithEvidence]);
+    from (select public.hog_admin_donation_detail($1::uuid) as data) detail`,
+      [donationWithEvidence],
+    );
 
     await db.query(
       "update public.hog_admin_campaigns set status = 'reported' where id = $1::uuid",
       [campaignId],
     );
-    await check(db, "proyek: status reported tetap kompatibel tanpa mensyaratkan laporan", `select (
+    await check(
+      db,
+      "proyek: status reported tetap kompatibel tanpa mensyaratkan laporan",
+      `select (
       status = 'reported'
       and reported_at is not null
       and not exists (
@@ -1180,19 +1297,27 @@ async function validateFreshInstall() {
       )
     ) as ok
     from home_of_giving.campaigns c
-    where c.id = $1::uuid`, [campaignId]);
+    where c.id = $1::uuid`,
+      [campaignId],
+    );
 
-    publishedReportId = (await db.query(
-      `insert into public.hog_admin_reports (kind, campaign_id, title, storage_bucket)
+    publishedReportId = (
+      await db.query(
+        `insert into public.hog_admin_reports (kind, campaign_id, title, storage_bucket)
        values ('campaign', $1::uuid, 'Laporan Uji Proyek', 'home-of-giving-public-reports')
        returning id`,
-      [campaignId],
-    )).rows[0].id;
+        [campaignId],
+      )
+    ).rows[0].id;
 
-    await expectFailure("laporan: publikasi tanpa berkas atau URL ditolak", () => db.query(
-      "update public.hog_admin_reports set published_at = now() where id = $1::uuid",
-      [publishedReportId],
-    ));
+    await expectFailure(
+      "laporan: publikasi tanpa berkas atau URL ditolak",
+      () =>
+        db.query(
+          "update public.hog_admin_reports set published_at = now() where id = $1::uuid",
+          [publishedReportId],
+        ),
+    );
 
     await db.query(
       `update public.hog_admin_reports
@@ -1200,24 +1325,29 @@ async function validateFreshInstall() {
        where id = $1::uuid`,
       [publishedReportId],
     );
-    draftReportId = (await db.query(
-      `insert into public.hog_admin_reports (
+    draftReportId = (
+      await db.query(
+        `insert into public.hog_admin_reports (
         kind, campaign_id, title, storage_bucket, external_url, period_label
       ) values (
         'periodic', null, 'Laporan Berkala Draf', 'home-of-giving-public-reports',
         'https://example.invalid/laporan-berkala.pdf', 'September 2026'
       ) returning id`,
-    )).rows[0].id;
+      )
+    ).rows[0].id;
 
     await db.exec(`update public.hog_admin_site_settings
       set value = jsonb_build_object(
-        'label', 'Hubungi panitia',
+        'label', 'Hubungi pengurus',
         'phone', '628111111111',
         'message', 'Halo, saya ingin berdonasi.'
       )
       where key = 'whatsapp_cta'`);
 
-    await check(db, "admin: dashboard memakai shape final", `select (
+    await check(
+      db,
+      "admin: dashboard memakai shape final",
+      `select (
       (select count(*) from jsonb_object_keys(summary)) = 4
       and summary ?& array[
         'total_donation_count', 'total_donation_amount_idr',
@@ -1228,25 +1358,40 @@ async function validateFreshInstall() {
       and (summary ->> 'running_campaign_count')::integer = 2
       and (summary ->> 'unpublished_report_count')::integer = 1
     ) as ok
-    from (select public.hog_admin_dashboard_summary() as summary) dashboard`);
+    from (select public.hog_admin_dashboard_summary() as summary) dashboard`,
+    );
   });
 
   await withRole(db, "anon", null, async () => {
-    await check(db, "anon: hanya laporan terbit yang terlihat", `select (
+    await check(
+      db,
+      "anon: hanya laporan terbit yang terlihat",
+      `select (
       count(*) = 1
       and count(*) filter (where id = $1::uuid) = 1
       and count(*) filter (where id = $2::uuid) = 0
-    ) as ok from public.hog_reports`, [publishedReportId, draftReportId]);
-    await check(db, "anon: konfigurasi WhatsApp global terbaca", `select (
+    ) as ok from public.hog_reports`,
+      [publishedReportId, draftReportId],
+    );
+    await check(
+      db,
+      "anon: konfigurasi WhatsApp global terbaca",
+      `select (
       count(*) = 1 and bool_and(value ->> 'phone' = '628111111111')
-    ) as ok from public.hog_site_settings where key = 'whatsapp_cta'`);
-    await check(db, "anon: donasi baru langsung tampil aman", `select (
+    ) as ok from public.hog_site_settings where key = 'whatsapp_cta'`,
+    );
+    await check(
+      db,
+      "anon: donasi baru langsung tampil aman",
+      `select (
       count(*) filter (where id in ($1::uuid, $2::uuid)) = 2
       and count(*) filter (
         where id in ($1::uuid, $2::uuid)
           and public_name = 'Sit*** R.'
       ) = 2
-    ) as ok from public.hog_donation_ledger`, [donationWithoutEvidence, donationWithEvidence]);
+    ) as ok from public.hog_donation_ledger`,
+      [donationWithoutEvidence, donationWithEvidence],
+    );
   });
 
   await checkSharedIsolation(db, "fresh final");
@@ -1260,10 +1405,17 @@ async function validateCampaignDeletion() {
   await run(db, "delete bootstrap Supabase stub", bootstrap);
   await applySequence(db, "delete", freshSequence);
 
-  await run(db, "delete supabase/sql-editor/09_campaign_bulk_delete.sql", readSql(sqlFiles.bulkDelete));
+  await run(
+    db,
+    "delete supabase/sql-editor/09_campaign_bulk_delete.sql",
+    readSql(sqlFiles.bulkDelete),
+  );
   await run(db, "delete rerun 09 (idempotensi)", readSql(sqlFiles.bulkDelete));
 
-  await check(db, "delete: kontrak RPC hapus proyek final", `select (
+  await check(
+    db,
+    "delete: kontrak RPC hapus proyek final",
+    `select (
     (
       select count(*) = 1
       from pg_proc p
@@ -1299,12 +1451,24 @@ async function validateCampaignDeletion() {
     and not has_function_privilege('anon', 'home_of_giving.admin_delete_campaigns(uuid[])'::regprocedure, 'EXECUTE')
     and has_function_privilege('authenticated', 'public.hog_admin_delete_campaigns(uuid[])'::regprocedure, 'EXECUTE')
     and has_function_privilege('service_role', 'public.hog_admin_delete_campaigns(uuid[])'::regprocedure, 'EXECUTE')
-  ) as ok`);
+  ) as ok`,
+  );
 
-  await run(db, "delete supabase/sql-editor/10_cleanup_legacy_drafts.sql", readSql(sqlFiles.cleanupDrafts));
-  await run(db, "delete rerun 10 (idempotensi)", readSql(sqlFiles.cleanupDrafts));
+  await run(
+    db,
+    "delete supabase/sql-editor/10_cleanup_legacy_drafts.sql",
+    readSql(sqlFiles.cleanupDrafts),
+  );
+  await run(
+    db,
+    "delete rerun 10 (idempotensi)",
+    readSql(sqlFiles.cleanupDrafts),
+  );
 
-  await check(db, "delete: cleanup 10 mempertahankan proyek berjalan dan 14 donasi canonical", `select (
+  await check(
+    db,
+    "delete: cleanup 10 mempertahankan proyek berjalan dan 14 donasi canonical",
+    `select (
     (select count(*) from home_of_giving.campaigns) = 3
     and (select count(*) from home_of_giving.campaigns where status = 'running') = 3
     and (select count(*) from home_of_giving.donations where external_reference like 'seed:%') = 14
@@ -1315,7 +1479,8 @@ async function validateCampaignDeletion() {
       from home_of_giving_private.simplification_archive
       where migration_key = '2026-09-16_cleanup_legacy_draft_campaigns_v1'
     )
-  ) as ok`);
+  ) as ok`,
+  );
 
   await run(db, "delete fixture proyek uji", deletionFixture);
 
@@ -1327,12 +1492,16 @@ async function validateCampaignDeletion() {
     insert into home_of_giving_private.admin_members (user_id, display_name)
     values ('${adminId}', 'Super Admin Hapus');`);
 
-  const targetId = (await db.query(
-    "select id from home_of_giving.campaigns where slug = 'proyek-uji-hapus'",
-  )).rows[0].id;
-  const keeperId = (await db.query(
-    "select id from home_of_giving.campaigns where slug = 'proyek-uji-simpan'",
-  )).rows[0].id;
+  const targetId = (
+    await db.query(
+      "select id from home_of_giving.campaigns where slug = 'proyek-uji-hapus'",
+    )
+  ).rows[0].id;
+  const keeperId = (
+    await db.query(
+      "select id from home_of_giving.campaigns where slug = 'proyek-uji-simpan'",
+    )
+  ).rows[0].id;
 
   await withRole(db, "authenticated", adminId, async () => {
     await db.query(
@@ -1349,7 +1518,10 @@ async function validateCampaignDeletion() {
     );
   });
 
-  await check(db, "delete: fixture proyek uji lengkap sebelum penghapusan", `select (
+  await check(
+    db,
+    "delete: fixture proyek uji lengkap sebelum penghapusan",
+    `select (
     (select count(*) from home_of_giving.donations where campaign_id = $1::uuid) = 3
     and (select count(*) from home_of_giving_private.donor_identities) = 3
     and (
@@ -1362,31 +1534,42 @@ async function validateCampaignDeletion() {
     and (select count(*) from home_of_giving.campaign_milestones where campaign_id = $1::uuid) = 1
     and (select count(*) from home_of_giving.campaign_media where campaign_id = $1::uuid) = 4
     and (select count(*) from home_of_giving.blog_posts where campaign_id = $1::uuid) = 1
-  ) as ok`, [targetId]);
+  ) as ok`,
+    [targetId],
+  );
 
   await withRole(db, "anon", null, async () => {
-    await expectFailure("anon: RPC hapus proyek ditolak", () => db.query(
-      "select public.hog_admin_delete_campaigns(array[]::uuid[])",
-    ));
-    await expectFailure("anon: RPC hapus proyek internal ditolak", () => db.query(
-      "select home_of_giving.admin_delete_campaigns(array[]::uuid[])",
-    ));
+    await expectFailure("anon: RPC hapus proyek ditolak", () =>
+      db.query("select public.hog_admin_delete_campaigns(array[]::uuid[])"),
+    );
+    await expectFailure("anon: RPC hapus proyek internal ditolak", () =>
+      db.query("select home_of_giving.admin_delete_campaigns(array[]::uuid[])"),
+    );
   });
 
   await withRole(db, "authenticated", nonAdminId, async () => {
-    await expectFailure("non-admin: RPC hapus proyek ditolak", () => db.query(
-      "select public.hog_admin_delete_campaigns(array[$1::uuid])",
-      [targetId],
-    ));
+    await expectFailure("non-admin: RPC hapus proyek ditolak", () =>
+      db.query("select public.hog_admin_delete_campaigns(array[$1::uuid])", [
+        targetId,
+      ]),
+    );
   });
 
-  await check(db, "delete: penolakan tidak menghapus data apa pun", `select (
+  await check(
+    db,
+    "delete: penolakan tidak menghapus data apa pun",
+    `select (
     (select count(*) from home_of_giving.campaigns where id = $1::uuid) = 1
     and (select count(*) from home_of_giving.donations where campaign_id = $1::uuid) = 3
-  ) as ok`, [targetId]);
+  ) as ok`,
+    [targetId],
+  );
 
   await withRole(db, "authenticated", adminId, async () => {
-    await check(db, "delete: array kosong dan null mengembalikan nol", `select (
+    await check(
+      db,
+      "delete: array kosong dan null mengembalikan nol",
+      `select (
       (kosong ->> 'deleted_campaign_count')::integer = 0
       and (kosong ->> 'deleted_donation_count')::integer = 0
       and kosong -> 'storage_objects' = '[]'::jsonb
@@ -1404,9 +1587,13 @@ async function validateCampaignDeletion() {
         public.hog_admin_delete_campaigns(
           array['99999999-9999-9999-9999-999999999999'::uuid]
         ) as asing
-    ) calls`);
+    ) calls`,
+    );
 
-    await check(db, "delete: payload hapus proyek sesuai kontrak", `select (
+    await check(
+      db,
+      "delete: payload hapus proyek sesuai kontrak",
+      `select (
       (select count(*) from jsonb_object_keys(result)) = 3
       and result ?& array[
         'deleted_campaign_count', 'deleted_donation_count', 'storage_objects'
@@ -1432,10 +1619,15 @@ async function validateCampaignDeletion() {
       and not (result -> 'storage_objects' @> '[{"path": "media/uji-bersama-blog.jpg"}]'::jsonb)
       and not (result::text like '%example.invalid%')
     ) as ok
-    from (select public.hog_admin_delete_campaigns(array[$1::uuid]) as result) call`, [targetId]);
+    from (select public.hog_admin_delete_campaigns(array[$1::uuid]) as result) call`,
+      [targetId],
+    );
   });
 
-  await check(db, "delete: proyek, donasi, bukti, dan identitas yatim ikut terhapus", `select (
+  await check(
+    db,
+    "delete: proyek, donasi, bukti, dan identitas yatim ikut terhapus",
+    `select (
     not exists (select 1 from home_of_giving.campaigns where id = $1::uuid)
     and not exists (select 1 from home_of_giving.donations where campaign_id = $1::uuid)
     and not exists (
@@ -1450,9 +1642,14 @@ async function validateCampaignDeletion() {
     and not exists (select 1 from home_of_giving.reports where campaign_id = $1::uuid)
     and not exists (select 1 from home_of_giving.campaign_milestones where campaign_id = $1::uuid)
     and not exists (select 1 from home_of_giving.campaign_media where campaign_id = $1::uuid)
-  ) as ok`, [targetId]);
+  ) as ok`,
+    [targetId],
+  );
 
-  await check(db, "delete: proyek lain, donasi canonical, dan media bersama tetap utuh", `select (
+  await check(
+    db,
+    "delete: proyek lain, donasi canonical, dan media bersama tetap utuh",
+    `select (
     (select count(*) from home_of_giving.campaigns where id = $1::uuid) = 1
     and (select count(*) from home_of_giving.donations where campaign_id = $1::uuid) = 1
     and (select count(*) from home_of_giving.donations where external_reference like 'seed:%') = 14
@@ -1476,25 +1673,39 @@ async function validateCampaignDeletion() {
       join home_of_giving.media_assets m on m.id = bm.media_id
       where m.source_key = 'del-shared-blog'
     )
-  ) as ok`, [keeperId]);
+  ) as ok`,
+    [keeperId],
+  );
 
-  await check(db, "delete: media yatim berbasis storage dihapus", `select (
+  await check(
+    db,
+    "delete: media yatim berbasis storage dihapus",
+    `select (
     not exists (select 1 from home_of_giving.media_assets where source_key = 'del-orphan')
     and not exists (select 1 from home_of_giving.media_assets where source_key = 'del-cover')
     and (select count(*) from home_of_giving.media_assets) = 14
-  ) as ok`);
+  ) as ok`,
+  );
 
-  await check(db, "delete: artikel blog bertahan dengan campaign_id null", `select (
+  await check(
+    db,
+    "delete: artikel blog bertahan dengan campaign_id null",
+    `select (
     count(*) = 1
     and bool_and(campaign_id is null)
     and bool_and(status = 'published')
   ) as ok
   from home_of_giving.blog_posts
-  where slug = 'blog-uji-hapus'`);
+  where slug = 'blog-uji-hapus'`,
+  );
 
-  await check(db, "delete: blog seed lain tidak terpengaruh", `select (
+  await check(
+    db,
+    "delete: blog seed lain tidak terpengaruh",
+    `select (
     (select count(*) from home_of_giving.blog_posts) = 8
-  ) as ok`);
+  ) as ok`,
+  );
 
   await checkFinalObjects(db, "delete final");
   await checkSharedIsolation(db, "delete final");
@@ -1508,9 +1719,16 @@ async function validateLegacyUpgrade() {
   await applySequence(db, "legacy fixture base", freshSequence);
   await run(db, "legacy fixture draft seed historis", legacySeedDrafts);
   await run(db, "legacy fixture objects and rows", legacyFixture);
-  await run(db, "legacy fixture campaign categories gaya lama", categoryFixture);
+  await run(
+    db,
+    "legacy fixture campaign categories gaya lama",
+    categoryFixture,
+  );
 
-  await check(db, "legacy fixture: obsolete modules dan seluruh status donation tersedia", `select (
+  await check(
+    db,
+    "legacy fixture: obsolete modules dan seluruh status donation tersedia",
+    `select (
     to_regclass('home_of_giving.beneficiaries') is not null
     and to_regclass('home_of_giving.events') is not null
     and to_regclass('home_of_giving.disbursements') is not null
@@ -1531,9 +1749,13 @@ async function validateLegacyUpgrade() {
       select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace
       where n.nspname = 'public' and p.proname = 'hog_admin_verify_donation'
     )
-  ) as ok`);
+  ) as ok`,
+  );
 
-  await check(db, "legacy fixture: kategori proyek gaya lama tersedia", `select (
+  await check(
+    db,
+    "legacy fixture: kategori proyek gaya lama tersedia",
+    `select (
     to_regclass('home_of_giving.campaign_categories') is not null
     and exists (
       select 1 from information_schema.columns
@@ -1546,11 +1768,19 @@ async function validateLegacyUpgrade() {
     and to_regclass('public.hog_category_distribution_stats') is not null
     and position('category_id' in pg_get_viewdef('home_of_giving.public_campaigns'::regclass, true)) > 0
     and position('category_id' in pg_get_viewdef('public.hog_admin_campaigns'::regclass, true)) > 0
-  ) as ok`);
+  ) as ok`,
+  );
 
-  await run(db, "upgrade supabase/sql-editor/11_remove_campaign_categories.sql", readSql(sqlFiles.removeCategories));
+  await run(
+    db,
+    "upgrade supabase/sql-editor/11_remove_campaign_categories.sql",
+    readSql(sqlFiles.removeCategories),
+  );
 
-  await check(db, "upgrade 11: object kategori hilang dan data proyek utuh", `select (
+  await check(
+    db,
+    "upgrade 11: object kategori hilang dan data proyek utuh",
+    `select (
     to_regclass('home_of_giving.campaign_categories') is null
     and to_regclass('home_of_giving.category_distribution_stats') is null
     and to_regclass('public.hog_admin_campaign_categories') is null
@@ -1571,20 +1801,43 @@ async function validateLegacyUpgrade() {
       where migration_key = '2026-09-16_remove_campaign_categories_v1'
         and source_table = 'campaign_categories'
     )
-  ) as ok`);
+  ) as ok`,
+  );
 
-  const categoryArchiveCount = (await db.query(
-    "select count(*)::integer as total from home_of_giving_private.simplification_archive where migration_key = '2026-09-16_remove_campaign_categories_v1'",
-  )).rows[0].total;
-  await run(db, "upgrade rerun 11 (idempotensi)", readSql(sqlFiles.removeCategories));
-  await check(db, "upgrade 11 rerun: arsip tidak berduplikasi", `select count(*) = $1::integer as ok
-    from home_of_giving_private.simplification_archive where migration_key = '2026-09-16_remove_campaign_categories_v1'`, [categoryArchiveCount]);
+  const categoryArchiveCount = (
+    await db.query(
+      "select count(*)::integer as total from home_of_giving_private.simplification_archive where migration_key = '2026-09-16_remove_campaign_categories_v1'",
+    )
+  ).rows[0].total;
+  await run(
+    db,
+    "upgrade rerun 11 (idempotensi)",
+    readSql(sqlFiles.removeCategories),
+  );
+  await check(
+    db,
+    "upgrade 11 rerun: arsip tidak berduplikasi",
+    `select count(*) = $1::integer as ok
+    from home_of_giving_private.simplification_archive where migration_key = '2026-09-16_remove_campaign_categories_v1'`,
+    [categoryArchiveCount],
+  );
 
-  await run(db, "upgrade rerun 06 setelah 11 tanpa 42P16", readSql(sqlFiles.bridge));
+  await run(
+    db,
+    "upgrade rerun 06 setelah 11 tanpa 42P16",
+    readSql(sqlFiles.bridge),
+  );
 
-  await run(db, "upgrade supabase/sql-editor/08_simplify_donation_flow.sql", readSql(sqlFiles.upgrade));
+  await run(
+    db,
+    "upgrade supabase/sql-editor/08_simplify_donation_flow.sql",
+    readSql(sqlFiles.upgrade),
+  );
 
-  await check(db, "upgrade: data legacy diarsipkan sebelum modul dihapus", `select (
+  await check(
+    db,
+    "upgrade: data legacy diarsipkan sebelum modul dihapus",
+    `select (
     count(*) filter (where source_table = 'beneficiaries') = 1
     and count(*) filter (where source_table = 'beneficiary_contacts') = 1
     and count(*) filter (where source_table = 'events') = 1
@@ -1619,16 +1872,24 @@ async function validateLegacyUpgrade() {
     ) = 2
   ) as ok
   from home_of_giving_private.simplification_archive
-  where migration_key = '2026-09-15_simplify_donation_flow_v1'`);
+  where migration_key = '2026-09-15_simplify_donation_flow_v1'`,
+  );
 
-  await check(db, "upgrade: beneficiary dibackfill ke campaign", `select (
+  await check(
+    db,
+    "upgrade: beneficiary dibackfill ke campaign",
+    `select (
     beneficiary_name = 'Yayasan Legacy Amanah'
     and beneficiary_location = 'Cianjur, Jawa Barat'
   ) as ok
   from home_of_giving.campaigns
-  where slug = 'renovasi-rumah-ibadah'`);
+  where slug = 'renovasi-rumah-ibadah'`,
+  );
 
-  await check(db, "upgrade: media event mempertahankan role campaign media yang sudah ada", `select exists (
+  await check(
+    db,
+    "upgrade: media event mempertahankan role campaign media yang sudah ada",
+    `select exists (
     select 1
     from home_of_giving.campaign_media cm
     join home_of_giving.campaigns c on c.id = cm.campaign_id
@@ -1637,9 +1898,13 @@ async function validateLegacyUpgrade() {
       and m.source_key = 'g11'
       and cm.role = 'cover'
       and cm.sort_order = 15
-  ) as ok`);
+  ) as ok`,
+  );
 
-  await check(db, "upgrade: hanya pending dipromosikan dan verified tanpa timestamp diperbaiki", `select (
+  await check(
+    db,
+    "upgrade: hanya pending dipromosikan dan verified tanpa timestamp diperbaiki",
+    `select (
     (select status = 'verified' and verified_at is not null
      from home_of_giving.donations
      where id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa7')
@@ -1656,9 +1921,13 @@ async function validateLegacyUpgrade() {
     and (select count(*) from home_of_giving.donations) = 16
     and (select coalesce(sum(amount_idr), 0) from home_of_giving.donations) = 37650000
     and (select total_raised_idr from home_of_giving.site_stats) = 37650000
-  ) as ok`);
+  ) as ok`,
+  );
 
-  await check(db, "upgrade: evidence rejected dan void terarsip sementara object storage tetap ada", `select (
+  await check(
+    db,
+    "upgrade: evidence rejected dan void terarsip sementara object storage tetap ada",
+    `select (
     not exists (
       select 1 from home_of_giving_private.donation_evidence
       where donation_id in (
@@ -1674,9 +1943,13 @@ async function validateLegacyUpgrade() {
           'legacy/void/bukti-transfer.pdf'
         )
     ) = 2
-  ) as ok`);
+  ) as ok`,
+  );
 
-  await check(db, "upgrade: laporan tetap ada tanpa relasi disbursement", `select (
+  await check(
+    db,
+    "upgrade: laporan tetap ada tanpa relasi disbursement",
+    `select (
     count(*) filter (where id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa6') = 1
     and not exists (
       select 1 from information_schema.columns
@@ -1684,30 +1957,51 @@ async function validateLegacyUpgrade() {
         and table_name = 'reports'
         and column_name = 'disbursement_id'
     )
-  ) as ok from home_of_giving.reports`);
+  ) as ok from home_of_giving.reports`,
+  );
 
-  await expectFailure("upgrade: report mencegah campaign terhapus", () => db.query(
-    `delete from home_of_giving.campaigns
+  await expectFailure("upgrade: report mencegah campaign terhapus", () =>
+    db.query(
+      `delete from home_of_giving.campaigns
      where slug = 'renovasi-rumah-ibadah'`,
-  ));
-  await check(db, "upgrade: report tidak ikut terhapus", `select exists (
+    ),
+  );
+  await check(
+    db,
+    "upgrade: report tidak ikut terhapus",
+    `select exists (
     select 1 from home_of_giving.reports
     where id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa6'
-  ) as ok`);
+  ) as ok`,
+  );
 
   await checkFinalObjects(db, "upgrade");
   await checkSharedIsolation(db, "upgrade");
 
-  const archiveCount = (await db.query(
-    "select count(*)::integer as total from home_of_giving_private.simplification_archive",
-  )).rows[0].total;
+  const archiveCount = (
+    await db.query(
+      "select count(*)::integer as total from home_of_giving_private.simplification_archive",
+    )
+  ).rows[0].total;
   await run(db, "upgrade rerun 08 (idempotensi)", readSql(sqlFiles.upgrade));
-  await check(db, "upgrade rerun: archive tidak berduplikasi", `select count(*) = $1::integer as ok
-    from home_of_giving_private.simplification_archive`, [archiveCount]);
+  await check(
+    db,
+    "upgrade rerun: archive tidak berduplikasi",
+    `select count(*) = $1::integer as ok
+    from home_of_giving_private.simplification_archive`,
+    [archiveCount],
+  );
 
-  await run(db, "upgrade supabase/sql-editor/09_campaign_bulk_delete.sql", readSql(sqlFiles.bulkDelete));
+  await run(
+    db,
+    "upgrade supabase/sql-editor/09_campaign_bulk_delete.sql",
+    readSql(sqlFiles.bulkDelete),
+  );
   await run(db, "upgrade rerun 09 (idempotensi)", readSql(sqlFiles.bulkDelete));
-  await check(db, "upgrade: RPC hapus proyek terpasang setelah 09", `select (
+  await check(
+    db,
+    "upgrade: RPC hapus proyek terpasang setelah 09",
+    `select (
     pg_get_function_identity_arguments(
       'public.hog_admin_delete_campaigns(uuid[])'::regprocedure
     ) = 'p_campaign_ids uuid[]'
@@ -1718,9 +2012,13 @@ async function validateLegacyUpgrade() {
     and has_function_privilege(
       'authenticated', 'public.hog_admin_delete_campaigns(uuid[])'::regprocedure, 'EXECUTE'
     )
-  ) as ok`);
+  ) as ok`,
+  );
 
-  await check(db, "upgrade: 6 draft seed historis siap dibersihkan", `select (
+  await check(
+    db,
+    "upgrade: 6 draft seed historis siap dibersihkan",
+    `select (
     (
       select count(*)
       from home_of_giving.campaigns
@@ -1731,11 +2029,19 @@ async function validateLegacyUpgrade() {
       where slug = 'perpustakaan-mini-sdn-03-dari-rak-kosong'
         and campaign_id is not null
     )
-  ) as ok`);
+  ) as ok`,
+  );
 
-  await run(db, "upgrade supabase/sql-editor/10_cleanup_legacy_drafts.sql", readSql(sqlFiles.cleanupDrafts));
+  await run(
+    db,
+    "upgrade supabase/sql-editor/10_cleanup_legacy_drafts.sql",
+    readSql(sqlFiles.cleanupDrafts),
+  );
 
-  await check(db, "cleanup: draft seed historis terarsip sebelum dihapus", `select (
+  await check(
+    db,
+    "cleanup: draft seed historis terarsip sebelum dihapus",
+    `select (
     count(*) filter (where source_table = 'campaigns') = 6
     and count(*) filter (where source_table = 'campaign_media') = 5
     and count(*) filter (where source_table = 'reports') = 1
@@ -1746,9 +2052,13 @@ async function validateLegacyUpgrade() {
     ) = 1
   ) as ok
   from home_of_giving_private.simplification_archive
-  where migration_key = '2026-09-16_cleanup_legacy_draft_campaigns_v1'`);
+  where migration_key = '2026-09-16_cleanup_legacy_draft_campaigns_v1'`,
+  );
 
-  await check(db, "cleanup: draft seed historis dan relasinya terhapus", `select (
+  await check(
+    db,
+    "cleanup: draft seed historis dan relasinya terhapus",
+    `select (
     not exists (
       select 1 from home_of_giving.campaigns
       where slug in (
@@ -1764,9 +2074,13 @@ async function validateLegacyUpgrade() {
     and not exists (
       select 1 from home_of_giving.campaigns where status = 'draft' and needs_review
     )
-  ) as ok`);
+  ) as ok`,
+  );
 
-  await check(db, "cleanup: proyek berjalan dan 14 donasi canonical tetap utuh", `select (
+  await check(
+    db,
+    "cleanup: proyek berjalan dan 14 donasi canonical tetap utuh",
+    `select (
     (select count(*) from home_of_giving.campaigns) = 3
     and (select count(*) from home_of_giving.campaigns where status = 'running') = 3
     and (select count(*) from home_of_giving.donations where external_reference like 'seed:%') = 14
@@ -1778,9 +2092,13 @@ async function validateLegacyUpgrade() {
       from home_of_giving.media_assets
       where source_key in ('g4', 'g6', 'g7', 'g11')
     ) = 4
-  ) as ok`);
+  ) as ok`,
+  );
 
-  await check(db, "cleanup: artikel blog bertahan dengan campaign_id null", `select (
+  await check(
+    db,
+    "cleanup: artikel blog bertahan dengan campaign_id null",
+    `select (
     count(*) = 7
     and count(*) filter (where campaign_id is not null) = 0
     and count(*) filter (
@@ -1789,21 +2107,41 @@ async function validateLegacyUpgrade() {
         and status = 'published'
     ) = 1
   ) as ok
-  from home_of_giving.blog_posts`);
+  from home_of_giving.blog_posts`,
+  );
 
-  const cleanupArchiveCount = (await db.query(
-    "select count(*)::integer as total from home_of_giving_private.simplification_archive",
-  )).rows[0].total;
-  await run(db, "cleanup rerun 10 (idempotensi)", readSql(sqlFiles.cleanupDrafts));
-  await check(db, "cleanup rerun: arsip dan data tidak berubah", `select (
+  const cleanupArchiveCount = (
+    await db.query(
+      "select count(*)::integer as total from home_of_giving_private.simplification_archive",
+    )
+  ).rows[0].total;
+  await run(
+    db,
+    "cleanup rerun 10 (idempotensi)",
+    readSql(sqlFiles.cleanupDrafts),
+  );
+  await check(
+    db,
+    "cleanup rerun: arsip dan data tidak berubah",
+    `select (
     (select count(*) from home_of_giving_private.simplification_archive) = $1::integer
     and (select count(*) from home_of_giving.campaigns) = 3
     and (select count(*) from home_of_giving.donations) = 16
     and (select count(*) from home_of_giving.blog_posts) = 7
-  ) as ok`, [cleanupArchiveCount]);
+  ) as ok`,
+    [cleanupArchiveCount],
+  );
 
-  await run(db, "upgrade final verification 05_verify.sql", readSql(sqlFiles.verify));
-  await run(db, "upgrade final verification 07_verify_api_bridge.sql", readSql(sqlFiles.verifyBridge));
+  await run(
+    db,
+    "upgrade final verification 05_verify.sql",
+    readSql(sqlFiles.verify),
+  );
+  await run(
+    db,
+    "upgrade final verification 07_verify_api_bridge.sql",
+    readSql(sqlFiles.verifyBridge),
+  );
   await checkFinalObjects(db, "upgrade final");
   await checkSharedIsolation(db, "upgrade final");
   console.log("OK   legacy upgrade validation complete");

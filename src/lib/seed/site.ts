@@ -22,7 +22,7 @@ export const footerLinks = [
 ];
 
 export const whatsappCta = {
-  label: "Chat panitia",
+  label: "Chat pengurus",
   message:
     "Halo, saya ingin bertanya tentang program donasi REMAX Home of Giving.",
 };

@@ -41,6 +41,11 @@ export type CampaignDeletionResult = {
   storage_objects: Array<{ bucket: string; path: string }>;
 };
 
+export type DonationDeletionResult = {
+  deleted_donation_count: number;
+  storage_objects: Array<{ bucket: string; path: string }>;
+};
+
 export type DonationDetail = {
   id: string;
   campaign_id: string;
@@ -148,6 +153,25 @@ export type CampaignMilestoneRow = {
   sort_order: number;
   is_published: boolean;
 } & Timestamps;
+
+export type CampaignAllocationRow = {
+  id: string;
+  campaign_id: string;
+  label: string;
+  amount_idr: number;
+  note: string | null;
+  sort_order: number;
+  is_published: boolean;
+} & Timestamps;
+
+export type PublicCampaignAllocationRow = {
+  id: string;
+  campaign_id: string;
+  label: string;
+  amount_idr: number;
+  note: string | null;
+  sort_order: number;
+};
 
 export type ReportRow = {
   id: string;
@@ -385,6 +409,7 @@ export type Database = {
       }>;
       hog_donation_ledger: ReadonlyView<PublicDonationLedgerRow>;
       hog_campaign_milestones: ReadonlyView<PublicCampaignMilestoneRow>;
+      hog_campaign_allocations: ReadonlyView<PublicCampaignAllocationRow>;
       hog_reports: ReadonlyView<PublicReportRow>;
       hog_blog_posts: ReadonlyView<PublicBlogPostRow>;
       hog_gallery_media: ReadonlyView<PublicGalleryMediaRow>;
@@ -398,6 +423,7 @@ export type Database = {
       hog_admin_campaigns: WritableView<CampaignRow>;
       hog_admin_donations: ReadonlyView<DonationRow>;
       hog_admin_campaign_milestones: WritableView<CampaignMilestoneRow>;
+      hog_admin_campaign_allocations: WritableView<CampaignAllocationRow>;
       hog_admin_reports: WritableView<ReportRow>;
       hog_admin_blog_posts: WritableView<BlogPostRow>;
       hog_admin_campaign_media: WritableView<CampaignMediaRow>;
@@ -432,6 +458,20 @@ export type Database = {
       hog_admin_delete_campaigns: {
         Args: { p_campaign_ids: string[] };
         Returns: CampaignDeletionResult;
+      };
+      hog_admin_delete_donations: {
+        Args: { p_donation_ids: string[] };
+        Returns: DonationDeletionResult;
+      };
+      hog_admin_update_donation: {
+        Args: {
+          p_donation_id: string;
+          p_campaign_id: string;
+          p_full_name: string;
+          p_amount_idr: number;
+          p_donated_on: string;
+        };
+        Returns: string;
       };
     };
     Enums: Record<never, never>;

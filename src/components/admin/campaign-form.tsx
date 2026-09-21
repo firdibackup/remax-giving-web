@@ -4,10 +4,12 @@ import { useActionState } from "react";
 import { createCampaign, updateCampaign } from "@/app/admin/(protected)/proyek/actions";
 import { AdminNotice } from "@/components/admin/admin-notice";
 import { FormField } from "@/components/admin/form-field";
+import { RichTextEditor } from "@/components/admin/rich-text-editor";
 import { SubmitButton } from "@/components/admin/submit-button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { storyParagraphsToHtml } from "@/lib/story";
 import type { CampaignRow } from "@/lib/supabase/database.types";
 
 function CampaignForm({
@@ -38,13 +40,14 @@ function CampaignForm({
         <FormField label="Status" htmlFor="status" required>
           <Select id="status" name="status" defaultValue={campaign?.status || "draft"} required>
             <option value="draft">Draf</option>
-            <option value="scheduled">Terjadwal</option>
             <option value="running">Berjalan</option>
-            <option value="closed">Ditutup</option>
-            <option value="cancelled">Dibatalkan</option>
-            <option value="archived">Diarsipkan</option>
-            {campaign?.status === "disbursed" && <option value="disbursed">Selesai</option>}
+            <option value="closed">Donasi telah selesai</option>
+            {/* Nilai lama hanya muncul bila proyek ini memang sudah memakainya, supaya data tak berubah tak sengaja. */}
+            {campaign?.status === "scheduled" && <option value="scheduled">Terjadwal</option>}
+            {campaign?.status === "disbursed" && <option value="disbursed">Selesai (dana disalurkan)</option>}
             {campaign?.status === "reported" && <option value="reported">Laporan tersedia</option>}
+            {campaign?.status === "cancelled" && <option value="cancelled">Dibatalkan</option>}
+            {campaign?.status === "archived" && <option value="archived">Diarsipkan</option>}
           </Select>
         </FormField>
         <FormField label="Target donasi (Rp)" htmlFor="target_amount_idr" required>
@@ -64,8 +67,8 @@ function CampaignForm({
       <FormField label="Ringkasan" htmlFor="summary">
         <Textarea id="summary" name="summary" rows={3} defaultValue={campaign?.summary || ""} />
       </FormField>
-      <FormField label="Cerita proyek" htmlFor="story_paragraphs" hint="Pisahkan paragraf dengan satu baris kosong.">
-        <Textarea id="story_paragraphs" name="story_paragraphs" rows={9} defaultValue={campaign?.story_paragraphs.join("\n\n") || ""} />
+      <FormField label="Cerita proyek" htmlFor="story_paragraphs" hint="Gunakan toolbar untuk memformat: tebal, miring, sub-judul, daftar, kutipan, dan tautan.">
+        <RichTextEditor name="story_paragraphs" initialHTML={storyParagraphsToHtml(campaign?.story_paragraphs || [])} />
       </FormField>
 
       <div className="grid gap-5 md:grid-cols-2">

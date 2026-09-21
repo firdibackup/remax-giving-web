@@ -11,6 +11,7 @@ import { DonationCta } from "./donation-cta";
 
 const navLinks = [
   { href: "/", label: "Beranda" },
+  { href: "/tentang", label: "Tentang" },
   { href: "/program", label: "Program" },
   { href: "/riwayat-donasi", label: "Riwayat Donasi" },
   { href: "/blog", label: "Blog" },

@@ -22,7 +22,7 @@ export const campaigns: Campaign[] = [
     slug: "beasiswa-anak-agent-remax",
     image: "/photos/community-02-web.jpg",
     imagePos: "58% 40%",
-    title: "Beasiswa Anak Agent RE/MAX",
+    title: "Beasiswa Anak Agent REMAX",
     status: "berjalan",
     raised: "Rp12.000.000",
     target: "Rp50.000.000",
@@ -145,5 +145,3 @@ export const campaignStatuses = ["Semua", "Berjalan", "Tuntas"] as const;
 export function getCampaignBySlug(slug: string) {
   return campaigns.find((c) => c.slug === slug);
 }
-
-

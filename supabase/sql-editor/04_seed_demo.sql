@@ -30,7 +30,7 @@ values
   ('g5', '/photos/community-01-web.jpg', 'Penyerahan beasiswa anak agent', 'Penyerahan beasiswa anak agent', '62% 38%', 'normal', 'Pendidikan', 'Kelapa Gading', date '2026-06-15', 50, true),
   ('g6', '/photos/community-03-web.jpg', 'Penyerahan dana renovasi rumah ibadah', 'Penyerahan dana renovasi rumah ibadah', '52% 55%', 'normal', 'Serah terima', 'Cianjur', date '2026-07-12', 60, true),
   ('g7', '/photos/community-01-web.jpg', 'Bermain bersama anak-anak penerima', 'Bermain bersama anak-anak penerima', '30% 52%', 'normal', 'Kegiatan relawan', 'Jakarta', date '2026-07-09', 70, true),
-  ('g8', '/photos/community-02-web.jpg', 'Briefing panitia sebelum penyaluran', 'Briefing panitia sebelum penyaluran', '48% 32%', 'wide', 'Kegiatan relawan', 'Bogor', date '2026-07-01', 80, true),
+  ('g8', '/photos/community-02-web.jpg', 'Briefing pengurus sebelum penyaluran', 'Briefing pengurus sebelum penyaluran', '48% 32%', 'wide', 'Kegiatan relawan', 'Bogor', date '2026-07-01', 80, true),
   ('g9', '/photos/community-03-web.jpg', 'Distribusi air bersih pasca banjir', 'Distribusi air bersih pasca banjir', '60% 50%', 'normal', 'Bencana', 'Bekasi', date '2026-07-20', 90, true),
   ('g10', '/photos/community-01-web.jpg', 'Penataan 480 buku donasi', 'Penataan 480 buku donasi', '50% 60%', 'normal', 'Pendidikan', 'Cianjur', date '2026-06-26', 100, true),
   ('g11', '/photos/community-02-web.jpg', 'Tanda terima ditandatangani penerima', 'Tanda terima ditandatangani penerima', '42% 58%', 'normal', 'Serah terima', 'Puncak', date '2026-05-30', 110, true)
@@ -88,7 +88,7 @@ cross join lateral (
       'Bantuan untuk keluarga terdampak banjir Bekasi Utara.',
       array[
         'Banjir pertengahan Juli merendam 6 RW di Bekasi Utara hingga ketinggian satu meter.',
-        'Panitia Home of Giving melakukan survei lapangan bersama Yayasan Sahabat Anak dan menyalurkan bantuan kepada satu penerima manfaat agar bantuannya utuh dan mudah dipertanggungjawabkan.'
+        'pengurus Home of Giving melakukan survei lapangan bersama Yayasan Sahabat Anak dan menyalurkan bantuan kepada satu penerima manfaat agar bantuannya utuh dan mudah dipertanggungjawabkan.'
       ]::text[],
       'Yang paling kami butuhkan bukan uang tunai, tapi kepastian anak-anak bisa kembali ke sekolah minggu depan.',
       'Ketua Yayasan Sahabat Anak, catatan survei 24 Juli 2026',
@@ -103,14 +103,14 @@ cross join lateral (
     ),
     (
       'beasiswa-anak-agent-remax',
-      'Beasiswa Anak Agent RE/MAX',
-      'Anak keluarga agent RE/MAX',
+      'Beasiswa Anak Agent REMAX',
+      'Anak keluarga agent REMAX',
       null,
       refs.media_02,
-      'Beasiswa pendidikan untuk anak keluarga agent RE/MAX.',
+      'Beasiswa pendidikan untuk anak keluarga agent REMAX.',
       array[
-        'Program beasiswa membantu anak keluarga agent RE/MAX yang membutuhkan dukungan biaya pendidikan.',
-        'Setiap donasi dicatat panitia dan langsung ditampilkan dengan nama tersamarkan.'
+        'Program beasiswa membantu anak keluarga agent REMAX yang membutuhkan dukungan biaya pendidikan.',
+        'Setiap donasi dicatat pengurus dan langsung ditampilkan dengan nama tersamarkan.'
       ]::text[],
       null,
       null,
@@ -132,7 +132,7 @@ cross join lateral (
       'Paket gizi untuk anak-anak panti asuhan mitra.',
       array[
         'Program paket gizi mendukung kebutuhan nutrisi anak-anak panti asuhan mitra Home of Giving.',
-        'Panitia mencatat setiap donasi dengan nama donatur yang otomatis disamarkan.'
+        'pengurus mencatat setiap donasi dengan nama donatur yang otomatis disamarkan.'
       ]::text[],
       null,
       null,
@@ -264,12 +264,12 @@ select
 from refs
 cross join lateral (
   values
-    ('sehari-bersama-keluarga-penerima-di-cianjur', 'Sehari bersama keluarga penerima di Cianjur', null::uuid, refs.media_01, 'Kami berangkat pukul lima pagi untuk mengantar bantuan renovasi. Yang paling diingat bukan angka donasinya, tapi kalimat pertama tuan rumah ketika pintu dibuka.', 'Cerita lapangan dari panitia Home of Giving. Konten lengkap akan diperbarui melalui panel admin.', 'Panitia Home of Giving', 6, true, timestamptz '2026-08-14 09:00:00+07'),
+    ('sehari-bersama-keluarga-penerima-di-cianjur', 'Sehari bersama keluarga penerima di Cianjur', null::uuid, refs.media_01, 'Kami berangkat pukul lima pagi untuk mengantar bantuan renovasi. Yang paling diingat bukan angka donasinya, tapi kalimat pertama tuan rumah ketika pintu dibuka.', 'Cerita lapangan dari pengurus Home of Giving. Konten lengkap akan diperbarui melalui panel admin.', 'pengurus Home of Giving', 6, true, timestamptz '2026-08-14 09:00:00+07'),
     ('laporan-siklus-juli-tiga-proyek-tuntas', 'Laporan siklus Juli: tiga proyek tuntas', null::uuid, refs.media_03, 'Rincian penggunaan dana untuk renovasi rumah ibadah, perpustakaan mini, dan bibit pohon kawasan Puncak.', 'Laporan ringkas dari data seed. Perlu rekonsiliasi ledger sebelum dipublikasikan sebagai laporan finansial final.', null, null, false, timestamptz '2026-07-28 09:00:00+07'),
     ('kenapa-nama-donatur-kami-samarkan', 'Kenapa nama donatur kami samarkan', null::uuid, refs.media_02, 'Prinsip pencatatan donasi Home of Giving: tercatat lengkap di internal, disamarkan saat dipublikasikan.', 'Nama asli donatur hanya disimpan untuk kebutuhan internal. Website publik selalu menggunakan nama tersamarkan.', null, null, false, timestamptz '2026-08-02 09:00:00+07'),
     ('perpustakaan-mini-sdn-03-dari-rak-kosong', 'Perpustakaan mini SDN 03: dari rak kosong ke 480 buku', null::uuid, refs.media_01, 'Guru kelas empat bercerita soal jam istirahat yang kini dipakai membaca, bukan berkeliaran di lorong.', 'Konten detail akan dilengkapi setelah data historis direkonsiliasi.', null, null, false, timestamptz '2026-07-21 09:00:00+07'),
-    ('charity-run-agent-remax-240-peserta', 'Charity Run agent RE/MAX: 240 peserta, satu tujuan', null::uuid, refs.media_02, 'Catatan panitia dari Senayan - bagaimana biaya acara ditekan agar seluruh donasi tetap utuh.', 'Catatan kegiatan akan dilengkapi melalui panel admin.', null, null, false, timestamptz '2026-07-09 09:00:00+07'),
-    ('cara-panitia-memilih-satu-penerima-manfaat', 'Cara panitia memilih satu penerima manfaat', null::uuid, refs.media_03, 'Survei lapangan, verifikasi lembaga, dan alasan kami tidak membagi donasi ke banyak penerima sekaligus.', 'Home of Giving menyalurkan satu proyek kepada satu penerima manfaat agar dampak dan pertanggungjawaban lebih utuh.', null, null, false, timestamptz '2026-06-24 09:00:00+07'),
+    ('charity-run-agent-remax-240-peserta', 'Charity Run agent REMAX: 240 peserta, satu tujuan', null::uuid, refs.media_02, 'Catatan pengurus dari Senayan - bagaimana biaya acara ditekan agar seluruh donasi tetap utuh.', 'Catatan kegiatan akan dilengkapi melalui panel admin.', null, null, false, timestamptz '2026-07-09 09:00:00+07'),
+    ('cara-pengurus-memilih-satu-penerima-manfaat', 'Cara pengurus memilih satu penerima manfaat', null::uuid, refs.media_03, 'Survei lapangan, verifikasi lembaga, dan alasan kami tidak membagi donasi ke banyak penerima sekaligus.', 'Home of Giving menyalurkan satu proyek kepada satu penerima manfaat agar dampak dan pertanggungjawaban lebih utuh.', null, null, false, timestamptz '2026-06-24 09:00:00+07'),
     ('enam-bulan-home-of-giving', 'Enam bulan Home of Giving: yang berhasil dan yang belum', null::uuid, refs.media_01, 'Rekap paruh pertama 2026: Rp 640 juta tersalurkan, dua target belum tercapai, dan rencana perbaikannya.', 'Angka dalam artikel seed memerlukan konfirmasi karena belum didukung ledger Supabase awal.', null, null, false, timestamptz '2026-05-30 09:00:00+07')
 ) as data(slug, title, campaign_id, cover_media_id, excerpt, body_markdown, author_name, read_minutes, is_featured, published_at)
 on conflict (slug) do update
@@ -306,7 +306,7 @@ set target_amount_idr = excluded.target_amount_idr,
 insert into home_of_giving.site_settings (key, value, description, is_public)
 values
   ('whatsapp_cta', jsonb_build_object(
-    'label', 'Chat panitia',
+    'label', 'Chat pengurus',
     'phone', null,
     'message', 'Halo, saya ingin bertanya tentang program donasi REMAX Home of Giving.'
   ), 'Nomor WhatsApp harus diisi dari pengaturan admin sebelum tombol aktif.', true),

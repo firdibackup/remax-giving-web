@@ -48,6 +48,25 @@ export function readParagraphs(formData: FormData, key: string): string[] {
     .filter(Boolean);
 }
 
+// Strips the obvious injection vectors from admin-authored rich text.
+// ponytail: regex scrub, not a full DOM sanitizer — safe enough because the markup
+// is constrained to Tiptap's schema and only Super Admins can author it. Swap in
+// isomorphic-dompurify here if untrusted authors ever gain access.
+export function sanitizeStoryHtml(html: string): string {
+  return html
+    .replace(/<\/?(?:script|style|iframe|object|embed|link|meta|form|base)\b[^>]*>/gi, "")
+    .replace(/\son\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, "")
+    .replace(/((?:href|src)\s*=\s*)(["']?)\s*javascript:[^"'>\s]*/gi, "$1$2#");
+}
+
+// Rich-text "Cerita proyek" is stored as a single HTML string in story_paragraphs[0].
+// Returns [] when the editor is effectively empty (e.g. "<p></p>").
+export function readStoryHtml(formData: FormData, key: string): string[] {
+  const clean = sanitizeStoryHtml(readText(formData, key)).trim();
+  const textOnly = clean.replace(/<[^>]*>/g, "").trim();
+  return textOnly ? [clean] : [];
+}
+
 export function slugify(value: string): string {
   return value
     .toLowerCase()

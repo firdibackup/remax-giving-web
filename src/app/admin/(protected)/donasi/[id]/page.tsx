@@ -1,12 +1,15 @@
 import { notFound } from "next/navigation";
 import { ExternalLink, ShieldCheck } from "lucide-react";
+import { deleteDonations } from "@/app/admin/(protected)/donasi/actions";
 import { AdminNotice } from "@/components/admin/admin-notice";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
+import { ConfirmSubmitButton } from "@/components/admin/confirm-submit-button";
+import { DonationEditForm } from "@/components/admin/donation-edit-form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BUCKETS, createSignedUrl } from "@/lib/admin/storage";
-import { formatCurrency, formatDateTime, formatLongDate } from "@/lib/format";
-import { getDonationDetail } from "@/lib/admin/queries";
+import { formatCurrency, formatDateTime, formatLongDate, todayInJakarta } from "@/lib/format";
+import { getDonationDetail, listCampaignOptions } from "@/lib/admin/queries";
 
 function DetailItem({ label, value }: { label: string; value: React.ReactNode }) {
   return (
@@ -26,13 +29,16 @@ export default async function DonationDetailPage({ params, searchParams }: PageP
     notFound();
   }
 
-  const evidenceLinks = await Promise.all(
-    (donation.evidence_paths || []).map(async (path, index) => ({
-      path,
-      label: `Bukti ${index + 1}`,
-      url: await createSignedUrl(BUCKETS.donationEvidence, path),
-    })),
-  );
+  const [evidenceLinks, campaigns] = await Promise.all([
+    Promise.all(
+      (donation.evidence_paths || []).map(async (path, index) => ({
+        path,
+        label: `Bukti ${index + 1}`,
+        url: await createSignedUrl(BUCKETS.donationEvidence, path),
+      })),
+    ),
+    listCampaignOptions(),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -90,6 +96,30 @@ export default async function DonationDetailPage({ params, searchParams }: PageP
           </Card>
         </div>
       </div>
+
+      <Card className="gap-0 border-0 bg-white py-0 ring-1 ring-brand-border">
+        <CardHeader className="border-b border-brand-border px-5 py-5 sm:px-6">
+          <CardTitle className="font-bold text-brand-navy">Ubah donasi</CardTitle>
+        </CardHeader>
+        <CardContent className="p-5 sm:p-6">
+          <DonationEditForm donation={donation} campaigns={campaigns} today={todayInJakarta()} />
+        </CardContent>
+      </Card>
+
+      <Card className="gap-0 border-0 bg-white py-0 ring-1 ring-brand-red/25">
+        <CardHeader className="border-b border-brand-border px-5 py-5 sm:px-6">
+          <CardTitle className="font-bold text-brand-red">Zona berisiko</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-wrap items-center justify-between gap-4 p-5 sm:p-6">
+          <p className="max-w-lg text-sm text-brand-text-body">
+            Donasi ini, beserta bukti transfernya, akan dihapus permanen dari rekap dan tidak dapat dipulihkan.
+          </p>
+          <form action={deleteDonations}>
+            <input type="hidden" name="donation_id" value={donation.id} />
+            <ConfirmSubmitButton variant="destructive" confirmMessage="Hapus donasi ini secara permanen? Rekap publik akan diperbarui dan tidak dapat dipulihkan.">Hapus donasi</ConfirmSubmitButton>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }

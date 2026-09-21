@@ -10,6 +10,7 @@ import {
 import { AdminNotice } from "@/components/admin/admin-notice";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { AdminStatusBadge } from "@/components/admin/admin-status-badge";
+import { CampaignAllocationsEditor } from "@/components/admin/campaign-allocations-editor";
 import { CampaignDocumentationEditor } from "@/components/admin/campaign-documentation-editor";
 import { CampaignForm } from "@/components/admin/campaign-form";
 import { ConfirmSubmitButton } from "@/components/admin/confirm-submit-button";
@@ -23,6 +24,7 @@ import {
   getCampaign,
   getCampaignCoverMedia,
   getCampaignStats,
+  listCampaignAllocations,
   listCampaignDocumentation,
 } from "@/lib/admin/queries";
 import { resolveMediaUrl } from "@/lib/admin/storage";
@@ -37,10 +39,11 @@ export default async function CampaignDetailPage({ params, searchParams }: PageP
     notFound();
   }
 
-  const [stats, cover, documentation] = await Promise.all([
+  const [stats, cover, documentation, allocations] = await Promise.all([
     getCampaignStats(id),
     getCampaignCoverMedia(id),
     listCampaignDocumentation(id),
+    listCampaignAllocations(id),
   ]);
   const coverUrl = cover
     ? resolveMediaUrl(cover.external_url, cover.storage_bucket, cover.storage_path)
@@ -104,6 +107,22 @@ export default async function CampaignDetailPage({ params, searchParams }: PageP
         </CardHeader>
         <CardContent className="p-5 sm:p-6">
           <CampaignForm campaign={campaign} />
+        </CardContent>
+      </Card>
+
+      <Card className="gap-0 border-0 bg-white py-0 ring-1 ring-brand-border">
+        <CardHeader className="border-b border-brand-border px-5 py-5 sm:px-6">
+          <CardTitle className="font-bold text-brand-navy">Rincian penggunaan dana</CardTitle>
+        </CardHeader>
+        <CardContent className="p-5 sm:p-6">
+          <CampaignAllocationsEditor
+            campaignId={campaign.id}
+            allocations={allocations.map((item) => ({
+              label: item.label,
+              amount_idr: item.amount_idr,
+              note: item.note,
+            }))}
+          />
         </CardContent>
       </Card>
 

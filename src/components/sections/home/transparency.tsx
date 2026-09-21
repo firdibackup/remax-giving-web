@@ -5,29 +5,36 @@ import { Reveal } from "@/components/brand/reveal";
 const steps = [
   {
     num: "01",
-    title: "Panitia memilih penerima",
-    detail: "Survei kebutuhan, verifikasi lembaga atau keluarga penerima, lalu target donasi ditetapkan.",
+    title: "pengurus memilih penerima",
+    detail:
+      "Survei kebutuhan, verifikasi lembaga atau keluarga penerima, lalu target donasi ditetapkan.",
   },
   {
     num: "02",
     title: "Donasi masuk & dicatat",
-    detail: "Transfer dikonfirmasi admin sebelum dicatat di papan donatur. Nama donatur selalu disamarkan.",
+    detail:
+      "Transfer dikonfirmasi admin sebelum dicatat di papan donatur. Nama donatur selalu disamarkan.",
   },
   {
     num: "03",
     title: "Dana diserahkan langsung",
-    detail: "Penyerahan dilakukan di lokasi penerima, dicatat tanggalnya, dan didokumentasikan.",
+    detail:
+      "Penyerahan dilakukan di lokasi penerima, dicatat tanggalnya, dan didokumentasikan.",
   },
   {
     num: "04",
     title: "Laporan dibuka untuk publik",
-    detail: "Rincian penggunaan dana, foto serah terima, dan laporan PDF tersedia di halaman proyek.",
+    detail:
+      "Rincian penggunaan dana, foto serah terima, dan laporan PDF tersedia di halaman proyek.",
   },
 ];
 
 function Transparency() {
   return (
-    <section id="transparansi" className="scroll-mt-20 overflow-hidden bg-brand-blue px-5 py-16 text-white sm:px-8 sm:py-24">
+    <section
+      id="transparansi"
+      className="scroll-mt-20 overflow-hidden bg-brand-blue px-5 py-16 text-white sm:px-8 sm:py-24"
+    >
       <div className="mx-auto grid max-w-[1200px] items-start gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
         <div>
           <Reveal className="mb-4 flex">
@@ -49,9 +56,13 @@ function Transparency() {
             {steps.map((step, i) => (
               <Reveal key={step.num} delay={i * 90}>
                 <div className="rounded-2xl border border-white/24 p-6">
-                  <div className="mb-2.5 text-[15px] font-extrabold text-white/50">{step.num}</div>
+                  <div className="mb-2.5 text-[15px] font-extrabold text-white/50">
+                    {step.num}
+                  </div>
                   <div className="mb-2 text-[17px] font-bold">{step.title}</div>
-                  <div className="text-sm leading-relaxed text-white/82">{step.detail}</div>
+                  <div className="text-sm leading-relaxed text-white/82">
+                    {step.detail}
+                  </div>
                 </div>
               </Reveal>
             ))}
@@ -77,8 +88,8 @@ function Transparency() {
               Renovasi Rumah Ibadah
             </div>
             <div className="font-sans text-sm leading-relaxed text-brand-text-body">
-              Rp 80.000.000 diserahkan ke Masjid Al-Ikhlas, Cianjur · laporan dan
-              12 foto tersedia.
+              Rp 80.000.000 diserahkan ke Masjid Al-Ikhlas, Cianjur · laporan
+              dan 12 foto tersedia.
             </div>
           </div>
         </div>

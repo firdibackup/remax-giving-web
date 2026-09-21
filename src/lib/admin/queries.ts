@@ -7,6 +7,7 @@ import type {
   AuditLogRow,
   BlogCategoryRow,
   BlogPostRow,
+  CampaignAllocationRow,
   CampaignRow,
   CampaignStatus,
   DonationDetail,
@@ -160,6 +161,18 @@ export async function listCampaignDocumentation(campaignId: string): Promise<Med
   return ids
     .map((id) => assetsById.get(id))
     .filter((asset): asset is MediaAssetRow => Boolean(asset));
+}
+
+export async function listCampaignAllocations(campaignId: string): Promise<CampaignAllocationRow[]> {
+  await requireAdmin();
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("hog_admin_campaign_allocations")
+    .select("*")
+    .eq("campaign_id", campaignId)
+    .order("sort_order", { ascending: true });
+
+  return data || [];
 }
 
 export type DonationListItem = DonationRow & {

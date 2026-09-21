@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Check } from "lucide-react";
 import { BrandBadge } from "@/components/brand/badge";
 import { DonationCta } from "@/components/brand/donation-cta";
 import { BrandProgressBar } from "@/components/brand/progress-bar";
@@ -22,7 +23,7 @@ function FeaturedProject({ campaign }: { campaign: PublicCampaignCard | null }) 
               <p className="text-base leading-relaxed text-brand-text-body text-pretty">{campaign.summary}</p>
               <div><div className="mb-2.5 flex items-baseline justify-between"><span className="text-2xl font-extrabold tracking-tight text-brand-blue sm:text-[28px]">{campaign.raised}</span><span className="font-sans text-xs text-brand-text-body">dari target {campaign.target}</span></div><BrandProgressBar percent={campaign.percent} showLabel={false} /></div>
               <div className="flex flex-wrap gap-x-5 gap-y-2 pt-1 font-sans text-xs text-brand-text-body"><span><strong className="font-bold text-brand-navy">{campaign.donorCount}</strong> donatur</span>{campaign.cycle && <span>{campaign.cycle}</span>}<span>Penerima: {campaign.recipient}</span></div>
-              <div className="mt-1.5 flex flex-wrap gap-3"><DonationCta campaignTitle={campaign.title} /><Link href={`/program/${campaign.slug}`} className="inline-flex h-[50px] items-center rounded-[12px] border-[1.5px] border-brand-blue px-6 font-sans text-base font-bold text-brand-blue transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:-translate-y-px hover:shadow-brand-card">Detail proyek</Link></div>
+              <div className="mt-1.5 flex flex-wrap gap-3">{campaign.donationOpen ? <DonationCta campaignTitle={campaign.title} /> : <span className="inline-flex h-[50px] items-center gap-1.5 rounded-[12px] bg-brand-bg-soft px-6 font-sans text-base font-bold text-brand-text-body"><Check className="h-[18px] w-[18px]" strokeWidth={2.5} />Donasi telah selesai</span>}<Link href={`/program/${campaign.slug}`} className="inline-flex h-[50px] items-center rounded-[12px] border-[1.5px] border-brand-blue px-6 font-sans text-base font-bold text-brand-blue transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:-translate-y-px hover:shadow-brand-card">Detail proyek</Link></div>
             </div>
           </div>
         </Reveal>

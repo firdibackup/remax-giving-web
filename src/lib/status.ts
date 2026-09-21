@@ -7,7 +7,6 @@ type StatusPresentation = {
 
 const neutral = "border-slate-200 bg-slate-50 text-slate-600";
 const info = "border-blue-200 bg-blue-50 text-blue-700";
-const warning = "border-amber-200 bg-amber-50 text-amber-700";
 const success = "border-emerald-200 bg-emerald-50 text-emerald-700";
 const danger = "border-red-200 bg-red-50 text-red-700";
 
@@ -15,7 +14,7 @@ export const campaignStatusPresentation: Record<CampaignStatus, StatusPresentati
   draft: { label: "Draf", className: neutral },
   scheduled: { label: "Terjadwal", className: info },
   running: { label: "Berjalan", className: info },
-  closed: { label: "Ditutup", className: warning },
+  closed: { label: "Donasi telah selesai", className: success },
   disbursed: { label: "Selesai", className: success },
   reported: { label: "Laporan tersedia", className: success },
   cancelled: { label: "Dibatalkan", className: danger },
