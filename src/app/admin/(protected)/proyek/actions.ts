@@ -40,11 +40,16 @@ const campaignStatuses: CampaignStatus[] = [
   "cancelled",
   "archived",
 ];
-const publicCampaignStatuses: CampaignStatus[] = ["running", "closed", "disbursed", "reported"];
+const publicCampaignStatuses: CampaignStatus[] = [
+  "running",
+  "closed",
+  "disbursed",
+  "reported",
+];
 const maxCreateUploadBytes = 29_000_000;
 
 function revalidateCampaignSurfaces(slug?: string | null) {
-  revalidatePath("/admin/proyek");
+  revalidatePath("/admin/program");
   revalidatePath("/admin");
   revalidatePath("/program");
   revalidatePath("/");
@@ -80,7 +85,9 @@ type CampaignPayload = {
   internal_note: string | null;
 };
 
-function buildCampaignPayload(formData: FormData): CampaignPayload | { error: string } {
+function buildCampaignPayload(
+  formData: FormData,
+): CampaignPayload | { error: string } {
   const title = readText(formData, "title");
   const slugInput = readText(formData, "slug");
   const slug = slugInput ? slugify(slugInput) : slugify(title);
@@ -93,15 +100,17 @@ function buildCampaignPayload(formData: FormData): CampaignPayload | { error: st
   const totalBeneficiaries = readInteger(formData, "total_beneficiaries");
 
   if (!title) {
-    return { error: "Judul proyek wajib diisi." };
+    return { error: "Judul program wajib diisi." };
   }
 
   if (!slug || !isValidSlug(slug)) {
-    return { error: "Slug tidak valid. Gunakan huruf kecil, angka, dan tanda hubung." };
+    return {
+      error: "Slug tidak valid. Gunakan huruf kecil, angka, dan tanda hubung.",
+    };
   }
 
   if (!campaignStatuses.includes(status)) {
-    return { error: "Status proyek tidak valid." };
+    return { error: "Status program tidak valid." };
   }
 
   if (!targetAmount) {
@@ -120,12 +129,15 @@ function buildCampaignPayload(formData: FormData): CampaignPayload | { error: st
     return { error: "Tanggal selesai harus setelah tanggal mulai." };
   }
 
-  if (totalBeneficiariesInput && (!totalBeneficiaries || totalBeneficiaries < 1)) {
+  if (
+    totalBeneficiariesInput &&
+    (!totalBeneficiaries || totalBeneficiaries < 1)
+  ) {
     return { error: "Jumlah penerima wajib berupa angka lebih dari nol." };
   }
 
   if (publicCampaignStatuses.includes(status) && !beneficiaryName) {
-    return { error: "Proyek publik wajib memiliki nama penerima manfaat." };
+    return { error: "program publik wajib memiliki nama penerima manfaat." };
   }
 
   return {
@@ -161,7 +173,10 @@ function campaignFiles(formData: FormData): {
   return { cover, documentation };
 }
 
-function validateCampaignFiles(cover: File | null, documentation: File[]): string | null {
+function validateCampaignFiles(
+  cover: File | null,
+  documentation: File[],
+): string | null {
   const files = cover ? [cover, ...documentation] : documentation;
   const totalBytes = files.reduce((total, file) => total + file.size, 0);
 
@@ -182,7 +197,10 @@ function validateCampaignFiles(cover: File | null, documentation: File[]): strin
 
 async function clearOtherFeaturedCampaigns(currentId?: string) {
   const supabase = await createClient();
-  let query = supabase.from("hog_admin_campaigns").update({ is_featured: false }).eq("is_featured", true);
+  let query = supabase
+    .from("hog_admin_campaigns")
+    .update({ is_featured: false })
+    .eq("is_featured", true);
 
   if (currentId) {
     query = query.neq("id", currentId);
@@ -210,15 +228,24 @@ export async function createCampaign(
   }
 
   const supabase = await createClient();
-  const uploadedObjects: Array<{ bucket: typeof BUCKETS.publicMedia; path: string }> = [];
+  const uploadedObjects: Array<{
+    bucket: typeof BUCKETS.publicMedia;
+    path: string;
+  }> = [];
   const mediaIds: string[] = [];
   let campaignId: string | null = null;
   let previousFeaturedIds: string[] = [];
 
   const rollback = async () => {
     if (campaignId) {
-      await supabase.from("hog_admin_campaigns").update({ cover_media_id: null }).eq("id", campaignId);
-      await supabase.from("hog_admin_campaign_media").delete().eq("campaign_id", campaignId);
+      await supabase
+        .from("hog_admin_campaigns")
+        .update({ cover_media_id: null })
+        .eq("id", campaignId);
+      await supabase
+        .from("hog_admin_campaign_media")
+        .delete()
+        .eq("campaign_id", campaignId);
       await supabase.from("hog_admin_campaigns").delete().eq("id", campaignId);
     }
 
@@ -229,26 +256,43 @@ export async function createCampaign(
     await removeStorageObjects(uploadedObjects);
 
     if (previousFeaturedIds.length > 0) {
-      await supabase.from("hog_admin_campaigns").update({ is_featured: true }).in("id", previousFeaturedIds);
+      await supabase
+        .from("hog_admin_campaigns")
+        .update({ is_featured: true })
+        .in("id", previousFeaturedIds);
     }
   };
 
   try {
     const { data: campaign, error: campaignError } = await supabase
       .from("hog_admin_campaigns")
-      .insert({ ...payload, is_featured: false, created_by: admin.userId, updated_by: admin.userId })
+      .insert({
+        ...payload,
+        is_featured: false,
+        created_by: admin.userId,
+        updated_by: admin.userId,
+      })
       .select("id,slug")
       .single();
 
     if (campaignError || !campaign) {
-      return { error: toFriendlyError(campaignError?.message, "Proyek gagal disimpan.") };
+      return {
+        error: toFriendlyError(
+          campaignError?.message,
+          "program gagal disimpan.",
+        ),
+      };
     }
 
     campaignId = campaign.id;
     let coverMediaId: string | null = null;
 
     if (files.cover) {
-      const upload = await uploadToBucket(BUCKETS.publicMedia, `campaigns/${campaign.id}`, files.cover);
+      const upload = await uploadToBucket(
+        BUCKETS.publicMedia,
+        `campaigns/${campaign.id}`,
+        files.cover,
+      );
 
       if ("error" in upload) {
         await rollback();
@@ -262,7 +306,8 @@ export async function createCampaign(
           media_type: files.cover.type.startsWith("video/") ? "video" : "image",
           storage_bucket: BUCKETS.publicMedia,
           storage_path: upload.path,
-          alt_text: readOptionalText(formData, "cover_alt_text") || payload.title,
+          alt_text:
+            readOptionalText(formData, "cover_alt_text") || payload.title,
           is_published: true,
           created_by: admin.userId,
           updated_by: admin.userId,
@@ -272,7 +317,9 @@ export async function createCampaign(
 
       if (mediaError || !media) {
         await rollback();
-        return { error: toFriendlyError(mediaError?.message, "Sampul gagal dicatat.") };
+        return {
+          error: toFriendlyError(mediaError?.message, "Sampul gagal dicatat."),
+        };
       }
 
       coverMediaId = media.id;
@@ -280,7 +327,11 @@ export async function createCampaign(
     }
 
     for (const [index, file] of files.documentation.entries()) {
-      const upload = await uploadToBucket(BUCKETS.publicMedia, `campaigns/${campaign.id}`, file);
+      const upload = await uploadToBucket(
+        BUCKETS.publicMedia,
+        `campaigns/${campaign.id}`,
+        file,
+      );
 
       if ("error" in upload) {
         await rollback();
@@ -288,7 +339,10 @@ export async function createCampaign(
       }
 
       uploadedObjects.push({ bucket: BUCKETS.publicMedia, path: upload.path });
-      const documentationCaption = readOptionalText(formData, "documentation_caption");
+      const documentationCaption = readOptionalText(
+        formData,
+        "documentation_caption",
+      );
       const { data: media, error: mediaError } = await supabase
         .from("hog_admin_media_assets")
         .insert({
@@ -310,20 +364,32 @@ export async function createCampaign(
 
       if (mediaError || !media) {
         await rollback();
-        return { error: toFriendlyError(mediaError?.message, "Dokumentasi gagal dicatat.") };
+        return {
+          error: toFriendlyError(
+            mediaError?.message,
+            "Dokumentasi gagal dicatat.",
+          ),
+        };
       }
 
       mediaIds.push(media.id);
-      const { error: linkError } = await supabase.from("hog_admin_campaign_media").insert({
-        campaign_id: campaign.id,
-        media_id: media.id,
-        role: "documentation",
-        sort_order: index,
-      });
+      const { error: linkError } = await supabase
+        .from("hog_admin_campaign_media")
+        .insert({
+          campaign_id: campaign.id,
+          media_id: media.id,
+          role: "documentation",
+          sort_order: index,
+        });
 
       if (linkError) {
         await rollback();
-        return { error: toFriendlyError(linkError.message, "Dokumentasi gagal dihubungkan ke proyek.") };
+        return {
+          error: toFriendlyError(
+            linkError.message,
+            "Dokumentasi gagal dihubungkan ke program.",
+          ),
+        };
       }
     }
 
@@ -335,7 +401,9 @@ export async function createCampaign(
 
       if (coverError) {
         await rollback();
-        return { error: toFriendlyError(coverError.message, "Sampul gagal dipasang.") };
+        return {
+          error: toFriendlyError(coverError.message, "Sampul gagal dipasang."),
+        };
       }
     }
 
@@ -346,11 +414,18 @@ export async function createCampaign(
         .eq("is_featured", true)
         .neq("id", campaign.id);
       previousFeaturedIds = (featuredCampaigns || []).map((item) => item.id);
-      const { error: clearError } = await clearOtherFeaturedCampaigns(campaign.id);
+      const { error: clearError } = await clearOtherFeaturedCampaigns(
+        campaign.id,
+      );
 
       if (clearError) {
         await rollback();
-        return { error: toFriendlyError(clearError.message, "Proyek unggulan gagal diperbarui.") };
+        return {
+          error: toFriendlyError(
+            clearError.message,
+            "program unggulan gagal diperbarui.",
+          ),
+        };
       }
 
       const { error: featureError } = await supabase
@@ -360,19 +435,28 @@ export async function createCampaign(
 
       if (featureError) {
         await rollback();
-        return { error: toFriendlyError(featureError.message, "Proyek unggulan gagal diperbarui.") };
+        return {
+          error: toFriendlyError(
+            featureError.message,
+            "program unggulan gagal diperbarui.",
+          ),
+        };
       }
     }
 
     revalidateCampaignSurfaces(campaign.slug);
-    redirect(`/admin/proyek/${campaign.id}${encodeNotice({ success: "Proyek berhasil dibuat." })}`);
+    redirect(
+      `/admin/program/${campaign.id}${encodeNotice({ success: "program berhasil dibuat." })}`,
+    );
   } catch (error) {
     if (error && typeof error === "object" && "digest" in error) {
       throw error;
     }
 
     await rollback();
-    return { error: "Proyek gagal dibuat. Semua berkas baru telah dibersihkan." };
+    return {
+      error: "program gagal dibuat. Semua berkas baru telah dibersihkan.",
+    };
   }
 }
 
@@ -392,7 +476,12 @@ export async function updateCampaign(
     const { error } = await clearOtherFeaturedCampaigns(campaignId);
 
     if (error) {
-      return { error: toFriendlyError(error.message, "Proyek unggulan gagal diperbarui.") };
+      return {
+        error: toFriendlyError(
+          error.message,
+          "program unggulan gagal diperbarui.",
+        ),
+      };
     }
   }
 
@@ -403,13 +492,18 @@ export async function updateCampaign(
     .eq("id", campaignId);
 
   if (error) {
-    return { error: toFriendlyError(error.message, "Perubahan proyek gagal disimpan.") };
+    return {
+      error: toFriendlyError(
+        error.message,
+        "Perubahan program gagal disimpan.",
+      ),
+    };
   }
 
   revalidateCampaignSurfaces(payload.slug);
-  revalidatePath(`/admin/proyek/${campaignId}`);
+  revalidatePath(`/admin/program/${campaignId}`);
 
-  return { success: "Perubahan proyek tersimpan." };
+  return { success: "Perubahan program tersimpan." };
 }
 
 export async function deleteCampaigns(formData: FormData) {
@@ -424,7 +518,9 @@ export async function deleteCampaigns(formData: FormData) {
   );
 
   if (campaignIds.length === 0) {
-    redirect(`/admin/proyek${encodeNotice({ error: "Pilih minimal satu proyek untuk dihapus." })}`);
+    redirect(
+      `/admin/program${encodeNotice({ error: "Pilih minimal satu program untuk dihapus." })}`,
+    );
   }
 
   const supabase = await createClient();
@@ -434,16 +530,17 @@ export async function deleteCampaigns(formData: FormData) {
 
   if (error) {
     redirect(
-      `/admin/proyek${encodeNotice({
-        error: toFriendlyError(error.message, "Proyek gagal dihapus."),
+      `/admin/program${encodeNotice({
+        error: toFriendlyError(error.message, "program gagal dihapus."),
       })}`,
     );
   }
 
   if (!data) {
     redirect(
-      `/admin/proyek${encodeNotice({
-        error: "Proyek gagal dihapus: RPC tidak mengembalikan data. Pastikan migrasi 09_campaign_bulk_delete.sql sudah dijalankan.",
+      `/admin/program${encodeNotice({
+        error:
+          "program gagal dihapus: RPC tidak mengembalikan data. Pastikan migrasi 09_campaign_bulk_delete.sql sudah dijalankan.",
       })}`,
     );
   }
@@ -460,31 +557,39 @@ export async function deleteCampaigns(formData: FormData) {
 
   revalidateCampaignDeletionSurfaces();
 
-  const summary = `${formatNumber(data.deleted_campaign_count)} proyek dan ${formatNumber(data.deleted_donation_count)} donasi dihapus permanen.`;
+  const summary = `${formatNumber(data.deleted_campaign_count)} program dan ${formatNumber(data.deleted_donation_count)} donasi dihapus permanen.`;
 
   if ("error" in cleanup) {
     redirect(
-      `/admin/proyek${encodeNotice({
+      `/admin/program${encodeNotice({
         error: `${summary} Sebagian berkas masih tertinggal di penyimpanan dan perlu dibersihkan manual.`,
       })}`,
     );
   }
 
-  redirect(`/admin/proyek${encodeNotice({ success: summary })}`);
+  redirect(`/admin/program${encodeNotice({ success: summary })}`);
 }
 
 export async function updateCampaignAllocations(formData: FormData) {
   await requireAdmin();
   const campaignId = readText(formData, "campaign_id");
-  const redirectBase = `/admin/proyek/${campaignId}`;
+  const redirectBase = `/admin/program/${campaignId}`;
 
   if (!campaignId) {
-    redirect(`/admin/proyek${encodeNotice({ error: "Proyek tidak ditemukan." })}`);
+    redirect(
+      `/admin/program${encodeNotice({ error: "program tidak ditemukan." })}`,
+    );
   }
 
-  const labels = formData.getAll("allocation_label").map((value) => String(value).trim());
-  const amounts = formData.getAll("allocation_amount").map((value) => String(value).trim());
-  const notes = formData.getAll("allocation_note").map((value) => String(value).trim());
+  const labels = formData
+    .getAll("allocation_label")
+    .map((value) => String(value).trim());
+  const amounts = formData
+    .getAll("allocation_amount")
+    .map((value) => String(value).trim());
+  const notes = formData
+    .getAll("allocation_note")
+    .map((value) => String(value).trim());
 
   const rows: Array<{
     campaign_id: string;
@@ -503,7 +608,9 @@ export async function updateCampaignAllocations(formData: FormData) {
 
     const rawAmount = amounts[index] ?? "";
     if (rawAmount !== "" && !/^\d+$/.test(rawAmount)) {
-      redirect(`${redirectBase}${encodeNotice({ error: `Nominal untuk "${label}" harus berupa angka bulat tidak negatif.` })}`);
+      redirect(
+        `${redirectBase}${encodeNotice({ error: `Nominal untuk "${label}" harus berupa angka bulat tidak negatif.` })}`,
+      );
     }
 
     rows.push({
@@ -529,7 +636,9 @@ export async function updateCampaignAllocations(formData: FormData) {
     .eq("campaign_id", campaignId);
 
   if (deleteError) {
-    redirect(`${redirectBase}${encodeNotice({ error: toFriendlyError(deleteError.message, "Rincian penggunaan dana gagal disimpan.") })}`);
+    redirect(
+      `${redirectBase}${encodeNotice({ error: toFriendlyError(deleteError.message, "Rincian penggunaan dana gagal disimpan.") })}`,
+    );
   }
 
   if (rows.length > 0) {
@@ -538,26 +647,36 @@ export async function updateCampaignAllocations(formData: FormData) {
       .insert(rows);
 
     if (insertError) {
-      redirect(`${redirectBase}${encodeNotice({ error: toFriendlyError(insertError.message, "Rincian penggunaan dana gagal disimpan.") })}`);
+      redirect(
+        `${redirectBase}${encodeNotice({ error: toFriendlyError(insertError.message, "Rincian penggunaan dana gagal disimpan.") })}`,
+      );
     }
   }
 
   revalidateCampaignSurfaces(campaign?.slug);
   revalidatePath(redirectBase);
-  redirect(`${redirectBase}${encodeNotice({ success: `${formatNumber(rows.length)} baris rincian penggunaan dana tersimpan.` })}`);
+  redirect(
+    `${redirectBase}${encodeNotice({ success: `${formatNumber(rows.length)} baris rincian penggunaan dana tersimpan.` })}`,
+  );
 }
 
 export async function uploadCampaignCover(formData: FormData) {
   const admin = await requireAdmin();
   const campaignId = readText(formData, "campaign_id");
   const file = formData.get("cover");
-  const redirectBase = `/admin/proyek/${campaignId}`;
+  const redirectBase = `/admin/program/${campaignId}`;
 
   if (!campaignId || !isUploadPresent(file)) {
-    redirect(`${redirectBase}${encodeNotice({ error: "Pilih berkas sampul terlebih dahulu." })}`);
+    redirect(
+      `${redirectBase}${encodeNotice({ error: "Pilih berkas sampul terlebih dahulu." })}`,
+    );
   }
 
-  const upload = await uploadToBucket(BUCKETS.publicMedia, `campaigns/${campaignId}`, file);
+  const upload = await uploadToBucket(
+    BUCKETS.publicMedia,
+    `campaigns/${campaignId}`,
+    file,
+  );
 
   if ("error" in upload) {
     redirect(`${redirectBase}${encodeNotice({ error: upload.error })}`);
@@ -579,7 +698,9 @@ export async function uploadCampaignCover(formData: FormData) {
     .single();
 
   if (mediaError || !media) {
-    await removeStorageObjects([{ bucket: BUCKETS.publicMedia, path: upload.path }]);
+    await removeStorageObjects([
+      { bucket: BUCKETS.publicMedia, path: upload.path },
+    ]);
     redirect(
       `${redirectBase}${encodeNotice({
         error: toFriendlyError(mediaError?.message, "Media gagal dicatat."),
@@ -594,7 +715,9 @@ export async function uploadCampaignCover(formData: FormData) {
 
   if (campaignError) {
     await supabase.from("hog_admin_media_assets").delete().eq("id", media.id);
-    await removeStorageObjects([{ bucket: BUCKETS.publicMedia, path: upload.path }]);
+    await removeStorageObjects([
+      { bucket: BUCKETS.publicMedia, path: upload.path },
+    ]);
     redirect(
       `${redirectBase}${encodeNotice({
         error: toFriendlyError(campaignError.message, "Sampul gagal dipasang."),
@@ -604,30 +727,38 @@ export async function uploadCampaignCover(formData: FormData) {
 
   revalidateCampaignSurfaces();
   revalidatePath(redirectBase);
-  redirect(`${redirectBase}${encodeNotice({ success: "Sampul proyek diperbarui." })}`);
+  redirect(
+    `${redirectBase}${encodeNotice({ success: "Sampul program diperbarui." })}`,
+  );
 }
 
 export async function addCampaignMedia(formData: FormData) {
   const admin = await requireAdmin();
   const campaignId = readText(formData, "campaign_id");
-  const redirectBase = `/admin/proyek/${campaignId}`;
+  const redirectBase = `/admin/program/${campaignId}`;
   const files = formData.getAll("media").filter(isUploadPresent);
 
   if (!campaignId || files.length === 0) {
-    redirect(`${redirectBase}${encodeNotice({ error: "Pilih berkas dokumentasi terlebih dahulu." })}`);
+    redirect(
+      `${redirectBase}${encodeNotice({ error: "Pilih berkas dokumentasi terlebih dahulu." })}`,
+    );
   }
 
   const totalBytes = files.reduce((total, file) => total + file.size, 0);
 
   if (totalBytes > maxCreateUploadBytes) {
-    redirect(`${redirectBase}${encodeNotice({ error: "Total ukuran dokumentasi maksimal 29 MB per pengiriman." })}`);
+    redirect(
+      `${redirectBase}${encodeNotice({ error: "Total ukuran dokumentasi maksimal 29 MB per pengiriman." })}`,
+    );
   }
 
   for (const file of files) {
     const fileError = validateUpload(BUCKETS.publicMedia, file);
 
     if (fileError) {
-      redirect(`${redirectBase}${encodeNotice({ error: `${file.name}: ${fileError}` })}`);
+      redirect(
+        `${redirectBase}${encodeNotice({ error: `${file.name}: ${fileError}` })}`,
+      );
     }
   }
 
@@ -647,10 +778,16 @@ export async function addCampaignMedia(formData: FormData) {
   const baseOrder = lastLink?.[0]?.sort_order ?? -1;
   const sharedCaption = readOptionalText(formData, "caption");
   const sharedAltText =
-    readOptionalText(formData, "alt_text") || sharedCaption || campaign?.title || "Dokumentasi proyek";
+    readOptionalText(formData, "alt_text") ||
+    sharedCaption ||
+    campaign?.title ||
+    "Dokumentasi program";
   const sharedAlbum = readOptionalText(formData, "album_label");
 
-  const uploadedObjects: Array<{ bucket: typeof BUCKETS.publicMedia; path: string }> = [];
+  const uploadedObjects: Array<{
+    bucket: typeof BUCKETS.publicMedia;
+    path: string;
+  }> = [];
   const mediaIds: string[] = [];
 
   const rollbackBatch = async () => {
@@ -664,7 +801,11 @@ export async function addCampaignMedia(formData: FormData) {
   let addedCount = 0;
 
   for (const [index, file] of files.entries()) {
-    const upload = await uploadToBucket(BUCKETS.publicMedia, `campaigns/${campaignId}`, file);
+    const upload = await uploadToBucket(
+      BUCKETS.publicMedia,
+      `campaigns/${campaignId}`,
+      file,
+    );
 
     if ("error" in upload) {
       await rollbackBatch();
@@ -692,24 +833,32 @@ export async function addCampaignMedia(formData: FormData) {
       await rollbackBatch();
       redirect(
         `${redirectBase}${encodeNotice({
-          error: toFriendlyError(mediaError?.message, "Dokumentasi gagal disimpan."),
+          error: toFriendlyError(
+            mediaError?.message,
+            "Dokumentasi gagal disimpan.",
+          ),
         })}`,
       );
     }
 
     mediaIds.push(media.id);
-    const { error: linkError } = await supabase.from("hog_admin_campaign_media").insert({
-      campaign_id: campaignId,
-      media_id: media.id,
-      role: "documentation",
-      sort_order: baseOrder + 1 + index,
-    });
+    const { error: linkError } = await supabase
+      .from("hog_admin_campaign_media")
+      .insert({
+        campaign_id: campaignId,
+        media_id: media.id,
+        role: "documentation",
+        sort_order: baseOrder + 1 + index,
+      });
 
     if (linkError) {
       await rollbackBatch();
       redirect(
         `${redirectBase}${encodeNotice({
-          error: toFriendlyError(linkError.message, "Dokumentasi gagal dihubungkan ke proyek."),
+          error: toFriendlyError(
+            linkError.message,
+            "Dokumentasi gagal dihubungkan ke program.",
+          ),
         })}`,
       );
     }
@@ -719,13 +868,15 @@ export async function addCampaignMedia(formData: FormData) {
 
   revalidateCampaignSurfaces();
   revalidatePath(redirectBase);
-  redirect(`${redirectBase}${encodeNotice({ success: `${formatNumber(addedCount)} dokumentasi ditambahkan.` })}`);
+  redirect(
+    `${redirectBase}${encodeNotice({ success: `${formatNumber(addedCount)} dokumentasi ditambahkan.` })}`,
+  );
 }
 
 export async function bulkUpdateCampaignMedia(formData: FormData) {
   const admin = await requireAdmin();
   const campaignId = readText(formData, "campaign_id");
-  const redirectBase = `/admin/proyek/${campaignId}`;
+  const redirectBase = `/admin/program/${campaignId}`;
   const mediaIds = Array.from(
     new Set(
       formData
@@ -736,10 +887,16 @@ export async function bulkUpdateCampaignMedia(formData: FormData) {
   );
 
   if (!campaignId || mediaIds.length === 0) {
-    redirect(`${redirectBase}${encodeNotice({ error: "Pilih minimal satu dokumentasi untuk diubah." })}`);
+    redirect(
+      `${redirectBase}${encodeNotice({ error: "Pilih minimal satu dokumentasi untuk diubah." })}`,
+    );
   }
 
-  const patch: { caption?: string | null; album_label?: string | null; alt_text?: string | null } = {};
+  const patch: {
+    caption?: string | null;
+    album_label?: string | null;
+    alt_text?: string | null;
+  } = {};
   const caption = readOptionalText(formData, "caption");
   const albumLabel = readOptionalText(formData, "album_label");
   const altText = readOptionalText(formData, "alt_text");
@@ -773,7 +930,9 @@ export async function bulkUpdateCampaignMedia(formData: FormData) {
   const scopedIds = (links || []).map((link) => link.media_id);
 
   if (scopedIds.length === 0) {
-    redirect(`${redirectBase}${encodeNotice({ error: "Dokumentasi terpilih tidak termasuk proyek ini." })}`);
+    redirect(
+      `${redirectBase}${encodeNotice({ error: "Dokumentasi terpilih tidak termasuk program ini." })}`,
+    );
   }
 
   const { error } = await supabase
@@ -795,4 +954,3 @@ export async function bulkUpdateCampaignMedia(formData: FormData) {
     `${redirectBase}${encodeNotice({ success: `${formatNumber(scopedIds.length)} dokumentasi diperbarui.` })}`,
   );
 }
-

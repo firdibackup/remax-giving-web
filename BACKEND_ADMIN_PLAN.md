@@ -14,9 +14,9 @@ Integrasi provider email dan E2E dengan kredensial Super Admin nyata masih menun
 - Super Admin memasukkan donasi manual setelah konfirmasi transfer.
 - Donasi baru langsung tercatat sebagai `verified`; tidak ada antrean pending, reject, void, atau langkah verifikasi terpisah pada alur admin final.
 - Bukti transfer bersifat opsional dan disimpan privat jika diunggah.
-- Penerima manfaat disimpan sebagai teks `beneficiary_name` dan `beneficiary_location` langsung pada proyek; tidak ada master penerima manfaat atau kontak penerima terpisah.
+- Penerima manfaat disimpan sebagai teks `beneficiary_name` dan `beneficiary_location` langsung pada program; tidak ada master penerima manfaat atau kontak penerima terpisah.
 - Nilai terkumpul, persentase, jumlah transaksi, dan statistik situs dihitung dari ledger donasi verified.
-- Laporan proyek dan laporan berkala tetap tersedia tanpa bergantung pada record penyaluran.
+- Laporan program dan laporan berkala tetap tersedia tanpa bergantung pada record penyaluran.
 - Nomor, label, dan pesan WhatsApp dikelola sekali melalui setting global `whatsapp_cta`, lalu dipakai seluruh CTA website.
 - Modul penerima manfaat master, kegiatan/event, penyaluran, dan rincian alokasi sudah dihapus dari schema, API bridge, panel admin, dan navigasi.
 
@@ -33,13 +33,13 @@ Sumber awal:
 
 Konflik seed yang tidak boleh dianggap sebagai fakta:
 
-- Bantuan Banjir Bekasi tercatat berjalan dengan Rp68.000.000 di daftar proyek, tetapi tercatat selesai dan tersalurkan Rp100.000.000 pada detail proyek.
+- Bantuan Banjir Bekasi tercatat berjalan dengan Rp68.000.000 di daftar program, tetapi tercatat selesai dan tersalurkan Rp100.000.000 pada detail program.
 - Empat belas transaksi seed hanya berjumlah Rp37.350.000.
-- Statistik Rp1,2 miliar, 312 transaksi, 14 proyek selesai, dan 248 foto tidak didukung record seed.
-- Enam proyek historis tidak memiliki ledger donasi pendukung.
+- Statistik Rp1,2 miliar, 312 transaksi, 14 program selesai, dan 248 foto tidak didukung record seed.
+- Enam program historis tidak memiliki ledger donasi pendukung.
 - Data penyaluran historis lama tidak lengkap dan tidak dapat direkonsiliasi sebagai fakta finansial.
 
-Baseline canonical mempublikasikan tiga proyek berjalan, empat belas donasi verified, kategori, blog, media demo, target tahunan, dan pengaturan situs yang aman. Enam proyek historis tetap berupa draft `needs_review`. Statistik publik tidak memakai angka hardcoded lama.
+Baseline canonical mempublikasikan tiga program berjalan, empat belas donasi verified, kategori, blog, media demo, target tahunan, dan pengaturan situs yang aman. Enam program historis tetap berupa draft `needs_review`. Statistik publik tidak memakai angka hardcoded lama.
 
 ## Isolasi pada shared Supabase project
 
@@ -88,9 +88,9 @@ Baseline canonical mempublikasikan tiga proyek berjalan, empat belas donasi veri
 
 ## Alur final
 
-### Proyek
+### program
 
-Proyek menyimpan nama dan lokasi penerima secara langsung. Proyek publik wajib memiliki kategori, `published_at`, dan `beneficiary_name`. Media dokumentasi terkait proyek menggunakan `campaign_media`.
+program menyimpan nama dan lokasi penerima secara langsung. program publik wajib memiliki kategori, `published_at`, dan `beneficiary_name`. Media dokumentasi terkait program menggunakan `campaign_media`.
 
 ### Donasi
 
@@ -108,21 +108,21 @@ public.hog_admin_record_donation(
 
 RPC hanya dapat dijalankan admin. Dalam satu transaksi RPC akan:
 
-1. memvalidasi proyek, nama, nominal, dan tanggal;
+1. memvalidasi program, nama, nominal, dan tanggal;
 2. menyimpan identitas lengkap pada schema privat;
 3. menghasilkan nama publik deterministik, misalnya `Siti Rahmawati` menjadi `Sit*** R.`;
 4. membuat donasi langsung berstatus `verified`;
 5. menyimpan metadata bukti privat hanya jika `p_evidence_path` diberikan.
 
-Donasi langsung masuk ledger dan statistik publik. Nominal atau proyek pada donasi verified tidak dapat diubah; koreksi dilakukan dengan mencatat transaksi yang benar sesuai prosedur operasional.
+Donasi langsung masuk ledger dan statistik publik. Nominal atau program pada donasi verified tidak dapat diubah; koreksi dilakukan dengan mencatat transaksi yang benar sesuai prosedur operasional.
 
 ### Laporan
 
-Laporan dapat berjenis `campaign` atau `periodic`. Draft tidak terlihat publik. Laporan hanya dapat dipublikasikan jika memiliki path berkas atau URL eksternal. Proyek hanya dapat diubah ke status `reported` setelah memiliki laporan proyek yang sudah terbit. Tidak ada relasi atau workflow penyaluran.
+Laporan dapat berjenis `campaign` atau `periodic`. Draft tidak terlihat publik. Laporan hanya dapat dipublikasikan jika memiliki path berkas atau URL eksternal. program hanya dapat diubah ke status `reported` setelah memiliki laporan program yang sudah terbit. Tidak ada relasi atau workflow penyaluran.
 
 ### WhatsApp
 
-`site_settings.whatsapp_cta` adalah konfigurasi global yang berisi `label`, `phone`, dan `message`. Panel Pengaturan mengelola satu konfigurasi ini; CTA umum dan CTA donasi proyek membacanya dari public site settings. Tidak ada nomor WhatsApp per proyek.
+`site_settings.whatsapp_cta` adalah konfigurasi global yang berisi `label`, `phone`, dan `message`. Panel Pengaturan mengelola satu konfigurasi ini; CTA umum dan CTA donasi program membacanya dari public site settings. Tidak ada nomor WhatsApp per program.
 
 ## Privasi dan keamanan
 
@@ -161,7 +161,7 @@ Public read model utama:
 - `public_site_settings`
 - `public_annual_goals`
 
-Client Next.js memakai schema default `public` melalui bridge `hog_*`. Admin memakai bridge `hog_admin_*` yang tersisa untuk proyek, donasi, laporan, blog, media, target tahunan, pengaturan, audit, identitas sesi, detail donasi, dan ringkasan dashboard.
+Client Next.js memakai schema default `public` melalui bridge `hog_*`. Admin memakai bridge `hog_admin_*` yang tersisa untuk program, donasi, laporan, blog, media, target tahunan, pengaturan, audit, identitas sesi, detail donasi, dan ringkasan dashboard.
 
 Dashboard final mengembalikan tepat empat metrik:
 
@@ -176,9 +176,9 @@ Routes final:
 
 - `/admin/login`
 - `/admin`
-- `/admin/proyek`
-- `/admin/proyek/baru`
-- `/admin/proyek/[id]`
+- `/admin/program`
+- `/admin/program/baru`
+- `/admin/program/[id]`
 - `/admin/donasi`
 - `/admin/donasi/baru`
 - `/admin/donasi/[id]`
@@ -192,9 +192,9 @@ Fungsi yang sudah tersedia:
 
 - login, logout, refresh sesi, dan proteksi route;
 - dashboard operasional dan donasi terbaru;
-- pengelolaan proyek dengan penerima manfaat langsung, milestone, cover, dan galeri;
+- pengelolaan program dengan penerima manfaat langsung, milestone, cover, dan galeri;
 - pencatatan donasi langsung verified dengan bukti opsional dan detail privat untuk admin;
-- pembuatan, penerbitan, penarikan, dan penghapusan laporan proyek/berkala;
+- pembuatan, penerbitan, penarikan, dan penghapusan laporan program/berkala;
 - pengelolaan blog dan media;
 - target tahunan, pengaturan situs, dan WhatsApp global;
 - audit log;
@@ -227,7 +227,7 @@ Untuk database yang pernah menjalankan legacy `01`–`07`:
 3. jalankan versi final `supabase/sql-editor/05_verify.sql`;
 4. jalankan versi final `supabase/sql-editor/07_verify_api_bridge.sql`.
 
-Migrasi 08 berjalan dalam transaksi dan bersifat data-safe. Data dari modul lama diarsipkan ke `home_of_giving_private.simplification_archive` sebelum object dihapus. Nama/lokasi penerima dibackfill ke proyek, media event yang terkait proyek dipertahankan sebagai campaign media, laporan dipertahankan tanpa relasi penyaluran, dan donasi legacy non-verified diarsipkan lalu dinormalisasi menjadi verified. Unique key arsip membuat migrasi aman untuk dijalankan ulang tanpa menduplikasi arsip.
+Migrasi 08 berjalan dalam transaksi dan bersifat data-safe. Data dari modul lama diarsipkan ke `home_of_giving_private.simplification_archive` sebelum object dihapus. Nama/lokasi penerima dibackfill ke program, media event yang terkait program dipertahankan sebagai campaign media, laporan dipertahankan tanpa relasi penyaluran, dan donasi legacy non-verified diarsipkan lalu dinormalisasi menjadi verified. Unique key arsip membuat migrasi aman untuk dijalankan ulang tanpa menduplikasi arsip.
 
 Jangan menjalankan ulang `04_seed_demo.sql` pada database upgrade yang record demonya sudah diedit melalui panel admin.
 
@@ -254,12 +254,12 @@ Validator lokal `node scripts/validate-sql.mjs` tidak mengakses SQL remote. Caku
 - isolasi shared schema, bucket, dan policy;
 - RLS, security-invoker view, grant anon, serta akses anon/non-admin/admin;
 - RPC donasi lima argumen, immediate verified, bukti opsional, dan masking deterministik;
-- penerima manfaat langsung pada proyek dan WhatsApp global;
-- laporan draft/terbit serta prasyarat status proyek `reported`;
+- penerima manfaat langsung pada program dan WhatsApp global;
+- laporan draft/terbit serta prasyarat status program `reported`;
 - shape dashboard final;
 - ketiadaan object, kolom, view, dan RPC obsolete;
 - fixture schema legacy representatif, eksekusi serta rerun migrasi 08, isi arsip, backfill, preservasi media/laporan, normalisasi donasi, lalu final `05` dan `07`.
 
 ## Definition of done MVP
 
-Super Admin dapat mengelola proyek dan penerima manfaat langsung, mencatat donasi yang langsung verified dengan nama publik tersamarkan dan bukti opsional, mengelola laporan, blog, media, target, WhatsApp global, serta audit. Website hanya menampilkan data aman, dan seluruh statistik finansial berasal dari ledger donasi verified.
+Super Admin dapat mengelola program dan penerima manfaat langsung, mencatat donasi yang langsung verified dengan nama publik tersamarkan dan bukti opsional, mengelola laporan, blog, media, target, WhatsApp global, serta audit. Website hanya menampilkan data aman, dan seluruh statistik finansial berasal dari ledger donasi verified.

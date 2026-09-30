@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
-import { updateCampaignAllocations } from "@/app/admin/(protected)/proyek/actions";
+import { updateCampaignAllocations } from "@/app/admin/(protected)/program/actions";
 import { SubmitButton } from "@/components/admin/submit-button";
 import { Input } from "@/components/ui/input";
 import { formatCurrency } from "@/lib/format";
@@ -25,20 +25,37 @@ function CampaignAllocationsEditor({
   allocations,
 }: {
   campaignId: string;
-  allocations: Array<{ label: string; amount_idr: number; note: string | null }>;
+  allocations: Array<{
+    label: string;
+    amount_idr: number;
+    note: string | null;
+  }>;
 }) {
   const [rows, setRows] = useState<AllocationRow[]>(() =>
     allocations.length > 0
-      ? allocations.map((item) => makeRow(item.label, String(item.amount_idr), item.note || ""))
+      ? allocations.map((item) =>
+          makeRow(item.label, String(item.amount_idr), item.note || ""),
+        )
       : [makeRow()],
   );
 
-  const total = rows.reduce((sum, row) => sum + (/^\d+$/.test(row.amount.trim()) ? Number(row.amount.trim()) : 0), 0);
+  const total = rows.reduce(
+    (sum, row) =>
+      sum + (/^\d+$/.test(row.amount.trim()) ? Number(row.amount.trim()) : 0),
+    0,
+  );
 
-  const update = (key: string, field: "label" | "amount" | "note", value: string) =>
-    setRows((prev) => prev.map((row) => (row.key === key ? { ...row, [field]: value } : row)));
+  const update = (
+    key: string,
+    field: "label" | "amount" | "note",
+    value: string,
+  ) =>
+    setRows((prev) =>
+      prev.map((row) => (row.key === key ? { ...row, [field]: value } : row)),
+    );
 
-  const removeRow = (key: string) => setRows((prev) => prev.filter((row) => row.key !== key));
+  const removeRow = (key: string) =>
+    setRows((prev) => prev.filter((row) => row.key !== key));
   const addRow = () => setRows((prev) => [...prev, makeRow()]);
 
   return (
@@ -62,7 +79,9 @@ function CampaignAllocationsEditor({
                   <Input
                     name="allocation_label"
                     value={row.label}
-                    onChange={(event) => update(row.key, "label", event.target.value)}
+                    onChange={(event) =>
+                      update(row.key, "label", event.target.value)
+                    }
                     placeholder="Paket sembako"
                   />
                 </td>
@@ -74,7 +93,9 @@ function CampaignAllocationsEditor({
                     step="1"
                     inputMode="numeric"
                     value={row.amount}
-                    onChange={(event) => update(row.key, "amount", event.target.value)}
+                    onChange={(event) =>
+                      update(row.key, "amount", event.target.value)
+                    }
                     placeholder="0"
                     className="tabular-nums"
                   />
@@ -83,7 +104,9 @@ function CampaignAllocationsEditor({
                   <Input
                     name="allocation_note"
                     value={row.note}
-                    onChange={(event) => update(row.key, "note", event.target.value)}
+                    onChange={(event) =>
+                      update(row.key, "note", event.target.value)
+                    }
                     placeholder="200 paket"
                   />
                 </td>
@@ -103,8 +126,12 @@ function CampaignAllocationsEditor({
           </tbody>
           <tfoot>
             <tr className="border-t border-brand-border">
-              <td className="py-3 pr-3 text-sm font-bold text-brand-navy">Total</td>
-              <td className="py-3 pr-3 text-sm font-bold text-brand-navy tabular-nums">{formatCurrency(total)}</td>
+              <td className="py-3 pr-3 text-sm font-bold text-brand-navy">
+                Total
+              </td>
+              <td className="py-3 pr-3 text-sm font-bold text-brand-navy tabular-nums">
+                {formatCurrency(total)}
+              </td>
               <td colSpan={2} />
             </tr>
           </tfoot>
@@ -120,12 +147,16 @@ function CampaignAllocationsEditor({
           <Plus className="size-4" />
           Tambah baris
         </button>
-        <SubmitButton pendingLabel="Menyimpan..." className="h-10 bg-brand-blue px-5 font-bold text-white hover:bg-brand-blue-hover">
+        <SubmitButton
+          pendingLabel="Menyimpan..."
+          className="h-10 bg-brand-blue px-5 font-bold text-white hover:bg-brand-blue-hover"
+        >
           Simpan rincian
         </SubmitButton>
       </div>
       <p className="text-xs leading-5 text-brand-text-body">
-        Baris tanpa nama alokasi diabaikan. Kosongkan semua baris lalu simpan untuk menghapus rincian.
+        Baris tanpa nama alokasi diabaikan. Kosongkan semua baris lalu simpan
+        untuk menghapus rincian.
       </p>
     </form>
   );

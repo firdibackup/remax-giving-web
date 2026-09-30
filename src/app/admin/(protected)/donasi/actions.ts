@@ -46,7 +46,7 @@ export async function createDonation(
   const evidence = isUploadPresent(evidenceValue) ? evidenceValue : null;
 
   if (!campaignId) {
-    return { error: "Pilih proyek tujuan donasi." };
+    return { error: "Pilih program tujuan donasi." };
   }
 
   if (!fullName) {
@@ -72,7 +72,11 @@ export async function createDonation(
   let evidencePath: string | null = null;
 
   if (evidence) {
-    const upload = await uploadToBucket(BUCKETS.donationEvidence, `donations/${campaignId}`, evidence);
+    const upload = await uploadToBucket(
+      BUCKETS.donationEvidence,
+      `donations/${campaignId}`,
+      evidence,
+    );
 
     if ("error" in upload) {
       return { error: upload.error };
@@ -92,14 +96,18 @@ export async function createDonation(
 
   if (error || !data) {
     if (evidencePath) {
-      await removeStorageObjects([{ bucket: BUCKETS.donationEvidence, path: evidencePath }]);
+      await removeStorageObjects([
+        { bucket: BUCKETS.donationEvidence, path: evidencePath },
+      ]);
     }
 
     return { error: toFriendlyError(error?.message, "Donasi gagal dicatat.") };
   }
 
   revalidateDonationSurfaces();
-  redirect(`/admin/donasi/${data}${encodeNotice({ success: "Donasi berhasil dicatat dan langsung masuk ke rekap." })}`);
+  redirect(
+    `/admin/donasi/${data}${encodeNotice({ success: "Donasi berhasil dicatat dan langsung masuk ke rekap." })}`,
+  );
 }
 
 export async function updateDonation(
@@ -115,7 +123,7 @@ export async function updateDonation(
   const donatedOn = readText(formData, "donated_on");
 
   if (!campaignId) {
-    return { error: "Pilih proyek tujuan donasi." };
+    return { error: "Pilih program tujuan donasi." };
   }
 
   if (!fullName) {
@@ -140,7 +148,9 @@ export async function updateDonation(
   });
 
   if (error) {
-    return { error: toFriendlyError(error.message, "Perubahan donasi gagal disimpan.") };
+    return {
+      error: toFriendlyError(error.message, "Perubahan donasi gagal disimpan."),
+    };
   }
 
   revalidateDonationSurfaces();
@@ -161,7 +171,9 @@ export async function deleteDonations(formData: FormData) {
   );
 
   if (donationIds.length === 0) {
-    redirect(`/admin/donasi${encodeNotice({ error: "Pilih minimal satu donasi untuk dihapus." })}`);
+    redirect(
+      `/admin/donasi${encodeNotice({ error: "Pilih minimal satu donasi untuk dihapus." })}`,
+    );
   }
 
   const supabase = await createClient();
@@ -180,7 +192,8 @@ export async function deleteDonations(formData: FormData) {
   if (!data) {
     redirect(
       `/admin/donasi${encodeNotice({
-        error: "Donasi gagal dihapus: RPC tidak mengembalikan data. Pastikan migrasi 12_donation_crud.sql sudah dijalankan.",
+        error:
+          "Donasi gagal dihapus: RPC tidak mengembalikan data. Pastikan migrasi 12_donation_crud.sql sudah dijalankan.",
       })}`,
     );
   }

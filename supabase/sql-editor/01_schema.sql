@@ -520,7 +520,7 @@ begin
 
   if tg_op = 'UPDATE'
     and (new.amount_idr <> old.amount_idr or new.campaign_id <> old.campaign_id) then
-    raise exception 'Donasi terverifikasi tidak dapat diubah nominal atau proyeknya. Batalkan dahulu lalu catat ulang.';
+    raise exception 'Donasi terverifikasi tidak dapat diubah nominal atau programnya. Batalkan dahulu lalu catat ulang.';
   end if;
 
   new.verified_at := coalesce(new.verified_at, now());

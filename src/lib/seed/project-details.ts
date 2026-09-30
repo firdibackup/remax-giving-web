@@ -75,7 +75,7 @@ function buildDefaultDetail(c: Campaign): ProjectDetail {
         ? "Selesai"
         : `Berjalan · sisa ${c.meta.split("·")[0]?.replace("Sisa", "").trim() || "beberapa hari"}`),
     descriptionParagraphs: override.descriptionParagraphs ?? [
-      `${c.title} adalah proyek Home of Giving untuk satu penerima manfaat agar bantuannya utuh dan mudah dipertanggungjawabkan.`,
+      `${c.title} adalah program Home of Giving untuk satu penerima manfaat agar bantuannya utuh dan mudah dipertanggungjawabkan.`,
       `pengurus melakukan survei kebutuhan sebelum menetapkan target donasi sebesar ${c.target}. Setiap donasi yang masuk dikonfirmasi dan dicatat sebelum ditampilkan di papan donatur.`,
     ],
     quote: override.quote,

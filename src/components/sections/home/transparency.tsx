@@ -25,7 +25,7 @@ const steps = [
     num: "04",
     title: "Laporan dibuka untuk publik",
     detail:
-      "Rincian penggunaan dana, foto serah terima, dan laporan PDF tersedia di halaman proyek.",
+      "Rincian penggunaan dana, foto serah terima, dan laporan PDF tersedia di halaman program.",
   },
 ];
 
@@ -47,7 +47,7 @@ function Transparency() {
           </Reveal>
           <Reveal delay={140}>
             <p className="mb-10 max-w-[520px] text-base leading-relaxed text-white/88 sm:text-lg">
-              Donasi tidak digabung ke satu kas besar. Setiap proyek punya satu
+              Donasi tidak digabung ke satu kas besar. Setiap program punya satu
               penerima, satu laporan penggunaan dana, dan satu album dokumentasi
               yang bisa dibuka siapa saja.
             </p>

@@ -263,7 +263,7 @@
               <x-import
                 component-from-global-scope="HomeOfGivingDesignSystem_f09eee.StatCounter"
                 value="14"
-                label="Proyek tersalurkan"
+                label="program tersalurkan"
                 hint-size="180px,78px"
               ></x-import>
               <x-import
@@ -350,7 +350,7 @@
               >
                 <div>Tanggal</div>
                 <div>Donatur</div>
-                <div>Proyek</div>
+                <div>program</div>
                 <div style="text-align: right">Nominal</div>
               </div>
 
@@ -590,14 +590,14 @@
                     >Unduh laporan lengkap (PDF)</x-import
                   >
                   <a
-                    href="Home of Giving Detail Proyek.dc.html"
+                    href="Home of Giving Detail program.dc.html"
                     style="
                       text-align: center;
                       font-size: 14px;
                       font-weight: var(--fw-bold);
                       color: var(--color-brand-primary);
                     "
-                    >Lihat contoh laporan proyek →</a
+                    >Lihat contoh laporan program →</a
                   >
                 </div>
               </div>
@@ -618,9 +618,9 @@
       data-props='{"$preview":{"width":1440,"height":1000}}'
     >
       class Component extends DCLogic {
-        state = { project: 'Semua proyek', limit: 8 };
+        state = { project: 'Semua program', limit: 8 };
 
-        projects = ['Semua proyek', 'Banjir Bekasi', 'Beasiswa', 'Gizi Anak Panti'];
+        projects = ['Semua program', 'Banjir Bekasi', 'Beasiswa', 'Gizi Anak Panti'];
 
         all = [
           { date: '18 Agu', name: 'Rat*** S.', city: 'Bekasi', project: 'Bantuan Banjir Bekasi', amount: 'Rp 2.000.000', status: 'Terverifikasi', tag: 'Banjir Bekasi' },
@@ -648,7 +648,7 @@
 
         renderVals() {
           const { project, limit } = this.state;
-          const filtered = project === 'Semua proyek' ? this.all : this.all.filter(r => r.tag === project);
+          const filtered = project === 'Semua program' ? this.all : this.all.filter(r => r.tag === project);
           const rows = filtered.slice(0, limit);
 
           return {

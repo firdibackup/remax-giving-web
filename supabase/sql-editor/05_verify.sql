@@ -233,7 +233,7 @@ begin
   end if;
 
   if target_campaign is null then
-    raise notice 'Uji aturan bisnis dilewati: tidak ada proyek untuk diuji.';
+    raise notice 'Uji aturan bisnis dilewati: tidak ada program untuk diuji.';
     return;
   end if;
 

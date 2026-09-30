@@ -38,11 +38,11 @@ begin
      );
 
   if blockers is not null then
-    raise exception 'Pembersihan dibatalkan: proyek berikut tidak memenuhi syarat draft tanpa donasi: %', blockers;
+    raise exception 'Pembersihan dibatalkan: program berikut tidak memenuhi syarat draft tanpa donasi: %', blockers;
   end if;
 
   if (select count(*) from hog_legacy_draft_targets) > 6 then
-    raise exception 'Pembersihan dibatalkan: jumlah target melebihi 6 proyek seed historis.';
+    raise exception 'Pembersihan dibatalkan: jumlah target melebihi 6 program seed historis.';
   end if;
 end
 $$;

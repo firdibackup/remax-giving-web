@@ -52,7 +52,7 @@ function ProgramDirectory({
           <div className="grid grid-cols-2 justify-items-center gap-4 sm:gap-5">
             <BrandStatCounter
               value={String(runningCount)}
-              label="Proyek berjalan"
+              label="program berjalan"
               tone="red"
             />
             <BrandStatCounter
@@ -93,7 +93,7 @@ function ProgramDirectory({
             <strong className="font-bold text-brand-navy">
               {filtered.length}
             </strong>{" "}
-            proyek
+            program
           </div>
           {filtered.length > 0 ? (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -120,10 +120,10 @@ function ProgramDirectory({
           ) : (
             <div className="rounded-2xl bg-brand-bg-soft px-6 py-16 text-center">
               <div className="mb-2 text-xl font-bold text-brand-navy">
-                Belum ada proyek di status ini
+                Belum ada program di status ini
               </div>
               <div className="text-base text-brand-text-body">
-                Pilih status lain untuk melihat proyek yang tersedia.
+                Pilih status lain untuk melihat program yang tersedia.
               </div>
             </div>
           )}

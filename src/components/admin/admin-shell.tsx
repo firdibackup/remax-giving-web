@@ -46,8 +46,8 @@ const navigation = [
         available: true,
       },
       {
-        label: "Proyek",
-        href: "/admin/proyek",
+        label: "program",
+        href: "/admin/program",
         icon: FolderHeart,
         available: true,
       },

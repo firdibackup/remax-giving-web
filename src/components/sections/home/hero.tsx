@@ -31,8 +31,8 @@ function Hero({ featured }: { featured: PublicCampaignCard | null }) {
           </p>
           <div className="flex flex-wrap items-center gap-3.5">
             <DonationCta />
-            <BrandButton variant="secondary" href="#proyek">
-              Lihat proyek berjalan
+            <BrandButton variant="secondary" href="#program">
+              Lihat program berjalan
             </BrandButton>
           </div>
         </div>

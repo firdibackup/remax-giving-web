@@ -81,7 +81,7 @@ function DashboardContent({
             Selamat datang, {firstName}
           </h1>
           <p className="mt-2 text-sm leading-6 text-brand-text-body">
-            Pantau donasi, proyek, dan laporan Home of Giving hari ini.
+            Pantau donasi, program, dan laporan Home of Giving hari ini.
           </p>
         </div>
       </div>

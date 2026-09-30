@@ -94,13 +94,13 @@
             /></a>
             <div style="display: flex; align-items: center; gap: 28px">
               <a
-                href="#proyek"
+                href="#program"
                 style="
                   font-size: 15px;
                   font-weight: var(--fw-semibold);
                   color: var(--color-text-heading);
                 "
-                >Proyek</a
+                >program</a
               >
               <a
                 href="#transparansi"
@@ -244,7 +244,7 @@
                 "
               >
                 REMAX Home of Giving menyalurkan donasi agent, rekan, dan mitra
-                REMAX Indonesia ke satu penerima manfaat per proyek — dengan
+                REMAX Indonesia ke satu penerima manfaat per program — dengan
                 bukti penyaluran yang bisa Anda lacak sampai tuntas.
               </p>
               <div
@@ -268,7 +268,7 @@
                   variant="secondary"
                   on-click="{{ goProject }}"
                   hint-size="210px,50px"
-                  >Lihat proyek berjalan</x-import
+                  >Lihat program berjalan</x-import
                 >
               </div>
               <div
@@ -293,7 +293,7 @@
                   "
                 ></span>
                 <span
-                  >Satu proyek · satu penerima · laporan dan dokumentasi selalu
+                  >Satu program · satu penerima · laporan dan dokumentasi selalu
                   dipublikasikan</span
                 >
               </div>
@@ -341,7 +341,7 @@
                     component-from-global-scope="HomeOfGivingDesignSystem_f09eee.Badge"
                     tone="red"
                     hint-size="120px,26px"
-                    >Proyek berjalan</x-import
+                    >program berjalan</x-import
                   >
                 </div>
                 <div
@@ -488,7 +488,7 @@
         </section>
 
         <section
-          id="proyek"
+          id="program"
           style="
             background: var(--color-bg-soft);
             padding: 96px 32px;
@@ -506,7 +506,7 @@
                   color: var(--color-brand-accent);
                 "
               >
-                Proyek yang sedang berlangsung
+                program yang sedang berlangsung
               </div>
               <h2
                 style="
@@ -518,7 +518,7 @@
                   letter-spacing: -0.01em;
                 "
               >
-                Satu proyek, satu penerima
+                Satu program, satu penerima
               </h2>
             </div>
             <div
@@ -672,7 +672,7 @@
                     >Donasi via WhatsApp →</x-import
                   >
                   <a
-                    href="Home of Giving Detail Proyek.dc.html"
+                    href="Home of Giving Detail program.dc.html"
                     style="
                       display: inline-flex;
                       align-items: center;
@@ -688,7 +688,7 @@
                         transform 160ms var(--ease-standard);
                     "
                     style-hover="transform:translateY(-1px);box-shadow:var(--shadow-card)"
-                    >Detail proyek</a
+                    >Detail program</a
                   >
                 </div>
               </div>
@@ -751,7 +751,7 @@
                   text-wrap: pretty;
                 "
               >
-                Donasi tidak digabung ke satu kas besar. Setiap proyek punya
+                Donasi tidak digabung ke satu kas besar. Setiap program punya
                 satu penerima, satu laporan penggunaan dana, dan satu album
                 dokumentasi yang bisa dibuka siapa saja.
               </p>
@@ -911,7 +911,7 @@
                     "
                   >
                     Rincian penggunaan dana, foto serah terima, dan laporan PDF
-                    tersedia di halaman proyek.
+                    tersedia di halaman program.
                   </div>
                 </div>
               </div>
@@ -1079,7 +1079,7 @@
                   font-weight: var(--fw-bold);
                   color: var(--color-brand-primary);
                 "
-                >Lihat semua 14 proyek →</a
+                >Lihat semua 14 program →</a
               >
             </div>
           </div>
@@ -1495,7 +1495,7 @@
                     color: var(--color-text-body);
                   "
                 >
-                  pengurus membuka satu proyek baru setiap bulan. Hubungi kami
+                  pengurus membuka satu program baru setiap bulan. Hubungi kami
                   untuk mengusulkan penerima manfaat.
                 </div>
               </div>
@@ -1813,8 +1813,8 @@
                 opacity: 0.85;
               "
             >
-              Donasi berikutnya menentukan proyek mana yang bisa kami buka bulan
-              depan.
+              Donasi berikutnya menentukan program mana yang bisa kami buka
+              bulan depan.
             </p>
             <div
               data-reveal="220"
@@ -1895,8 +1895,8 @@
         pending = [];
         pctOff = { banjir: 0, beasiswa: 0, ibadah: 0 };
         pctOn = { banjir: 68, beasiswa: 24, ibadah: 100 };
-        goDonate = () => this.scrollTo('proyek');
-        goProject = () => this.scrollTo('proyek');
+        goDonate = () => this.scrollTo('program');
+        goProject = () => this.scrollTo('program');
 
         componentDidMount() {
           this.timer = setTimeout(() => this.setState({ live: true }), 500);

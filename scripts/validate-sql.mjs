@@ -115,7 +115,7 @@ select
   m.id,
   'draft'::home_of_giving.campaign_status,
   'Data historis dari seed belum memiliki ledger donasi pendukung.',
-  array['Proyek ini disimpan sebagai draft rekonsiliasi dan belum dipublikasikan ke website.']::text[],
+  array['program ini disimpan sebagai draft rekonsiliasi dan belum dipublikasikan ke website.']::text[],
   h.target_amount_idr,
   true,
   'Butuh rekonsiliasi ledger donasi sebelum dapat dipublikasikan. Catatan seed: ' || h.source_note
@@ -147,17 +147,17 @@ insert into home_of_giving.media_assets (
   source_key, media_type, storage_bucket, storage_path, caption, alt_text, is_published
 )
 values
-  ('del-shared-campaign', 'image', 'home-of-giving-public-media', 'media/uji-bersama-proyek.jpg', 'Media dipakai dua proyek', 'Media dipakai dua proyek', true),
+  ('del-shared-campaign', 'image', 'home-of-giving-public-media', 'media/uji-bersama-program.jpg', 'Media dipakai dua program', 'Media dipakai dua program', true),
   ('del-shared-blog', 'image', 'home-of-giving-public-media', 'media/uji-bersama-blog.jpg', 'Media dipakai blog', 'Media dipakai blog', true),
-  ('del-orphan', 'image', 'home-of-giving-public-media', 'media/uji-yatim.jpg', 'Media hanya milik proyek uji', 'Media hanya milik proyek uji', true),
-  ('del-cover', 'image', 'home-of-giving-public-media', 'media/uji-sampul.jpg', 'Sampul proyek uji', 'Sampul proyek uji', true);
+  ('del-orphan', 'image', 'home-of-giving-public-media', 'media/uji-yatim.jpg', 'Media hanya milik program uji', 'Media hanya milik program uji', true),
+  ('del-cover', 'image', 'home-of-giving-public-media', 'media/uji-sampul.jpg', 'Sampul program uji', 'Sampul program uji', true);
 
 insert into home_of_giving.media_assets (
   source_key, media_type, external_url, caption, alt_text, is_published
 )
 values (
   'del-orphan-external', 'image', 'https://example.invalid/uji-eksternal.jpg',
-  'Media eksternal proyek uji', 'Media eksternal proyek uji', true
+  'Media eksternal program uji', 'Media eksternal program uji', true
 );
 
 insert into home_of_giving.campaigns (
@@ -165,13 +165,13 @@ insert into home_of_giving.campaigns (
   status, summary, target_amount_idr, starts_on, ends_on, published_at
 )
 select
-  'proyek-uji-hapus',
-  'Proyek Uji Hapus',
+  'program-uji-hapus',
+  'program Uji Hapus',
   'Penerima Uji Hapus',
   'Jakarta',
   cover.id,
   'running',
-  'Proyek uji untuk penghapusan massal.',
+  'program uji untuk penghapusan massal.',
   20000000,
   date '2026-08-01',
   date '2026-09-30',
@@ -184,12 +184,12 @@ insert into home_of_giving.campaigns (
   status, summary, target_amount_idr, starts_on, ends_on, published_at
 )
 select
-  'proyek-uji-simpan',
-  'Proyek Uji Simpan',
+  'program-uji-simpan',
+  'program Uji Simpan',
   'Penerima Uji Simpan',
   'Bandung',
   'running',
-  'Proyek uji yang harus tetap utuh.',
+  'program uji yang harus tetap utuh.',
   15000000,
   date '2026-08-01',
   date '2026-09-30',
@@ -198,11 +198,11 @@ select
 insert into home_of_giving.campaign_media (campaign_id, media_id, role, sort_order)
 select c.id, m.id, rel.role::home_of_giving.media_role, rel.sort_order
 from (values
-  ('proyek-uji-hapus', 'del-shared-campaign', 'gallery', 10),
-  ('proyek-uji-hapus', 'del-shared-blog', 'gallery', 20),
-  ('proyek-uji-hapus', 'del-orphan', 'documentation', 30),
-  ('proyek-uji-hapus', 'del-orphan-external', 'documentation', 40),
-  ('proyek-uji-simpan', 'del-shared-campaign', 'cover', 10)
+  ('program-uji-hapus', 'del-shared-campaign', 'gallery', 10),
+  ('program-uji-hapus', 'del-shared-blog', 'gallery', 20),
+  ('program-uji-hapus', 'del-orphan', 'documentation', 30),
+  ('program-uji-hapus', 'del-orphan-external', 'documentation', 40),
+  ('program-uji-simpan', 'del-shared-campaign', 'cover', 10)
 ) as rel(campaign_slug, media_source_key, role, sort_order)
 join home_of_giving.campaigns c on c.slug = rel.campaign_slug
 join home_of_giving.media_assets m on m.source_key = rel.media_source_key;
@@ -220,16 +220,16 @@ select
   'blog-uji-hapus',
   'Blog Uji Hapus',
   c.id,
-  'Artikel yang harus tetap ada setelah proyeknya dihapus.',
+  'Artikel yang harus tetap ada setelah programnya dihapus.',
   'published',
   timestamptz '2026-08-20 09:00:00+07'
 from home_of_giving.campaigns c
-where c.slug = 'proyek-uji-hapus';
+where c.slug = 'program-uji-hapus';
 
 insert into home_of_giving.campaign_milestones (campaign_id, kind, title, is_published)
 select c.id, 'custom', 'Milestone Uji Hapus', true
 from home_of_giving.campaigns c
-where c.slug = 'proyek-uji-hapus';
+where c.slug = 'program-uji-hapus';
 
 insert into home_of_giving.reports (
   kind, campaign_id, title, storage_bucket, storage_path, published_at
@@ -239,7 +239,7 @@ select
   'home-of-giving-private-reports', 'laporan/uji-hapus.pdf',
   timestamptz '2026-08-25 09:00:00+07'
 from home_of_giving.campaigns c
-where c.slug = 'proyek-uji-hapus';
+where c.slug = 'program-uji-hapus';
 
 insert into home_of_giving.reports (
   kind, campaign_id, title, external_url, published_at
@@ -249,7 +249,7 @@ select
   'https://example.invalid/laporan-uji.pdf',
   timestamptz '2026-08-26 09:00:00+07'
 from home_of_giving.campaigns c
-where c.slug = 'proyek-uji-hapus';
+where c.slug = 'program-uji-hapus';
 
 insert into home_of_giving_private.donor_identities (id, full_name)
 values ('dddddddd-dddd-dddd-dddd-ddddddddddd1', 'Donatur Bersama');
@@ -266,7 +266,7 @@ select
   date '2026-08-20',
   'uji:hapus:bersama'
 from home_of_giving.campaigns c
-where c.slug = 'proyek-uji-hapus';
+where c.slug = 'program-uji-hapus';
 
 insert into home_of_giving.donations (
   id, campaign_id, donor_identity_id, public_name, amount_idr, donated_on, external_reference
@@ -280,7 +280,7 @@ select
   date '2026-08-20',
   'uji:simpan:bersama'
 from home_of_giving.campaigns c
-where c.slug = 'proyek-uji-simpan';
+where c.slug = 'program-uji-simpan';
 
 insert into home_of_giving_private.donation_evidence (
   donation_id, storage_bucket, storage_path, note
@@ -909,7 +909,7 @@ async function checkFinalObjects(db, label) {
 
   await check(
     db,
-    `${label}: penerima manfaat tersimpan langsung pada proyek`,
+    `${label}: penerima manfaat tersimpan langsung pada program`,
     `select (
     (select count(*) from information_schema.columns
       where table_schema = 'home_of_giving' and table_name = 'campaigns'
@@ -1224,7 +1224,7 @@ async function validateFreshInstall() {
   await withRole(db, "authenticated", adminId, async () => {
     await check(
       db,
-      "admin: seluruh proyek dapat dibaca",
+      "admin: seluruh program dapat dibaca",
       `select count(*) = 3 as ok from public.hog_admin_campaigns`,
     );
     await check(
@@ -1289,7 +1289,7 @@ async function validateFreshInstall() {
     );
     await check(
       db,
-      "proyek: status reported tetap kompatibel tanpa mensyaratkan laporan",
+      "program: status reported tetap kompatibel tanpa mensyaratkan laporan",
       `select (
       status = 'reported'
       and reported_at is not null
@@ -1305,7 +1305,7 @@ async function validateFreshInstall() {
     publishedReportId = (
       await db.query(
         `insert into public.hog_admin_reports (kind, campaign_id, title, storage_bucket)
-       values ('campaign', $1::uuid, 'Laporan Uji Proyek', 'home-of-giving-public-reports')
+       values ('campaign', $1::uuid, 'Laporan Uji program', 'home-of-giving-public-reports')
        returning id`,
         [campaignId],
       )
@@ -1401,7 +1401,7 @@ async function validateFreshInstall() {
 }
 
 async function validateCampaignDeletion() {
-  console.log("\n== HAPUS PROYEK: RPC BULK DELETE DAN CLEANUP DRAFT ==");
+  console.log("\n== HAPUS program: RPC BULK DELETE DAN CLEANUP DRAFT ==");
   const db = new PGlite();
   await run(db, "delete bootstrap Supabase stub", bootstrap);
   await applySequence(db, "delete", freshSequence);
@@ -1415,7 +1415,7 @@ async function validateCampaignDeletion() {
 
   await check(
     db,
-    "delete: kontrak RPC hapus proyek final",
+    "delete: kontrak RPC hapus program final",
     `select (
     (
       select count(*) = 1
@@ -1468,7 +1468,7 @@ async function validateCampaignDeletion() {
 
   await check(
     db,
-    "delete: cleanup 10 mempertahankan proyek berjalan dan 14 donasi canonical",
+    "delete: cleanup 10 mempertahankan program berjalan dan 14 donasi canonical",
     `select (
     (select count(*) from home_of_giving.campaigns) = 3
     and (select count(*) from home_of_giving.campaigns where status = 'running') = 3
@@ -1483,7 +1483,7 @@ async function validateCampaignDeletion() {
   ) as ok`,
   );
 
-  await run(db, "delete fixture proyek uji", deletionFixture);
+  await run(db, "delete fixture program uji", deletionFixture);
 
   const nonAdminId = "33333333-3333-3333-3333-333333333333";
   const adminId = "44444444-4444-4444-4444-444444444444";
@@ -1495,12 +1495,12 @@ async function validateCampaignDeletion() {
 
   const targetId = (
     await db.query(
-      "select id from home_of_giving.campaigns where slug = 'proyek-uji-hapus'",
+      "select id from home_of_giving.campaigns where slug = 'program-uji-hapus'",
     )
   ).rows[0].id;
   const keeperId = (
     await db.query(
-      "select id from home_of_giving.campaigns where slug = 'proyek-uji-simpan'",
+      "select id from home_of_giving.campaigns where slug = 'program-uji-simpan'",
     )
   ).rows[0].id;
 
@@ -1521,7 +1521,7 @@ async function validateCampaignDeletion() {
 
   await check(
     db,
-    "delete: fixture proyek uji lengkap sebelum penghapusan",
+    "delete: fixture program uji lengkap sebelum penghapusan",
     `select (
     (select count(*) from home_of_giving.donations where campaign_id = $1::uuid) = 3
     and (select count(*) from home_of_giving_private.donor_identities) = 3
@@ -1540,16 +1540,16 @@ async function validateCampaignDeletion() {
   );
 
   await withRole(db, "anon", null, async () => {
-    await expectFailure("anon: RPC hapus proyek ditolak", () =>
+    await expectFailure("anon: RPC hapus program ditolak", () =>
       db.query("select public.hog_admin_delete_campaigns(array[]::uuid[])"),
     );
-    await expectFailure("anon: RPC hapus proyek internal ditolak", () =>
+    await expectFailure("anon: RPC hapus program internal ditolak", () =>
       db.query("select home_of_giving.admin_delete_campaigns(array[]::uuid[])"),
     );
   });
 
   await withRole(db, "authenticated", nonAdminId, async () => {
-    await expectFailure("non-admin: RPC hapus proyek ditolak", () =>
+    await expectFailure("non-admin: RPC hapus program ditolak", () =>
       db.query("select public.hog_admin_delete_campaigns(array[$1::uuid])", [
         targetId,
       ]),
@@ -1593,7 +1593,7 @@ async function validateCampaignDeletion() {
 
     await check(
       db,
-      "delete: payload hapus proyek sesuai kontrak",
+      "delete: payload hapus program sesuai kontrak",
       `select (
       (select count(*) from jsonb_object_keys(result)) = 3
       and result ?& array[
@@ -1616,7 +1616,7 @@ async function validateCampaignDeletion() {
         {"bucket": "home-of-giving-public-media", "path": "media/uji-yatim.jpg"},
         {"bucket": "home-of-giving-public-media", "path": "media/uji-sampul.jpg"}
       ]'::jsonb
-      and not (result -> 'storage_objects' @> '[{"path": "media/uji-bersama-proyek.jpg"}]'::jsonb)
+      and not (result -> 'storage_objects' @> '[{"path": "media/uji-bersama-program.jpg"}]'::jsonb)
       and not (result -> 'storage_objects' @> '[{"path": "media/uji-bersama-blog.jpg"}]'::jsonb)
       and not (result::text like '%example.invalid%')
     ) as ok
@@ -1627,7 +1627,7 @@ async function validateCampaignDeletion() {
 
   await check(
     db,
-    "delete: proyek, donasi, bukti, dan identitas yatim ikut terhapus",
+    "delete: program, donasi, bukti, dan identitas yatim ikut terhapus",
     `select (
     not exists (select 1 from home_of_giving.campaigns where id = $1::uuid)
     and not exists (select 1 from home_of_giving.donations where campaign_id = $1::uuid)
@@ -1649,7 +1649,7 @@ async function validateCampaignDeletion() {
 
   await check(
     db,
-    "delete: proyek lain, donasi canonical, dan media bersama tetap utuh",
+    "delete: program lain, donasi canonical, dan media bersama tetap utuh",
     `select (
     (select count(*) from home_of_giving.campaigns where id = $1::uuid) = 1
     and (select count(*) from home_of_giving.donations where campaign_id = $1::uuid) = 1
@@ -1755,7 +1755,7 @@ async function validateLegacyUpgrade() {
 
   await check(
     db,
-    "legacy fixture: kategori proyek gaya lama tersedia",
+    "legacy fixture: kategori program gaya lama tersedia",
     `select (
     to_regclass('home_of_giving.campaign_categories') is not null
     and exists (
@@ -1780,7 +1780,7 @@ async function validateLegacyUpgrade() {
 
   await check(
     db,
-    "upgrade 11: object kategori hilang dan data proyek utuh",
+    "upgrade 11: object kategori hilang dan data program utuh",
     `select (
     to_regclass('home_of_giving.campaign_categories') is null
     and to_regclass('home_of_giving.category_distribution_stats') is null
@@ -2001,7 +2001,7 @@ async function validateLegacyUpgrade() {
   await run(db, "upgrade rerun 09 (idempotensi)", readSql(sqlFiles.bulkDelete));
   await check(
     db,
-    "upgrade: RPC hapus proyek terpasang setelah 09",
+    "upgrade: RPC hapus program terpasang setelah 09",
     `select (
     pg_get_function_identity_arguments(
       'public.hog_admin_delete_campaigns(uuid[])'::regprocedure
@@ -2080,7 +2080,7 @@ async function validateLegacyUpgrade() {
 
   await check(
     db,
-    "cleanup: proyek berjalan dan 14 donasi canonical tetap utuh",
+    "cleanup: program berjalan dan 14 donasi canonical tetap utuh",
     `select (
     (select count(*) from home_of_giving.campaigns) = 3
     and (select count(*) from home_of_giving.campaigns where status = 'running') = 3
@@ -2133,8 +2133,16 @@ async function validateLegacyUpgrade() {
     [cleanupArchiveCount],
   );
 
-  await run(db, "upgrade 14_donor_name_masking.sql", readSql(sqlFiles.nameMasking));
-  await run(db, "upgrade rerun 14 (idempotensi)", readSql(sqlFiles.nameMasking));
+  await run(
+    db,
+    "upgrade 14_donor_name_masking.sql",
+    readSql(sqlFiles.nameMasking),
+  );
+  await run(
+    db,
+    "upgrade rerun 14 (idempotensi)",
+    readSql(sqlFiles.nameMasking),
+  );
   await check(
     db,
     "masking: 2 huruf depan + huruf terakhir, nama pendek huruf pertama + terakhir",

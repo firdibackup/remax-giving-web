@@ -102,7 +102,7 @@ export const donations: Donation[] = [
 ];
 
 export const donationProjectFilters = [
-  "Semua proyek",
+  "Semua program",
   "Banjir Bekasi",
   "Beasiswa",
   "Gizi Anak Panti",

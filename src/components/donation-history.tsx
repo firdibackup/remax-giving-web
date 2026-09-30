@@ -24,15 +24,15 @@ function DonationHistory({
 }) {
   const projects = useMemo(
     () => [
-      "Semua proyek",
+      "Semua program",
       ...Array.from(new Set(donations.map((donation) => donation.project))),
     ],
     [donations],
   );
-  const [project, setProject] = useState("Semua proyek");
+  const [project, setProject] = useState("Semua program");
   const [limit, setLimit] = useState(PAGE_SIZE);
   const filtered =
-    project === "Semua proyek"
+    project === "Semua program"
       ? donations
       : donations.filter((donation) => donation.project === project);
   const rows = filtered.slice(0, limit);
@@ -96,7 +96,7 @@ function DonationHistory({
             <div className="hidden grid-cols-[88px_1fr_1fr_auto] gap-4 border-b-[1.5px] border-brand-border pb-3 font-sans text-xs font-bold tracking-[0.1em] text-brand-text-body uppercase sm:grid">
               <div>Tanggal</div>
               <div>Donatur</div>
-              <div>Proyek</div>
+              <div>program</div>
               <div className="text-right">Nominal</div>
             </div>
             <div>
@@ -122,7 +122,7 @@ function DonationHistory({
                 ))
               ) : (
                 <div className="py-12 text-center text-sm text-brand-text-body">
-                  Belum ada donasi tercatat untuk proyek ini.
+                  Belum ada donasi tercatat untuk program ini.
                 </div>
               )}
             </div>
@@ -146,7 +146,7 @@ function DonationHistory({
               href="/program"
               className="font-sans text-sm font-bold text-brand-blue"
             >
-              Lihat semua proyek →
+              Lihat semua program →
             </Link>
           </div>
         </div>

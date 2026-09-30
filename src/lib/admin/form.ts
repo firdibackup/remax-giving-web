@@ -9,7 +9,10 @@ export function readText(formData: FormData, key: string): string {
   return String(formData.get(key) ?? "").trim();
 }
 
-export function readOptionalText(formData: FormData, key: string): string | null {
+export function readOptionalText(
+  formData: FormData,
+  key: string,
+): string | null {
   const value = readText(formData, key);
   return value ? value : null;
 }
@@ -54,12 +57,15 @@ export function readParagraphs(formData: FormData, key: string): string[] {
 // isomorphic-dompurify here if untrusted authors ever gain access.
 export function sanitizeStoryHtml(html: string): string {
   return html
-    .replace(/<\/?(?:script|style|iframe|object|embed|link|meta|form|base)\b[^>]*>/gi, "")
+    .replace(
+      /<\/?(?:script|style|iframe|object|embed|link|meta|form|base)\b[^>]*>/gi,
+      "",
+    )
     .replace(/\son\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, "")
     .replace(/((?:href|src)\s*=\s*)(["']?)\s*javascript:[^"'>\s]*/gi, "$1$2#");
 }
 
-// Rich-text "Cerita proyek" is stored as a single HTML string in story_paragraphs[0].
+// Rich-text "Cerita program" is stored as a single HTML string in story_paragraphs[0].
 // Returns [] when the editor is effectively empty (e.g. "<p></p>").
 export function readStoryHtml(formData: FormData, key: string): string[] {
   const clean = sanitizeStoryHtml(readText(formData, key)).trim();
@@ -81,22 +87,55 @@ export function isValidSlug(value: string): boolean {
 }
 
 export function isValidDate(value: string): boolean {
-  return /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(new Date(`${value}T00:00:00`).getTime());
+  return (
+    /^\d{4}-\d{2}-\d{2}$/.test(value) &&
+    !Number.isNaN(new Date(`${value}T00:00:00`).getTime())
+  );
 }
 
 const friendlyErrors: Array<{ match: RegExp; message: string }> = [
-  { match: /Akses ditolak/i, message: "Akses ditolak. Akun Anda bukan Super Admin aktif." },
-  { match: /campaigns_slug_format|blog_posts_slug_format|categories_slug_format/i, message: "Slug hanya boleh huruf kecil, angka, dan tanda hubung." },
-  { match: /duplicate key value|unique constraint/i, message: "Data dengan penanda unik yang sama sudah ada." },
-  { match: /campaigns_single_featured_idx/i, message: "Hanya satu proyek yang dapat disorot. Nonaktifkan sorotan sebelumnya." },
-  { match: /blog_posts_single_featured_idx/i, message: "Hanya satu tulisan yang dapat disorot. Nonaktifkan sorotan sebelumnya." },
+  {
+    match: /Akses ditolak/i,
+    message: "Akses ditolak. Akun Anda bukan Super Admin aktif.",
+  },
+  {
+    match:
+      /campaigns_slug_format|blog_posts_slug_format|categories_slug_format/i,
+    message: "Slug hanya boleh huruf kecil, angka, dan tanda hubung.",
+  },
+  {
+    match: /duplicate key value|unique constraint/i,
+    message: "Data dengan penanda unik yang sama sudah ada.",
+  },
+  {
+    match: /campaigns_single_featured_idx/i,
+    message:
+      "Hanya satu program yang dapat disorot. Nonaktifkan sorotan sebelumnya.",
+  },
+  {
+    match: /blog_posts_single_featured_idx/i,
+    message:
+      "Hanya satu tulisan yang dapat disorot. Nonaktifkan sorotan sebelumnya.",
+  },
 
-  { match: /Tanggal donasi/i, message: "Tanggal donasi tidak boleh melewati hari ini." },
-  { match: /violates foreign key|foreign key constraint/i, message: "Data masih dipakai record lain atau referensi tidak ditemukan." },
-  { match: /row-level security|permission denied/i, message: "Akses ditolak oleh kebijakan keamanan database." },
+  {
+    match: /Tanggal donasi/i,
+    message: "Tanggal donasi tidak boleh melewati hari ini.",
+  },
+  {
+    match: /violates foreign key|foreign key constraint/i,
+    message: "Data masih dipakai record lain atau referensi tidak ditemukan.",
+  },
+  {
+    match: /row-level security|permission denied/i,
+    message: "Akses ditolak oleh kebijakan keamanan database.",
+  },
 ];
 
-export function toFriendlyError(message: string | null | undefined, fallback: string): string {
+export function toFriendlyError(
+  message: string | null | undefined,
+  fallback: string,
+): string {
   if (!message) {
     return fallback;
   }
@@ -110,7 +149,10 @@ export function toFriendlyError(message: string | null | undefined, fallback: st
   return fallback;
 }
 
-export function encodeNotice(params: { error?: string; success?: string }): string {
+export function encodeNotice(params: {
+  error?: string;
+  success?: string;
+}): string {
   const search = new URLSearchParams();
 
   if (params.error) {

@@ -48,7 +48,7 @@ $$;
 
 -- Relax the donation trigger: verified donations may now be edited by an admin.
 -- The future-date, verified-status, and legacy-import guards stay in place; only the
--- "nominal & proyek tidak dapat diubah" block is removed so admin CRUD can update them.
+-- "nominal & program tidak dapat diubah" block is removed so admin CRUD can update them.
 create or replace function home_of_giving_private.enforce_donation_rules()
 returns trigger
 language plpgsql
@@ -191,7 +191,7 @@ begin
   end if;
 
   if not exists (select 1 from home_of_giving.campaigns c where c.id = p_campaign_id) then
-    raise exception 'Proyek tidak ditemukan';
+    raise exception 'program tidak ditemukan';
   end if;
 
   select d.donor_identity_id, true

@@ -41,25 +41,37 @@ export async function createReport(formData: FormData) {
   const file = formData.get("report");
 
   if (!title) {
-    redirect(`/admin/laporan${encodeNotice({ error: "Judul laporan wajib diisi." })}`);
+    redirect(
+      `/admin/laporan${encodeNotice({ error: "Judul laporan wajib diisi." })}`,
+    );
   }
 
   if (!(["campaign", "periodic"] as ReportKind[]).includes(kind)) {
-    redirect(`/admin/laporan${encodeNotice({ error: "Jenis laporan tidak valid." })}`);
+    redirect(
+      `/admin/laporan${encodeNotice({ error: "Jenis laporan tidak valid." })}`,
+    );
   }
 
   if (kind === "campaign" && !campaignId) {
-    redirect(`/admin/laporan${encodeNotice({ error: "Laporan proyek wajib memilih proyek." })}`);
+    redirect(
+      `/admin/laporan${encodeNotice({ error: "Laporan program wajib memilih program." })}`,
+    );
   }
 
   if (!externalUrl && !isUploadPresent(file)) {
-    redirect(`/admin/laporan${encodeNotice({ error: "Tambahkan berkas PDF atau tautan eksternal." })}`);
+    redirect(
+      `/admin/laporan${encodeNotice({ error: "Tambahkan berkas PDF atau tautan eksternal." })}`,
+    );
   }
 
   let storagePath: string | null = null;
 
   if (isUploadPresent(file)) {
-    const upload = await uploadToBucket(BUCKETS.privateReports, campaignId ? `campaigns/${campaignId}` : "periodic", file);
+    const upload = await uploadToBucket(
+      BUCKETS.privateReports,
+      campaignId ? `campaigns/${campaignId}` : "periodic",
+      file,
+    );
 
     if ("error" in upload) {
       redirect(`/admin/laporan${encodeNotice({ error: upload.error })}`);
@@ -83,7 +95,9 @@ export async function createReport(formData: FormData) {
 
   if (error) {
     if (storagePath) {
-      await removeStorageObjects([{ bucket: BUCKETS.privateReports, path: storagePath }]);
+      await removeStorageObjects([
+        { bucket: BUCKETS.privateReports, path: storagePath },
+      ]);
     }
 
     redirect(
@@ -94,7 +108,9 @@ export async function createReport(formData: FormData) {
   }
 
   revalidateReportSurfaces(campaignId);
-  redirect(`/admin/laporan${encodeNotice({ success: "Laporan berhasil dibuat." })}`);
+  redirect(
+    `/admin/laporan${encodeNotice({ success: "Laporan berhasil dibuat." })}`,
+  );
 }
 
 type ManagedReportObject = { bucket: ReportBucketName; path: string };
@@ -160,7 +176,9 @@ async function relocateReport(
     .update({
       published_at: publishedAt,
       updated_by: adminId,
-      ...(moved ? { storage_bucket: destinationBucket, storage_path: moved.path } : {}),
+      ...(moved
+        ? { storage_bucket: destinationBucket, storage_path: moved.path }
+        : {}),
     })
     .eq("id", reportId)
     .select("id")
@@ -171,15 +189,21 @@ async function relocateReport(
   }
 
   if (moved && source) {
-    const reverted = await moveReportObject(destinationBucket, moved.path, source.bucket, source.path);
+    const reverted = await moveReportObject(
+      destinationBucket,
+      moved.path,
+      source.bucket,
+      source.path,
+    );
 
     if ("error" in reverted) {
       const cleanup = await removeStorageObjects([
         { bucket: destinationBucket, path: moved.path },
       ]);
-      const detail = "error" in cleanup
-        ? " Pemindahan balik dan pembersihan berkas tujuan juga gagal."
-        : " Berkas tujuan sudah dibersihkan setelah pemindahan balik gagal.";
+      const detail =
+        "error" in cleanup
+          ? " Pemindahan balik dan pembersihan berkas tujuan juga gagal."
+          : " Berkas tujuan sudah dibersihkan setelah pemindahan balik gagal.";
 
       return `${toFriendlyError(error?.message, fallbackMessage)}${detail}`;
     }
@@ -206,7 +230,9 @@ export async function publishReport(formData: FormData) {
   }
 
   revalidateReportSurfaces(campaignId);
-  redirect(`/admin/laporan${encodeNotice({ success: "Laporan dipublikasikan." })}`);
+  redirect(
+    `/admin/laporan${encodeNotice({ success: "Laporan dipublikasikan." })}`,
+  );
 }
 
 export async function unpublishReport(formData: FormData) {
@@ -227,7 +253,9 @@ export async function unpublishReport(formData: FormData) {
   }
 
   revalidateReportSurfaces(campaignId);
-  redirect(`/admin/laporan${encodeNotice({ success: "Laporan ditarik dari publik." })}`);
+  redirect(
+    `/admin/laporan${encodeNotice({ success: "Laporan ditarik dari publik." })}`,
+  );
 }
 
 export async function deleteReport(formData: FormData) {
@@ -238,11 +266,16 @@ export async function deleteReport(formData: FormData) {
   const report = await loadReport(reportId);
 
   if (!report) {
-    redirect(`/admin/laporan${encodeNotice({ error: "Laporan tidak ditemukan." })}`);
+    redirect(
+      `/admin/laporan${encodeNotice({ error: "Laporan tidak ditemukan." })}`,
+    );
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.from("hog_admin_reports").delete().eq("id", reportId);
+  const { error } = await supabase
+    .from("hog_admin_reports")
+    .delete()
+    .eq("id", reportId);
 
   if (error) {
     redirect(
@@ -253,14 +286,17 @@ export async function deleteReport(formData: FormData) {
   }
 
   const object = ownedObject(report);
-  const cleanup = object ? await removeStorageObjects([object]) : { success: true as const };
+  const cleanup = object
+    ? await removeStorageObjects([object])
+    : { success: true as const };
 
   revalidateReportSurfaces(campaignId);
 
   if ("error" in cleanup) {
     redirect(
       `/admin/laporan${encodeNotice({
-        error: "Laporan dihapus, tetapi berkas di penyimpanan gagal dihapus. Periksa Storage secara manual.",
+        error:
+          "Laporan dihapus, tetapi berkas di penyimpanan gagal dihapus. Periksa Storage secara manual.",
       })}`,
     );
   }

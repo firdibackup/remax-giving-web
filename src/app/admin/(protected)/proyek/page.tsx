@@ -9,7 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { listCampaigns } from "@/lib/admin/queries";
 
-export default async function CampaignsPage({ searchParams }: PageProps<"/admin/proyek">) {
+export default async function CampaignsPage({
+  searchParams,
+}: PageProps<"/admin/program">) {
   const params = await searchParams;
   const status = typeof params.status === "string" ? params.status : "";
   const search = typeof params.q === "string" ? params.q : "";
@@ -18,10 +20,10 @@ export default async function CampaignsPage({ searchParams }: PageProps<"/admin/
   return (
     <div className="space-y-6">
       <AdminPageHeader
-        title="Proyek"
-        description="Kelola target, penerima manfaat, status publikasi, cerita, dan dokumentasi setiap proyek."
-        actionHref="/admin/proyek/baru"
-        actionLabel="Proyek baru"
+        title="program"
+        description="Kelola target, penerima manfaat, status publikasi, cerita, dan dokumentasi setiap program."
+        actionHref="/admin/program/baru"
+        actionLabel="program baru"
       />
       <AdminNotice error={params.error} success={params.success} />
 
@@ -30,7 +32,12 @@ export default async function CampaignsPage({ searchParams }: PageProps<"/admin/
           <form className="flex flex-col gap-3 sm:flex-row">
             <div className="relative flex-1">
               <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-brand-text-body" />
-              <Input name="q" defaultValue={search} placeholder="Cari judul proyek" className="pl-9" />
+              <Input
+                name="q"
+                defaultValue={search}
+                placeholder="Cari judul program"
+                className="pl-9"
+              />
             </div>
             <Select name="status" defaultValue={status} className="sm:w-48">
               <option value="">Semua status</option>
@@ -43,7 +50,9 @@ export default async function CampaignsPage({ searchParams }: PageProps<"/admin/
               <option value="cancelled">Dibatalkan</option>
               <option value="archived">Diarsipkan</option>
             </Select>
-            <Button type="submit" variant="outline" className="h-10">Terapkan</Button>
+            <Button type="submit" variant="outline" className="h-10">
+              Terapkan
+            </Button>
           </form>
         </CardContent>
       </Card>
@@ -65,7 +74,10 @@ export default async function CampaignsPage({ searchParams }: PageProps<"/admin/
               }))}
             />
           ) : (
-            <EmptyState title="Proyek tidak ditemukan" description="Ubah filter atau buat proyek baru." />
+            <EmptyState
+              title="program tidak ditemukan"
+              description="Ubah filter atau buat program baru."
+            />
           )}
         </CardContent>
       </Card>

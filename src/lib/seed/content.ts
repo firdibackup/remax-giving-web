@@ -20,7 +20,7 @@ export const blogPosts: BlogPost[] = [
     featured: true,
   },
   {
-    slug: "laporan-siklus-juli-tiga-proyek-tuntas",
+    slug: "laporan-siklus-juli-tiga-program-tuntas",
     title: "Laporan siklus Juli: tiga Program Selesai",
     category: "Laporan",
     date: "28 Jul 2026",

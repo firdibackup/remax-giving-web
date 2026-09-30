@@ -2,7 +2,7 @@ export const siteStats = {
   totalDonasi: "Rp 1,2 Miliar",
   donasiTercatat: 312,
   totalTerbantu: 120,
-  proyekTuntas: 14,
+  programTuntas: 14,
 };
 
 export const navLinks = [

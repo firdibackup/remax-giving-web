@@ -19,7 +19,7 @@ const caveat = Caveat({
 export const metadata: Metadata = {
   title: "REMAX Home of Giving",
   description:
-    "REMAX Home of Giving menyalurkan donasi agent, rekan, dan mitra REMAX Indonesia ke satu penerima manfaat per proyek — dengan bukti penyaluran yang bisa dilacak sampai tuntas.",
+    "REMAX Home of Giving menyalurkan donasi agent, rekan, dan mitra REMAX Indonesia ke satu penerima manfaat per program — dengan bukti penyaluran yang bisa dilacak sampai tuntas.",
   manifest: "/manifest.json",
 };
 

@@ -26,7 +26,9 @@ function useDonationCtaConfig() {
   const config = useContext(DonationCtaContext);
 
   if (!config) {
-    throw new Error("DonationCta harus digunakan di dalam DonationCtaProvider.");
+    throw new Error(
+      "DonationCta harus digunakan di dalam DonationCtaProvider.",
+    );
   }
 
   return config;
@@ -36,7 +38,7 @@ function buildDonationHref(config: PublicCtaConfig, campaignTitle?: string) {
   if (!config.phone) return null;
 
   const message = campaignTitle
-    ? `${config.message}\n\nSaya ingin berdonasi untuk proyek "${campaignTitle}".`
+    ? `${config.message}\n\nSaya ingin berdonasi untuk program "${campaignTitle}".`
     : config.message;
 
   return `https://wa.me/${config.phone}?text=${encodeURIComponent(message)}`;

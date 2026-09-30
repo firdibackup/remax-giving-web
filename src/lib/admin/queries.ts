@@ -30,7 +30,10 @@ export async function listCampaigns(options?: {
   await requireAdmin();
   const supabase = await createClient();
 
-  let query = supabase.from("hog_admin_campaigns").select("*").order("created_at", { ascending: false });
+  let query = supabase
+    .from("hog_admin_campaigns")
+    .select("*")
+    .order("created_at", { ascending: false });
 
   if (options?.status) {
     query = query.eq("status", options.status as CampaignStatus);
@@ -42,14 +45,20 @@ export async function listCampaigns(options?: {
 
   const [campaignsResult, statsResult] = await Promise.all([
     query,
-    supabase.from("hog_campaign_stats").select("campaign_id,raised_amount_idr,verified_donation_count,percent_funded"),
+    supabase
+      .from("hog_campaign_stats")
+      .select(
+        "campaign_id,raised_amount_idr,verified_donation_count,percent_funded",
+      ),
   ]);
 
   if (campaignsResult.error) {
-    throw new Error("Daftar proyek tidak dapat dimuat.");
+    throw new Error("Daftar program tidak dapat dimuat.");
   }
 
-  const statsMap = new Map((statsResult.data || []).map((row) => [row.campaign_id, row]));
+  const statsMap = new Map(
+    (statsResult.data || []).map((row) => [row.campaign_id, row]),
+  );
 
   return (campaignsResult.data || []).map((campaign) => {
     const stats = statsMap.get(campaign.id);
@@ -66,7 +75,11 @@ export async function listCampaigns(options?: {
 export async function getCampaign(id: string): Promise<CampaignRow | null> {
   await requireAdmin();
   const supabase = await createClient();
-  const { data, error } = await supabase.from("hog_admin_campaigns").select("*").eq("id", id).maybeSingle();
+  const { data, error } = await supabase
+    .from("hog_admin_campaigns")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
 
   return error ? null : data;
 }
@@ -91,7 +104,9 @@ export async function getCampaignStats(id: string): Promise<{
   };
 }
 
-export async function listCampaignOptions(): Promise<Array<Pick<CampaignRow, "id" | "title" | "status">>> {
+export async function listCampaignOptions(): Promise<
+  Array<Pick<CampaignRow, "id" | "title" | "status">>
+> {
   await requireAdmin();
   const supabase = await createClient();
   const { data } = await supabase
@@ -113,7 +128,9 @@ export async function listMediaAssets(): Promise<MediaAssetRow[]> {
   return data || [];
 }
 
-export async function getCampaignCoverMedia(campaignId: string): Promise<MediaAssetRow | null> {
+export async function getCampaignCoverMedia(
+  campaignId: string,
+): Promise<MediaAssetRow | null> {
   await requireAdmin();
   const supabase = await createClient();
   const { data: campaign } = await supabase
@@ -135,7 +152,9 @@ export async function getCampaignCoverMedia(campaignId: string): Promise<MediaAs
   return data || null;
 }
 
-export async function listCampaignDocumentation(campaignId: string): Promise<MediaAssetRow[]> {
+export async function listCampaignDocumentation(
+  campaignId: string,
+): Promise<MediaAssetRow[]> {
   await requireAdmin();
   const supabase = await createClient();
   const { data: links } = await supabase
@@ -163,7 +182,9 @@ export async function listCampaignDocumentation(campaignId: string): Promise<Med
     .filter((asset): asset is MediaAssetRow => Boolean(asset));
 }
 
-export async function listCampaignAllocations(campaignId: string): Promise<CampaignAllocationRow[]> {
+export async function listCampaignAllocations(
+  campaignId: string,
+): Promise<CampaignAllocationRow[]> {
   await requireAdmin();
   const supabase = await createClient();
   const { data } = await supabase
@@ -215,21 +236,28 @@ export async function listDonations(options?: {
     throw new Error("Daftar donasi tidak dapat dimuat.");
   }
 
-  const campaignMap = new Map((campaignsResult.data || []).map((row) => [row.id, row.title]));
+  const campaignMap = new Map(
+    (campaignsResult.data || []).map((row) => [row.id, row.title]),
+  );
 
   return {
     rows: (donationsResult.data || []).map((donation) => ({
       ...donation,
-      campaignTitle: campaignMap.get(donation.campaign_id) || "Proyek tidak ditemukan",
+      campaignTitle:
+        campaignMap.get(donation.campaign_id) || "program tidak ditemukan",
     })),
     total: donationsResult.count ?? 0,
   };
 }
 
-export async function getDonationDetail(id: string): Promise<DonationDetail | null> {
+export async function getDonationDetail(
+  id: string,
+): Promise<DonationDetail | null> {
   await requireAdmin();
   const supabase = await createClient();
-  const { data, error } = await supabase.rpc("hog_admin_donation_detail", { p_donation_id: id });
+  const { data, error } = await supabase.rpc("hog_admin_donation_detail", {
+    p_donation_id: id,
+  });
 
   return error ? null : data;
 }
@@ -243,7 +271,10 @@ export async function listReports(): Promise<ReportListItem[]> {
   const supabase = await createClient();
 
   const [reportsResult, campaignsResult] = await Promise.all([
-    supabase.from("hog_admin_reports").select("*").order("created_at", { ascending: false }),
+    supabase
+      .from("hog_admin_reports")
+      .select("*")
+      .order("created_at", { ascending: false }),
     supabase.from("hog_admin_campaigns").select("id,title"),
   ]);
 
@@ -251,11 +282,15 @@ export async function listReports(): Promise<ReportListItem[]> {
     throw new Error("Daftar laporan tidak dapat dimuat.");
   }
 
-  const campaignMap = new Map((campaignsResult.data || []).map((row) => [row.id, row.title]));
+  const campaignMap = new Map(
+    (campaignsResult.data || []).map((row) => [row.id, row.title]),
+  );
 
   return (reportsResult.data || []).map((report) => ({
     ...report,
-    campaignTitle: report.campaign_id ? campaignMap.get(report.campaign_id) ?? null : null,
+    campaignTitle: report.campaign_id
+      ? (campaignMap.get(report.campaign_id) ?? null)
+      : null,
   }));
 }
 
@@ -267,7 +302,10 @@ export async function listBlogPosts(): Promise<BlogPostListItem[]> {
   await requireAdmin();
   const supabase = await createClient();
   const [postsResult, categoriesResult] = await Promise.all([
-    supabase.from("hog_admin_blog_posts").select("*").order("created_at", { ascending: false }),
+    supabase
+      .from("hog_admin_blog_posts")
+      .select("*")
+      .order("created_at", { ascending: false }),
     supabase.from("hog_admin_blog_categories").select("*"),
   ]);
 
@@ -275,11 +313,18 @@ export async function listBlogPosts(): Promise<BlogPostListItem[]> {
     throw new Error("Daftar tulisan tidak dapat dimuat.");
   }
 
-  const categoryMap = new Map((categoriesResult.data || []).map((category) => [category.id, category.name]));
+  const categoryMap = new Map(
+    (categoriesResult.data || []).map((category) => [
+      category.id,
+      category.name,
+    ]),
+  );
 
   return (postsResult.data || []).map((post) => ({
     ...post,
-    categoryName: post.category_id ? categoryMap.get(post.category_id) ?? null : null,
+    categoryName: post.category_id
+      ? (categoryMap.get(post.category_id) ?? null)
+      : null,
   }));
 }
 

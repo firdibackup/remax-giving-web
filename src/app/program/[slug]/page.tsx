@@ -74,8 +74,8 @@ export default async function ProjectDetailPage({
     .map((item) => ({
       id: item.media_id,
       src: item.src,
-      alt: item.alt_text || item.caption || "Dokumentasi proyek",
-      caption: item.caption || item.alt_text || "Dokumentasi proyek",
+      alt: item.alt_text || item.caption || "Dokumentasi program",
+      caption: item.caption || item.alt_text || "Dokumentasi program",
       pos: item.focal_position || "50% 50%",
     }));
   const days = cycleDays(campaign.startsOn, campaign.endsOn);
@@ -137,7 +137,7 @@ export default async function ProjectDetailPage({
                   href="/program"
                   className="font-sans text-sm font-bold text-white/80 underline-offset-4 hover:underline"
                 >
-                  Lihat proyek lain →
+                  Lihat program lain →
                 </Link>
               </>
             )}
@@ -248,7 +248,7 @@ export default async function ProjectDetailPage({
             <div className="rounded-2xl border border-brand-border bg-white p-7 shadow-brand-card sm:p-9">
               <div className="mb-5 flex flex-wrap items-baseline justify-between gap-4">
                 <h2 className="text-xl font-bold text-brand-navy">
-                  Donatur proyek ini
+                  Donatur Program ini
                 </h2>
                 <span className="font-sans text-xs text-brand-text-body">
                   {campaign.donorCount} donatur · nama disamarkan
@@ -276,7 +276,7 @@ export default async function ProjectDetailPage({
                   ))
                 ) : (
                   <div className="border-t border-brand-border py-6 font-sans text-sm text-brand-text-body">
-                    Donatur akan tampil setelah donasi tercatat untuk proyek
+                    Donatur akan tampil setelah donasi tercatat untuk program
                     ini.
                   </div>
                 )}
@@ -364,7 +364,7 @@ export default async function ProjectDetailPage({
           <Reveal>
             <div className="font-hand text-2xl leading-none font-bold opacity-85 sm:text-[32px]">
               {donationOpen
-                ? "Proyek ini masih berjalan"
+                ? "program ini masih berjalan"
                 : "Kebaikan terus berlanjut"}
             </div>
           </Reveal>
@@ -378,8 +378,8 @@ export default async function ProjectDetailPage({
           <Reveal delay={150}>
             <p className="mx-auto mb-7 max-w-[480px] text-base leading-relaxed opacity-88 sm:text-lg">
               {donationOpen
-                ? "Hubungi pengurus melalui WhatsApp untuk berdonasi dan memperoleh informasi proyek ini."
-                : "Donasi untuk proyek ini telah ditutup. Terima kasih atas dukungan Anda — pantau proyek lain yang masih berjalan."}
+                ? "Hubungi pengurus melalui WhatsApp untuk berdonasi dan memperoleh informasi program ini."
+                : "Donasi untuk program ini telah ditutup. Terima kasih atas dukungan Anda — pantau program lain yang masih berjalan."}
             </p>
           </Reveal>
           <Reveal delay={220}>
@@ -391,7 +391,7 @@ export default async function ProjectDetailPage({
                 href="/program"
                 className="inline-flex h-[56px] items-center rounded-[12px] border-[1.5px] border-white/60 px-6.5 font-sans text-base font-bold text-white transition-colors hover:bg-white/12"
               >
-                Lihat semua proyek
+                Lihat semua program
               </Link>
             </div>
           </Reveal>

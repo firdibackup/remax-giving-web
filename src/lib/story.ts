@@ -1,4 +1,4 @@
-// Shared helpers for the campaign "Cerita proyek" rich-text field.
+// Shared helpers for the campaign "Cerita program" rich-text field.
 // The DB column stays `story_paragraphs text[]`: legacy rows hold one plain-text
 // string per paragraph, new rows hold a single HTML string authored in the editor.
 
@@ -17,7 +17,10 @@ export const STORY_PROSE_CLASS =
 const HTML_RE = /<[a-z][\s\S]*>/i;
 
 export function escapeHtml(value: string): string {
-  return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 }
 
 // Turn a stored `story_paragraphs` array into one HTML string for rendering / editing.
@@ -27,6 +30,8 @@ export function storyParagraphsToHtml(paragraphs: string[]): string {
     return "";
   }
   return paragraphs
-    .map((paragraph) => (HTML_RE.test(paragraph) ? paragraph : `<p>${escapeHtml(paragraph)}</p>`))
+    .map((paragraph) =>
+      HTML_RE.test(paragraph) ? paragraph : `<p>${escapeHtml(paragraph)}</p>`,
+    )
     .join("");
 }

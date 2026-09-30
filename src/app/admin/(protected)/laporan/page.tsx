@@ -25,7 +25,9 @@ import {
 import { formatShortDate } from "@/lib/format";
 import { listCampaignOptions, listReports } from "@/lib/admin/queries";
 
-export default async function ReportsPage({ searchParams }: PageProps<"/admin/laporan">) {
+export default async function ReportsPage({
+  searchParams,
+}: PageProps<"/admin/laporan">) {
   const notice = await searchParams;
   const [reports, campaigns] = await Promise.all([
     listReports(),
@@ -44,14 +46,20 @@ export default async function ReportsPage({ searchParams }: PageProps<"/admin/la
         }
 
         if (report.storage_bucket === BUCKETS.publicReports) {
-          return [report.id, publicStorageUrl(report.storage_bucket, report.storage_path)];
+          return [
+            report.id,
+            publicStorageUrl(report.storage_bucket, report.storage_path),
+          ];
         }
 
         if (!isReportBucket(report.storage_bucket)) {
           return [report.id, null];
         }
 
-        return [report.id, await createSignedUrl(report.storage_bucket, report.storage_path)];
+        return [
+          report.id,
+          await createSignedUrl(report.storage_bucket, report.storage_path),
+        ];
       }),
     ),
   );
@@ -60,13 +68,15 @@ export default async function ReportsPage({ searchParams }: PageProps<"/admin/la
     <div className="space-y-6">
       <AdminPageHeader
         title="Laporan"
-        description="Kelola dokumen transparansi per proyek maupun laporan berkala dalam format PDF atau tautan eksternal."
+        description="Kelola dokumen transparansi per program maupun laporan berkala dalam format PDF atau tautan eksternal."
       />
       <AdminNotice error={notice.error} success={notice.success} />
 
       <Card className="gap-0 border-0 bg-white py-0 ring-1 ring-brand-border">
         <CardHeader className="border-b border-brand-border px-5 py-5 sm:px-6">
-          <CardTitle className="font-bold text-brand-navy">Buat laporan</CardTitle>
+          <CardTitle className="font-bold text-brand-navy">
+            Buat laporan
+          </CardTitle>
         </CardHeader>
         <CardContent className="p-5 sm:p-6">
           <form action={createReport} className="grid gap-5 md:grid-cols-2">
@@ -75,31 +85,61 @@ export default async function ReportsPage({ searchParams }: PageProps<"/admin/la
             </FormField>
             <FormField label="Jenis laporan" htmlFor="kind" required>
               <Select id="kind" name="kind" defaultValue="campaign" required>
-                <option value="campaign">Laporan proyek</option>
+                <option value="campaign">Laporan program</option>
                 <option value="periodic">Laporan berkala</option>
               </Select>
             </FormField>
-            <FormField label="Proyek" htmlFor="campaign_id" hint="Wajib untuk laporan proyek.">
+            <FormField
+              label="program"
+              htmlFor="campaign_id"
+              hint="Wajib untuk laporan program."
+            >
               <Select id="campaign_id" name="campaign_id" defaultValue="">
-                <option value="">Tidak terkait proyek</option>
+                <option value="">Tidak terkait program</option>
                 {campaigns.map((campaign) => (
-                  <option key={campaign.id} value={campaign.id}>{campaign.title}</option>
+                  <option key={campaign.id} value={campaign.id}>
+                    {campaign.title}
+                  </option>
                 ))}
               </Select>
             </FormField>
             <FormField label="Label periode" htmlFor="period_label">
-              <Input id="period_label" name="period_label" placeholder="Agustus 2026" />
+              <Input
+                id="period_label"
+                name="period_label"
+                placeholder="Agustus 2026"
+              />
             </FormField>
-            <FormField label="Berkas PDF" htmlFor="report" hint="Maksimal 25 MB.">
-              <Input id="report" name="report" type="file" accept="application/pdf" />
+            <FormField
+              label="Berkas PDF"
+              htmlFor="report"
+              hint="Maksimal 25 MB."
+            >
+              <Input
+                id="report"
+                name="report"
+                type="file"
+                accept="application/pdf"
+              />
             </FormField>
             <div className="md:col-span-2">
-              <FormField label="Tautan eksternal" htmlFor="external_url" hint="Opsional jika dokumen disimpan di layanan lain.">
-                <Input id="external_url" name="external_url" type="url" placeholder="https://" />
+              <FormField
+                label="Tautan eksternal"
+                htmlFor="external_url"
+                hint="Opsional jika dokumen disimpan di layanan lain."
+              >
+                <Input
+                  id="external_url"
+                  name="external_url"
+                  type="url"
+                  placeholder="https://"
+                />
               </FormField>
             </div>
             <div className="md:col-span-2">
-              <SubmitButton className="bg-brand-blue px-5 font-bold text-white hover:bg-brand-blue-hover">Simpan sebagai draf</SubmitButton>
+              <SubmitButton className="bg-brand-blue px-5 font-bold text-white hover:bg-brand-blue-hover">
+                Simpan sebagai draf
+              </SubmitButton>
             </div>
           </form>
         </CardContent>
@@ -125,38 +165,97 @@ export default async function ReportsPage({ searchParams }: PageProps<"/admin/la
                   return (
                     <tr key={report.id} className="hover:bg-brand-bg-soft/60">
                       <td className="px-6 py-4">
-                        <p className="font-bold text-brand-navy">{report.title}</p>
-                        <p className="mt-1 text-xs text-brand-text-body">Dibuat {formatShortDate(report.created_at)}</p>
+                        <p className="font-bold text-brand-navy">
+                          {report.title}
+                        </p>
+                        <p className="mt-1 text-xs text-brand-text-body">
+                          Dibuat {formatShortDate(report.created_at)}
+                        </p>
                       </td>
-                      <td className="px-4 py-4 text-brand-text-body">{report.kind === "campaign" ? report.campaignTitle || "Proyek" : "Berkala"}</td>
-                      <td className="px-4 py-4 text-brand-text-body">{report.period_label || "-"}</td>
+                      <td className="px-4 py-4 text-brand-text-body">
+                        {report.kind === "campaign"
+                          ? report.campaignTitle || "program"
+                          : "Berkala"}
+                      </td>
+                      <td className="px-4 py-4 text-brand-text-body">
+                        {report.period_label || "-"}
+                      </td>
                       <td className="px-4 py-4">
-                        <Badge variant="outline" className={report.published_at ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-brand-border bg-white text-brand-text-body"}>
+                        <Badge
+                          variant="outline"
+                          className={
+                            report.published_at
+                              ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                              : "border-brand-border bg-white text-brand-text-body"
+                          }
+                        >
                           {report.published_at ? "Terbit" : "Draf"}
                         </Badge>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex justify-end gap-2">
                           {fileUrl && (
-                            <Button asChild variant="outline" size="sm"><a href={fileUrl} target="_blank" rel="noreferrer"><ExternalLink className="size-4" />Buka</a></Button>
+                            <Button asChild variant="outline" size="sm">
+                              <a
+                                href={fileUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                <ExternalLink className="size-4" />
+                                Buka
+                              </a>
+                            </Button>
                           )}
                           {report.published_at ? (
                             <form action={unpublishReport}>
-                              <input type="hidden" name="report_id" value={report.id} />
-                              <input type="hidden" name="campaign_id" value={report.campaign_id || ""} />
-                              <ConfirmSubmitButton confirmMessage="Tarik laporan ini dari situs publik?">Tarik</ConfirmSubmitButton>
+                              <input
+                                type="hidden"
+                                name="report_id"
+                                value={report.id}
+                              />
+                              <input
+                                type="hidden"
+                                name="campaign_id"
+                                value={report.campaign_id || ""}
+                              />
+                              <ConfirmSubmitButton confirmMessage="Tarik laporan ini dari situs publik?">
+                                Tarik
+                              </ConfirmSubmitButton>
                             </form>
                           ) : (
                             <form action={publishReport}>
-                              <input type="hidden" name="report_id" value={report.id} />
-                              <input type="hidden" name="campaign_id" value={report.campaign_id || ""} />
-                              <ConfirmSubmitButton confirmMessage="Publikasikan laporan ini? Pastikan berkas atau tautan sudah tersedia.">Terbitkan</ConfirmSubmitButton>
+                              <input
+                                type="hidden"
+                                name="report_id"
+                                value={report.id}
+                              />
+                              <input
+                                type="hidden"
+                                name="campaign_id"
+                                value={report.campaign_id || ""}
+                              />
+                              <ConfirmSubmitButton confirmMessage="Publikasikan laporan ini? Pastikan berkas atau tautan sudah tersedia.">
+                                Terbitkan
+                              </ConfirmSubmitButton>
                             </form>
                           )}
                           <form action={deleteReport}>
-                            <input type="hidden" name="report_id" value={report.id} />
-                            <input type="hidden" name="campaign_id" value={report.campaign_id || ""} />
-                            <ConfirmSubmitButton variant="ghost" confirmMessage="Hapus laporan ini secara permanen?"><Trash2 className="size-4" /></ConfirmSubmitButton>
+                            <input
+                              type="hidden"
+                              name="report_id"
+                              value={report.id}
+                            />
+                            <input
+                              type="hidden"
+                              name="campaign_id"
+                              value={report.campaign_id || ""}
+                            />
+                            <ConfirmSubmitButton
+                              variant="ghost"
+                              confirmMessage="Hapus laporan ini secara permanen?"
+                            >
+                              <Trash2 className="size-4" />
+                            </ConfirmSubmitButton>
                           </form>
                         </div>
                       </td>
@@ -166,7 +265,10 @@ export default async function ReportsPage({ searchParams }: PageProps<"/admin/la
               </tbody>
             </table>
           ) : (
-            <EmptyState title="Belum ada laporan" description="Buat laporan proyek atau laporan berkala melalui form di atas." />
+            <EmptyState
+              title="Belum ada laporan"
+              description="Buat laporan program atau laporan berkala melalui form di atas."
+            />
           )}
         </CardContent>
       </Card>

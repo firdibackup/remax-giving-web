@@ -99,7 +99,7 @@ cross join lateral (
       true,
       timestamptz '2026-08-01 09:00:00+07',
       true,
-      'Seed asli konflik: daftar proyek berjalan Rp68 juta, detail proyek tersalurkan Rp100 juta. Data canonical memakai ledger donasi Rp28,8 juta.'
+      'Seed asli konflik: daftar program berjalan Rp68 juta, detail program tersalurkan Rp100 juta. Data canonical memakai ledger donasi Rp28,8 juta.'
     ),
     (
       'beasiswa-anak-agent-remax',
@@ -265,11 +265,11 @@ from refs
 cross join lateral (
   values
     ('sehari-bersama-keluarga-penerima-di-cianjur', 'Sehari bersama keluarga penerima di Cianjur', null::uuid, refs.media_01, 'Kami berangkat pukul lima pagi untuk mengantar bantuan renovasi. Yang paling diingat bukan angka donasinya, tapi kalimat pertama tuan rumah ketika pintu dibuka.', 'Cerita lapangan dari pengurus Home of Giving. Konten lengkap akan diperbarui melalui panel admin.', 'pengurus Home of Giving', 6, true, timestamptz '2026-08-14 09:00:00+07'),
-    ('laporan-siklus-juli-tiga-proyek-tuntas', 'Laporan siklus Juli: tiga Program Selesai', null::uuid, refs.media_03, 'Rincian penggunaan dana untuk renovasi rumah ibadah, perpustakaan mini, dan bibit pohon kawasan Puncak.', 'Laporan ringkas dari data seed. Perlu rekonsiliasi ledger sebelum dipublikasikan sebagai laporan finansial final.', null, null, false, timestamptz '2026-07-28 09:00:00+07'),
+    ('laporan-siklus-juli-tiga-program-tuntas', 'Laporan siklus Juli: tiga Program Selesai', null::uuid, refs.media_03, 'Rincian penggunaan dana untuk renovasi rumah ibadah, perpustakaan mini, dan bibit pohon kawasan Puncak.', 'Laporan ringkas dari data seed. Perlu rekonsiliasi ledger sebelum dipublikasikan sebagai laporan finansial final.', null, null, false, timestamptz '2026-07-28 09:00:00+07'),
     ('kenapa-nama-donatur-kami-samarkan', 'Kenapa nama donatur kami samarkan', null::uuid, refs.media_02, 'Prinsip pencatatan donasi Home of Giving: tercatat lengkap di internal, disamarkan saat dipublikasikan.', 'Nama asli donatur hanya disimpan untuk kebutuhan internal. Website publik selalu menggunakan nama tersamarkan.', null, null, false, timestamptz '2026-08-02 09:00:00+07'),
     ('perpustakaan-mini-sdn-03-dari-rak-kosong', 'Perpustakaan mini SDN 03: dari rak kosong ke 480 buku', null::uuid, refs.media_01, 'Guru kelas empat bercerita soal jam istirahat yang kini dipakai membaca, bukan berkeliaran di lorong.', 'Konten detail akan dilengkapi setelah data historis direkonsiliasi.', null, null, false, timestamptz '2026-07-21 09:00:00+07'),
     ('charity-run-agent-remax-240-peserta', 'Charity Run agent REMAX: 240 peserta, satu tujuan', null::uuid, refs.media_02, 'Catatan pengurus dari Senayan - bagaimana biaya acara ditekan agar seluruh donasi tetap utuh.', 'Catatan kegiatan akan dilengkapi melalui panel admin.', null, null, false, timestamptz '2026-07-09 09:00:00+07'),
-    ('cara-pengurus-memilih-satu-penerima-manfaat', 'Cara pengurus memilih satu penerima manfaat', null::uuid, refs.media_03, 'Survei lapangan, verifikasi lembaga, dan alasan kami tidak membagi donasi ke banyak penerima sekaligus.', 'Home of Giving menyalurkan satu proyek kepada satu penerima manfaat agar dampak dan pertanggungjawaban lebih utuh.', null, null, false, timestamptz '2026-06-24 09:00:00+07'),
+    ('cara-pengurus-memilih-satu-penerima-manfaat', 'Cara pengurus memilih satu penerima manfaat', null::uuid, refs.media_03, 'Survei lapangan, verifikasi lembaga, dan alasan kami tidak membagi donasi ke banyak penerima sekaligus.', 'Home of Giving menyalurkan satu program kepada satu penerima manfaat agar dampak dan pertanggungjawaban lebih utuh.', null, null, false, timestamptz '2026-06-24 09:00:00+07'),
     ('enam-bulan-home-of-giving', 'Enam bulan Home of Giving: yang berhasil dan yang belum', null::uuid, refs.media_01, 'Rekap paruh pertama 2026: Rp 640 juta tersalurkan, dua target belum tercapai, dan rencana perbaikannya.', 'Angka dalam artikel seed memerlukan konfirmasi karena belum didukung ledger Supabase awal.', null, null, false, timestamptz '2026-05-30 09:00:00+07')
 ) as data(slug, title, campaign_id, cover_media_id, excerpt, body_markdown, author_name, read_minutes, is_featured, published_at)
 on conflict (slug) do update
@@ -289,7 +289,7 @@ select p.id, m.id, rel.sort_order
 from (values
   ('sehari-bersama-keluarga-penerima-di-cianjur', 'g1', 10),
   ('kenapa-nama-donatur-kami-samarkan', 'g2', 10),
-  ('laporan-siklus-juli-tiga-proyek-tuntas', 'g3', 10)
+  ('laporan-siklus-juli-tiga-program-tuntas', 'g3', 10)
 ) as rel(post_slug, media_source_key, sort_order)
 join home_of_giving.blog_posts p on p.slug = rel.post_slug
 join home_of_giving.media_assets m on m.source_key = rel.media_source_key

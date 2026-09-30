@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { bulkUpdateCampaignMedia } from "@/app/admin/(protected)/proyek/actions";
+import { bulkUpdateCampaignMedia } from "@/app/admin/(protected)/program/actions";
 import { FormField } from "@/components/admin/form-field";
 import { SubmitButton } from "@/components/admin/submit-button";
 import { Input } from "@/components/ui/input";
@@ -102,7 +102,7 @@ function CampaignDocumentationEditor({
                       <Image
                         src={item.thumbUrl}
                         alt={
-                          item.altText || item.caption || "Dokumentasi proyek"
+                          item.altText || item.caption || "Dokumentasi program"
                         }
                         fill
                         sizes="(max-width: 640px) 50vw, 25vw"

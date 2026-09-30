@@ -87,10 +87,18 @@ function DonationsTable({ donations }: { donations: DonationItem[] }) {
                 Donatur
               </label>
             </th>
-            <th className="px-4 py-3 font-bold" scope="col">Proyek</th>
-            <th className="px-4 py-3 font-bold" scope="col">Tanggal</th>
-            <th className="px-4 py-3 text-right font-bold" scope="col">Nominal</th>
-            <th className="px-6 py-3 text-right font-bold" scope="col">Aksi</th>
+            <th className="px-4 py-3 font-bold" scope="col">
+              program
+            </th>
+            <th className="px-4 py-3 font-bold" scope="col">
+              Tanggal
+            </th>
+            <th className="px-4 py-3 text-right font-bold" scope="col">
+              Nominal
+            </th>
+            <th className="px-6 py-3 text-right font-bold" scope="col">
+              Aksi
+            </th>
           </tr>
         </thead>
         <tbody className="divide-y divide-brand-border">
@@ -105,14 +113,24 @@ function DonationsTable({ donations }: { donations: DonationItem[] }) {
                     onChange={() => toggle(donation.id)}
                     aria-label={`Pilih donasi ${donation.public_name}`}
                   />
-                  <span className="font-bold text-brand-navy">{donation.public_name}</span>
+                  <span className="font-bold text-brand-navy">
+                    {donation.public_name}
+                  </span>
                 </label>
               </td>
-              <td className="max-w-[280px] px-4 py-4 text-brand-text-body"><span className="line-clamp-2">{donation.campaignTitle}</span></td>
-              <td className="px-4 py-4 whitespace-nowrap text-brand-text-body tabular-nums">{formatShortDate(donation.donated_on)}</td>
-              <td className="px-4 py-4 text-right font-bold whitespace-nowrap text-brand-navy tabular-nums">{formatCurrency(donation.amount_idr)}</td>
+              <td className="max-w-[280px] px-4 py-4 text-brand-text-body">
+                <span className="line-clamp-2">{donation.campaignTitle}</span>
+              </td>
+              <td className="px-4 py-4 whitespace-nowrap text-brand-text-body tabular-nums">
+                {formatShortDate(donation.donated_on)}
+              </td>
+              <td className="px-4 py-4 text-right font-bold whitespace-nowrap text-brand-navy tabular-nums">
+                {formatCurrency(donation.amount_idr)}
+              </td>
               <td className="px-6 py-4 text-right">
-                <Button asChild variant="outline"><Link href={`/admin/donasi/${donation.id}`}>Kelola</Link></Button>
+                <Button asChild variant="outline">
+                  <Link href={`/admin/donasi/${donation.id}`}>Kelola</Link>
+                </Button>
               </td>
             </tr>
           ))}
@@ -122,12 +140,25 @@ function DonationsTable({ donations }: { donations: DonationItem[] }) {
       {selected.size > 0 && (
         <div className="sticky bottom-0 z-10 flex items-center justify-between gap-4 rounded-b-xl border border-brand-border bg-brand-navy px-5 py-3 text-sm text-white shadow-lg">
           <p>
-            <span className="font-bold">{formatNumber(selected.size)}</span> donasi dipilih
+            <span className="font-bold">{formatNumber(selected.size)}</span>{" "}
+            donasi dipilih
             {" · "}
-            <span className="font-bold tabular-nums">{formatCurrency(totalAmount)}</span> total
+            <span className="font-bold tabular-nums">
+              {formatCurrency(totalAmount)}
+            </span>{" "}
+            total
           </p>
-          <Button type="button" variant="destructive" disabled={isPending} onClick={handleDelete}>
-            {isPending ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
+          <Button
+            type="button"
+            variant="destructive"
+            disabled={isPending}
+            onClick={handleDelete}
+          >
+            {isPending ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <Trash2 className="size-4" />
+            )}
             {isPending ? "Menghapus..." : "Hapus permanen"}
           </Button>
         </div>

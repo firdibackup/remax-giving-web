@@ -6,7 +6,7 @@ import {
   addCampaignMedia,
   deleteCampaigns,
   uploadCampaignCover,
-} from "@/app/admin/(protected)/proyek/actions";
+} from "@/app/admin/(protected)/program/actions";
 import { AdminNotice } from "@/components/admin/admin-notice";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { AdminStatusBadge } from "@/components/admin/admin-status-badge";
@@ -33,7 +33,7 @@ import { campaignStatusPresentation } from "@/lib/status";
 export default async function CampaignDetailPage({
   params,
   searchParams,
-}: PageProps<"/admin/proyek/[id]">) {
+}: PageProps<"/admin/program/[id]">) {
   const { id } = await params;
   const notice = await searchParams;
   const campaign = await getCampaign(id);
@@ -72,9 +72,9 @@ export default async function CampaignDetailPage({
     <div className="space-y-6">
       <AdminPageHeader
         title={campaign.title}
-        description="Perbarui detail proyek, sampul, dan dokumentasi yang tampil di situs publik."
-        backHref="/admin/proyek"
-        backLabel="Kembali ke daftar proyek"
+        description="Perbarui detail program, sampul, dan dokumentasi yang tampil di situs publik."
+        backHref="/admin/program"
+        backLabel="Kembali ke daftar program"
       />
       <AdminNotice error={notice.error} success={notice.success} />
 
@@ -140,7 +140,7 @@ export default async function CampaignDetailPage({
       <Card className="gap-0 border-0 bg-white py-0 ring-1 ring-brand-border">
         <CardHeader className="border-b border-brand-border px-5 py-5 sm:px-6">
           <CardTitle className="font-bold text-brand-navy">
-            Informasi proyek
+            Informasi program
           </CardTitle>
         </CardHeader>
         <CardContent className="p-5 sm:p-6">
@@ -170,7 +170,7 @@ export default async function CampaignDetailPage({
         <Card className="gap-0 border-0 bg-white py-0 ring-1 ring-brand-border">
           <CardHeader className="border-b border-brand-border px-5 py-5 sm:px-6">
             <CardTitle className="font-bold text-brand-navy">
-              Sampul proyek
+              Sampul program
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 p-5 sm:p-6">
@@ -186,7 +186,7 @@ export default async function CampaignDetailPage({
                   <div className="relative h-44 w-full">
                     <Image
                       src={coverUrl}
-                      alt={cover.alt_text || "Sampul proyek"}
+                      alt={cover.alt_text || "Sampul program"}
                       fill
                       sizes="(max-width: 1024px) 100vw, 50vw"
                       className="object-cover"
@@ -202,7 +202,7 @@ export default async function CampaignDetailPage({
               </div>
             ) : (
               <p className="rounded-xl border border-dashed border-brand-border bg-brand-bg-soft px-4 py-3 text-sm text-brand-text-body">
-                Belum ada sampul untuk proyek ini.
+                Belum ada sampul untuk program ini.
               </p>
             )}
             <form action={uploadCampaignCover} className="space-y-4">
@@ -253,7 +253,7 @@ export default async function CampaignDetailPage({
               />
             ) : (
               <p className="rounded-xl border border-dashed border-brand-border bg-brand-bg-soft px-4 py-3 text-sm text-brand-text-body">
-                Belum ada dokumentasi untuk proyek ini.
+                Belum ada dokumentasi untuk program ini.
               </p>
             )}
             <form
@@ -319,16 +319,16 @@ export default async function CampaignDetailPage({
         </CardHeader>
         <CardContent className="flex flex-wrap items-center justify-between gap-4 p-5 sm:p-6">
           <p className="max-w-lg text-sm text-brand-text-body">
-            Proyek, beserta donasi, dokumentasi, dan laporannya akan dihapus
+            program, beserta donasi, dokumentasi, dan laporannya akan dihapus
             secara permanen dan tidak dapat dipulihkan.
           </p>
           <form action={deleteCampaigns}>
             <input type="hidden" name="campaign_id" value={campaign.id} />
             <ConfirmSubmitButton
               variant="destructive"
-              confirmMessage="Hapus proyek ini secara permanen? Proyek, donasi, dokumentasi, dan laporannya tidak dapat dipulihkan."
+              confirmMessage="Hapus program ini secara permanen? program, donasi, dokumentasi, dan laporannya tidak dapat dipulihkan."
             >
-              Hapus proyek
+              Hapus program
             </ConfirmSubmitButton>
           </form>
         </CardContent>

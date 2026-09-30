@@ -319,7 +319,7 @@ begin
     and btrim(coalesce(beneficiary_name, '')) = '';
 
   if missing_campaigns is not null then
-    raise exception 'Migrasi dibatalkan: proyek publik tanpa nama penerima manfaat: %', missing_campaigns;
+    raise exception 'Migrasi dibatalkan: program publik tanpa nama penerima manfaat: %', missing_campaigns;
   end if;
 end
 $$;
@@ -1016,7 +1016,7 @@ begin
 
   if tg_op = 'UPDATE'
     and (new.amount_idr <> old.amount_idr or new.campaign_id <> old.campaign_id) then
-    raise exception 'Donasi terverifikasi tidak dapat diubah nominal atau proyeknya. Batalkan dahulu lalu catat ulang.';
+    raise exception 'Donasi terverifikasi tidak dapat diubah nominal atau programnya. Batalkan dahulu lalu catat ulang.';
   end if;
 
   new.verified_at := coalesce(new.verified_at, now());
@@ -1367,7 +1367,7 @@ begin
   end if;
 
   if not exists (select 1 from home_of_giving.campaigns c where c.id = p_campaign_id) then
-    raise exception 'Proyek tidak ditemukan';
+    raise exception 'program tidak ditemukan';
   end if;
 
   insert into home_of_giving_private.donor_identities (full_name, created_by)

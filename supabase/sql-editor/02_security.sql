@@ -354,7 +354,7 @@ begin
   end if;
 
   if not exists (select 1 from home_of_giving.campaigns c where c.id = p_campaign_id) then
-    raise exception 'Proyek tidak ditemukan';
+    raise exception 'program tidak ditemukan';
   end if;
 
   insert into home_of_giving_private.donor_identities (full_name, created_by)
