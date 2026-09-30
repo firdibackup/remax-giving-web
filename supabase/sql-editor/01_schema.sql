@@ -156,6 +156,7 @@ declare
   total integer;
   head text;
   tail text;
+  first_len integer;
 begin
   cleaned := btrim(regexp_replace(coalesce(full_name, ''), '\s+', ' ', 'g'));
 
@@ -165,7 +166,16 @@ begin
 
   parts := string_to_array(cleaned, ' ');
   total := array_length(parts, 1);
-  head := left(parts[1], 3) || '***';
+  first_len := char_length(parts[1]);
+
+  -- Ratina -> Rat**a; names of 4 letters or fewer keep only first + last: Siti -> S**i.
+  if first_len > 4 then
+    head := left(parts[1], 3) || repeat('*', first_len - 4) || right(parts[1], 1);
+  elsif first_len > 2 then
+    head := left(parts[1], 1) || repeat('*', first_len - 2) || right(parts[1], 1);
+  else
+    head := left(parts[1], 1) || '*';
+  end if;
 
   if total = 1 then
     return head;
@@ -317,7 +327,7 @@ create table if not exists home_of_giving.donations (
   constraint donations_amount_positive check (amount_idr > 0),
   constraint donations_public_name_present check (btrim(public_name) <> ''),
   constraint donations_public_name_masked check (
-    public_name = 'Anonim' or position('***' in public_name) > 0
+    public_name = 'Anonim' or position('*' in public_name) > 0
   ),
   constraint donations_status_verified check (status = 'verified'),
   constraint donations_verified_meta check (verified_at is not null)

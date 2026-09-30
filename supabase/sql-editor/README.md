@@ -80,13 +80,17 @@ Sebelum dihapus, proyek dan relasinya (`campaign_media`, `campaign_milestones`, 
 
 Sebelum dihapus, seluruh baris kategori proyek disalin ke `home_of_giving_private.simplification_archive` dengan `migration_key` `2026-09-16_remove_campaign_categories_v1`. Penghapusan memakai urutan dependensi tanpa `CASCADE`: bridge `public` dulu, lalu view `home_of_giving`, lalu kolom `campaigns.category_id`, lalu tabel kategori. View `home_of_giving.public_campaigns`, `public.hog_campaigns`, dan `public.hog_admin_campaigns` dibangun ulang dalam bentuk final tanpa kategori beserta grant-nya; dua query terakhir menampilkan sisa object/kolom kategori yang seharusnya 0 baris.
 
+### 14: format masking nama donatur
+
+`14_donor_name_masking.sql` bersifat transaksional dan dapat dijalankan ulang. Jalankan sekali pada database yang sudah berjalan (instalasi baru sudah mendapatkannya dari `01`). Skrip ini mengganti `mask_donor_name` ke format baru, melonggarkan constraint `donations_public_name_masked` dari `***` menjadi minimal satu `*`, lalu menyamarkan ulang semua donasi yang memiliki nama lengkap di `donor_identities`. Donasi seed legacy tanpa identitas tetap memakai nama yang tersimpan.
+
 ## Model final yang disederhanakan
 
 - Penerima manfaat bukan master data terpisah; nama dan lokasi disimpan langsung pada setiap proyek.
 - Donasi yang dimasukkan Super Admin langsung berstatus `verified` dan langsung masuk statistik serta ledger publik.
 - RPC pencatatan donasi final memiliki lima argumen: campaign, nama lengkap, nominal, tanggal, dan path bukti opsional.
 - Bukti transfer bersifat opsional. Jika diberikan, metadata file disimpan privat; bukti tidak menjadi syarat verifikasi.
-- Masking nama bersifat deterministik. Contoh: `Siti Rahmawati` menjadi `Sit*** R.`.
+- Masking nama bersifat deterministik. Contoh: `Ratina Sari` menjadi `Rat**a S.`; nama depan 4 huruf atau kurang hanya menampilkan huruf pertama dan terakhir (`Siti Rahmawati` menjadi `S**i R.`).
 - Nomor, label, dan pesan WhatsApp disimpan sekali secara global pada setting publik `whatsapp_cta`; tidak ada konfigurasi WhatsApp per proyek.
 - Laporan tetap tersedia sebagai laporan proyek atau berkala. PDF draf disimpan di bucket privat, dipindahkan ke bucket publik saat diterbitkan, dan dikembalikan ke bucket privat saat ditarik; tautan eksternal tidak dikelola oleh Storage.
 - Menghapus proyek berarti menghapus permanen donasi, identitas donatur yatim, metadata bukti, relasi media, milestone, dan laporan proyek tersebut melalui RPC `hog_admin_delete_campaigns`. Artikel blog tidak ikut terhapus dan hanya kehilangan tautan proyeknya.

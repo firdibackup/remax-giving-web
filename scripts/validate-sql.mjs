@@ -16,6 +16,7 @@ const sqlFiles = {
   bulkDelete: "supabase/sql-editor/09_campaign_bulk_delete.sql",
   cleanupDrafts: "supabase/sql-editor/10_cleanup_legacy_drafts.sql",
   removeCategories: "supabase/sql-editor/11_remove_campaign_categories.sql",
+  nameMasking: "supabase/sql-editor/14_donor_name_masking.sql",
 };
 
 const freshSequence = [
@@ -1261,7 +1262,7 @@ async function validateFreshInstall() {
       db,
       "admin: donasi tanpa bukti langsung verified dan termasking deterministik",
       `select (
-      data ->> 'public_name' = 'Sit*** R.'
+      data ->> 'public_name' = 'S**i R.'
       and data ->> 'full_name' = 'Siti Rahmawati'
       and data ->> 'status' = 'verified'
       and jsonb_array_length(data -> 'evidence_paths') = 0
@@ -1274,7 +1275,7 @@ async function validateFreshInstall() {
       db,
       "admin: bukti opsional tersimpan tanpa tahap verifikasi",
       `select (
-      data ->> 'public_name' = 'Sit*** R.'
+      data ->> 'public_name' = 'S**i R.'
       and data ->> 'status' = 'verified'
       and data -> 'evidence_paths' = '["donations/test/bukti.pdf"]'::jsonb
     ) as ok
@@ -1387,7 +1388,7 @@ async function validateFreshInstall() {
       count(*) filter (where id in ($1::uuid, $2::uuid)) = 2
       and count(*) filter (
         where id in ($1::uuid, $2::uuid)
-          and public_name = 'Sit*** R.'
+          and public_name = 'S**i R.'
       ) = 2
     ) as ok from public.hog_donation_ledger`,
       [donationWithoutEvidence, donationWithEvidence],
@@ -2130,6 +2131,27 @@ async function validateLegacyUpgrade() {
     and (select count(*) from home_of_giving.blog_posts) = 7
   ) as ok`,
     [cleanupArchiveCount],
+  );
+
+  await run(db, "upgrade 14_donor_name_masking.sql", readSql(sqlFiles.nameMasking));
+  await run(db, "upgrade rerun 14 (idempotensi)", readSql(sqlFiles.nameMasking));
+  await check(
+    db,
+    "masking: 3 huruf depan + huruf terakhir, nama pendek huruf pertama + terakhir",
+    `select (
+    home_of_giving_private.mask_donor_name('Ratina') = 'Rat**a'
+    and home_of_giving_private.mask_donor_name('  Ratina   Sari ') = 'Rat**a S.'
+    and home_of_giving_private.mask_donor_name('Muhammad Fajar') = 'Muh****d F.'
+    and home_of_giving_private.mask_donor_name('Siti Rahmawati') = 'S**i R.'
+    and home_of_giving_private.mask_donor_name('Ani') = 'A*i'
+    and home_of_giving_private.mask_donor_name('Al') = 'A*'
+    and not exists (
+      select 1
+      from home_of_giving.donations d
+      join home_of_giving_private.donor_identities i on i.id = d.donor_identity_id
+      where d.public_name <> home_of_giving_private.mask_donor_name(i.full_name)
+    )
+  ) as ok`,
   );
 
   await run(

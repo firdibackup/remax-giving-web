@@ -16,7 +16,7 @@ select
   count(*)::integer as total_donations,
   coalesce(sum(amount_idr), 0)::bigint as total_amount_idr,
   count(*) filter (
-    where position('***' in public_name) = 0
+    where position('*' in public_name) = 0
       and public_name <> 'Anonim'
   )::integer as unmasked_names
 from public.hog_donation_ledger;

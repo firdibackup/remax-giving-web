@@ -44,7 +44,7 @@ select
 
 select
   count(*) as total_baris,
-  count(*) filter (where position('***' in public_name) = 0 and public_name <> 'Anonim') as nama_tidak_tersamarkan
+  count(*) filter (where position('*' in public_name) = 0 and public_name <> 'Anonim') as nama_tidak_tersamarkan
 from home_of_giving.public_donation_ledger;
 
 select
