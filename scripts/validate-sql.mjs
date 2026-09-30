@@ -1262,7 +1262,7 @@ async function validateFreshInstall() {
       db,
       "admin: donasi tanpa bukti langsung verified dan termasking deterministik",
       `select (
-      data ->> 'public_name' = 'S**i R.'
+      data ->> 'public_name' = 'Si*i R.'
       and data ->> 'full_name' = 'Siti Rahmawati'
       and data ->> 'status' = 'verified'
       and jsonb_array_length(data -> 'evidence_paths') = 0
@@ -1275,7 +1275,7 @@ async function validateFreshInstall() {
       db,
       "admin: bukti opsional tersimpan tanpa tahap verifikasi",
       `select (
-      data ->> 'public_name' = 'S**i R.'
+      data ->> 'public_name' = 'Si*i R.'
       and data ->> 'status' = 'verified'
       and data -> 'evidence_paths' = '["donations/test/bukti.pdf"]'::jsonb
     ) as ok
@@ -1388,7 +1388,7 @@ async function validateFreshInstall() {
       count(*) filter (where id in ($1::uuid, $2::uuid)) = 2
       and count(*) filter (
         where id in ($1::uuid, $2::uuid)
-          and public_name = 'S**i R.'
+          and public_name = 'Si*i R.'
       ) = 2
     ) as ok from public.hog_donation_ledger`,
       [donationWithoutEvidence, donationWithEvidence],
@@ -2137,12 +2137,12 @@ async function validateLegacyUpgrade() {
   await run(db, "upgrade rerun 14 (idempotensi)", readSql(sqlFiles.nameMasking));
   await check(
     db,
-    "masking: 3 huruf depan + huruf terakhir, nama pendek huruf pertama + terakhir",
+    "masking: 2 huruf depan + huruf terakhir, nama pendek huruf pertama + terakhir",
     `select (
-    home_of_giving_private.mask_donor_name('Ratina') = 'Rat**a'
-    and home_of_giving_private.mask_donor_name('  Ratina   Sari ') = 'Rat**a S.'
-    and home_of_giving_private.mask_donor_name('Muhammad Fajar') = 'Muh****d F.'
-    and home_of_giving_private.mask_donor_name('Siti Rahmawati') = 'S**i R.'
+    home_of_giving_private.mask_donor_name('Ratina') = 'Ra***a'
+    and home_of_giving_private.mask_donor_name('  Ratina   Sari ') = 'Ra***a S.'
+    and home_of_giving_private.mask_donor_name('Muhammad Fajar') = 'Mu*****d F.'
+    and home_of_giving_private.mask_donor_name('Siti Rahmawati') = 'Si*i R.'
     and home_of_giving_private.mask_donor_name('Ani') = 'A*i'
     and home_of_giving_private.mask_donor_name('Al') = 'A*'
     and not exists (

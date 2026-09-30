@@ -90,7 +90,7 @@ Sebelum dihapus, seluruh baris kategori proyek disalin ke `home_of_giving_privat
 - Donasi yang dimasukkan Super Admin langsung berstatus `verified` dan langsung masuk statistik serta ledger publik.
 - RPC pencatatan donasi final memiliki lima argumen: campaign, nama lengkap, nominal, tanggal, dan path bukti opsional.
 - Bukti transfer bersifat opsional. Jika diberikan, metadata file disimpan privat; bukti tidak menjadi syarat verifikasi.
-- Masking nama bersifat deterministik. Contoh: `Ratina Sari` menjadi `Rat**a S.`; nama depan 4 huruf atau kurang hanya menampilkan huruf pertama dan terakhir (`Siti Rahmawati` menjadi `S**i R.`).
+- Masking nama bersifat deterministik. Contoh: `Ratina Sari` menjadi `Ra***a S.` dan `Siti Rahmawati` menjadi `Si*i R.`; nama depan 3 huruf atau kurang hanya menampilkan huruf pertama dan terakhir (`Ani` menjadi `A*i`).
 - Nomor, label, dan pesan WhatsApp disimpan sekali secara global pada setting publik `whatsapp_cta`; tidak ada konfigurasi WhatsApp per proyek.
 - Laporan tetap tersedia sebagai laporan proyek atau berkala. PDF draf disimpan di bucket privat, dipindahkan ke bucket publik saat diterbitkan, dan dikembalikan ke bucket privat saat ditarik; tautan eksternal tidak dikelola oleh Storage.
 - Menghapus proyek berarti menghapus permanen donasi, identitas donatur yatim, metadata bukti, relasi media, milestone, dan laporan proyek tersebut melalui RPC `hog_admin_delete_campaigns`. Artikel blog tidak ikut terhapus dan hanya kehilangan tautan proyeknya.

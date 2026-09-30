@@ -21,7 +21,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     slug: "laporan-siklus-juli-tiga-proyek-tuntas",
-    title: "Laporan siklus Juli: tiga proyek tuntas",
+    title: "Laporan siklus Juli: tiga Program Selesai",
     category: "Laporan",
     date: "28 Jul 2026",
     excerpt:

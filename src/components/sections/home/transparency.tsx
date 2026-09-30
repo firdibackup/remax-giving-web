@@ -82,7 +82,7 @@ function Transparency() {
           </div>
           <div className="relative mx-auto -mt-10 w-[calc(100%-32px)] max-w-[300px] rounded-2xl bg-white p-6 shadow-brand-card-hover sm:absolute sm:bottom-0 sm:-left-10 sm:mt-0 sm:w-[300px]">
             <div className="mb-2.5 font-sans text-xs font-bold tracking-[0.12em] text-brand-red uppercase">
-              Proyek tuntas
+              Program Selesai
             </div>
             <div className="mb-1.5 font-sans text-[17px] font-bold text-brand-navy">
               Renovasi Rumah Ibadah

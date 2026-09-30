@@ -45,9 +45,9 @@ function ProgramDirectory({
     <>
       <PageHeader
         breadcrumbLabel="Program & Target Donasi"
-        eyebrow="Program & Target Donasi"
+        eyebrow=""
         title="Bersama menciptakan dampak nyata"
-        description="Setiap siklus donasi punya satu penerima manfaat dan satu target yang jelas. Di halaman ini Anda bisa melihat semua proyek — yang sedang berjalan maupun yang sudah tuntas beserta laporannya."
+        description="Temukan berbagai program donasi yang sedang berjalan maupun yang telah disalurkan, lengkap dengan informasi penerima manfaat dan laporan penyalurannya. Pilih program dan ikut berkontribusi untuk membantu mereka yang membutuhkan."
         side={
           <div className="grid grid-cols-2 justify-items-center gap-4 sm:gap-5">
             <BrandStatCounter
@@ -57,7 +57,7 @@ function ProgramDirectory({
             />
             <BrandStatCounter
               value={String(completedCount)}
-              label="Proyek tuntas"
+              label="Program Selesai"
             />
           </div>
         }

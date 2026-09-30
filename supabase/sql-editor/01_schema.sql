@@ -168,9 +168,9 @@ begin
   total := array_length(parts, 1);
   first_len := char_length(parts[1]);
 
-  -- Ratina -> Rat**a; names of 4 letters or fewer keep only first + last: Siti -> S**i.
-  if first_len > 4 then
-    head := left(parts[1], 3) || repeat('*', first_len - 4) || right(parts[1], 1);
+  -- Ratina -> Ra***a, Siti -> Si*i; names of 3 letters or fewer keep only first + last: Ani -> A*i.
+  if first_len > 3 then
+    head := left(parts[1], 2) || repeat('*', first_len - 3) || right(parts[1], 1);
   elsif first_len > 2 then
     head := left(parts[1], 1) || repeat('*', first_len - 2) || right(parts[1], 1);
   else

@@ -170,7 +170,10 @@ export default async function ProjectDetailPage({
                 value={String(campaign.donorCount)}
                 label="Donatur"
               />
-              <BrandStatCounter value={String(days)} label="Hari siklus" />
+              <BrandStatCounter
+                value={String(days)}
+                label="Hari penggalangan"
+              />
               <BrandStatCounter
                 value={String(campaign.totalBeneficiaries)}
                 label="Total terbantu"
@@ -205,7 +208,7 @@ export default async function ProjectDetailPage({
           <Reveal delay={120}>
             <div className="rounded-2xl border border-brand-border bg-white p-6.5 shadow-brand-card">
               <div className="mb-4.5 font-sans text-xs font-bold tracking-[0.12em] text-brand-text-body uppercase">
-                Ringkasan proyek
+                Ringkasan program
               </div>
               <div className="flex flex-col">
                 <SummaryRow label="Penerima" value={campaign.recipient} />
@@ -298,7 +301,7 @@ export default async function ProjectDetailPage({
               <div className="rounded-2xl border border-brand-border bg-white p-7 shadow-brand-card sm:p-9">
                 <div className="mb-5 flex flex-wrap items-baseline justify-between gap-4">
                   <h2 className="text-xl font-bold text-brand-navy">
-                    Rincian penggunaan dana
+                    Rincian Penyaluran Donasi
                   </h2>
                   <span className="font-sans text-xs text-brand-text-body">
                     Total {formatCurrency(allocationsTotal)}

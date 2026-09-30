@@ -23,14 +23,18 @@ function DonationHistory({
   reportUrl: string | null;
 }) {
   const projects = useMemo(
-    () => ["Semua proyek", ...Array.from(new Set(donations.map((donation) => donation.project)))],
+    () => [
+      "Semua proyek",
+      ...Array.from(new Set(donations.map((donation) => donation.project))),
+    ],
     [donations],
   );
   const [project, setProject] = useState("Semua proyek");
   const [limit, setLimit] = useState(PAGE_SIZE);
-  const filtered = project === "Semua proyek"
-    ? donations
-    : donations.filter((donation) => donation.project === project);
+  const filtered =
+    project === "Semua proyek"
+      ? donations
+      : donations.filter((donation) => donation.project === project);
   const rows = filtered.slice(0, limit);
 
   return (
@@ -45,9 +49,19 @@ function DonationHistory({
       <section className="relative z-[2] bg-white px-5 sm:px-8">
         <div className="mx-auto max-w-[1200px]">
           <div className="-mt-10 grid grid-cols-1 gap-5 rounded-3xl border border-brand-border bg-white p-6 shadow-brand-card-hover sm:mt-[-52px] sm:grid-cols-3 sm:gap-6 sm:p-8">
-            <BrandStatCounter value={formatNumber(donations.length)} label="Transaksi tercatat" />
-            <BrandStatCounter value={formatCompactCurrency(totalRaised).replace("Rp ", "")} label="Total donasi (Rp)" tone="red" />
-            <BrandStatCounter value={formatNumber(completedCampaigns)} label="Proyek tuntas" />
+            <BrandStatCounter
+              value={formatNumber(donations.length)}
+              label="Donasi tercatat"
+            />
+            <BrandStatCounter
+              value={formatCompactCurrency(totalRaised).replace("Rp ", "")}
+              label="Total donasi (Rp)"
+              tone="red"
+            />
+            <BrandStatCounter
+              value={formatNumber(completedCampaigns)}
+              label="Program Selesai"
+            />
           </div>
         </div>
       </section>
@@ -55,7 +69,9 @@ function DonationHistory({
         <div className="mx-auto max-w-[1200px]">
           <div className="rounded-3xl border border-brand-border bg-white p-6 shadow-brand-card sm:p-8">
             <div className="mb-5.5 flex flex-wrap items-end justify-between gap-4.5">
-              <h2 className="text-xl font-bold text-brand-navy">Donasi masuk</h2>
+              <h2 className="text-xl font-bold text-brand-navy">
+                Donasi masuk
+              </h2>
               <div className="flex flex-wrap gap-2">
                 {projects.map((label) => (
                   <button
@@ -84,14 +100,27 @@ function DonationHistory({
               <div className="text-right">Nominal</div>
             </div>
             <div>
-              {rows.length > 0 ? rows.map((donation) => (
-                <div key={donation.id} className="grid grid-cols-2 gap-2 border-b border-brand-border py-4 sm:grid-cols-[88px_1fr_1fr_auto] sm:items-center sm:gap-4">
-                  <div className="font-sans text-[13px] font-medium text-brand-text-body">{donation.date}</div>
-                  <div className="order-3 font-sans text-[15px] font-semibold text-brand-navy sm:order-none">{donation.name}</div>
-                  <div className="order-4 font-sans text-[13px] leading-snug text-brand-text-body sm:order-none">{donation.project}</div>
-                  <div className="text-right font-sans text-[15px] font-bold text-brand-blue">{donation.amount}</div>
-                </div>
-              )) : (
+              {rows.length > 0 ? (
+                rows.map((donation) => (
+                  <div
+                    key={donation.id}
+                    className="grid grid-cols-2 gap-2 border-b border-brand-border py-4 sm:grid-cols-[88px_1fr_1fr_auto] sm:items-center sm:gap-4"
+                  >
+                    <div className="font-sans text-[13px] font-medium text-brand-text-body">
+                      {donation.date}
+                    </div>
+                    <div className="order-3 font-sans text-[15px] font-semibold text-brand-navy sm:order-none">
+                      {donation.name}
+                    </div>
+                    <div className="order-4 font-sans text-[13px] leading-snug text-brand-text-body sm:order-none">
+                      {donation.project}
+                    </div>
+                    <div className="text-right font-sans text-[15px] font-bold text-brand-blue">
+                      {donation.amount}
+                    </div>
+                  </div>
+                ))
+              ) : (
                 <div className="py-12 text-center text-sm text-brand-text-body">
                   Belum ada donasi tercatat untuk proyek ini.
                 </div>
@@ -113,7 +142,10 @@ function DonationHistory({
                 Unduh laporan lengkap (PDF)
               </BrandButton>
             )}
-            <Link href="/program" className="font-sans text-sm font-bold text-brand-blue">
+            <Link
+              href="/program"
+              className="font-sans text-sm font-bold text-brand-blue"
+            >
               Lihat semua proyek →
             </Link>
           </div>
