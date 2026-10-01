@@ -6,6 +6,7 @@ import { Check } from "lucide-react";
 import { BrandBadge } from "@/components/brand/badge";
 import { BrandButton } from "@/components/brand/button";
 import { DonationCta } from "@/components/brand/donation-cta";
+import { DonationDisclaimer } from "@/components/brand/donation-disclaimer";
 import { BrandProgressBar } from "@/components/brand/progress-bar";
 import { Reveal } from "@/components/brand/reveal";
 import { BrandStatCounter } from "@/components/brand/stat-counter";
@@ -142,6 +143,7 @@ export default async function ProjectDetailPage({
               </>
             )}
           </div>
+          {donationOpen && <DonationDisclaimer className="mt-4 w-fit" />}
         </div>
       </section>
 
@@ -165,6 +167,7 @@ export default async function ProjectDetailPage({
               </span>
             </div>
             <BrandProgressBar percent={campaign.percent} showLabel={false} />
+            <DonationDisclaimer className="mt-4" />
             <div className="mt-7 grid grid-cols-3 justify-items-center gap-4 border-t border-brand-border pt-6.5 sm:gap-5">
               <BrandStatCounter
                 value={String(campaign.donorCount)}
@@ -349,6 +352,7 @@ export default async function ProjectDetailPage({
                     </tfoot>
                   </table>
                 </div>
+                <DonationDisclaimer className="mt-5" />
               </div>
             </Reveal>
           )}

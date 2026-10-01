@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ExternalLink } from "lucide-react";
 import {
-  addCampaignMedia,
   deleteCampaigns,
   uploadCampaignCover,
 } from "@/app/admin/(protected)/program/actions";
@@ -14,6 +13,7 @@ import { CampaignAllocationsEditor } from "@/components/admin/campaign-allocatio
 import { CampaignDocumentationEditor } from "@/components/admin/campaign-documentation-editor";
 import { CampaignForm } from "@/components/admin/campaign-form";
 import { ConfirmSubmitButton } from "@/components/admin/confirm-submit-button";
+import { DocumentationUploader } from "@/components/admin/documentation-uploader";
 import { FormField } from "@/components/admin/form-field";
 import { SubmitButton } from "@/components/admin/submit-button";
 import { Button } from "@/components/ui/button";
@@ -256,57 +256,7 @@ export default async function CampaignDetailPage({
                 Belum ada dokumentasi untuk program ini.
               </p>
             )}
-            <form
-              action={addCampaignMedia}
-              className="space-y-4 border-t border-brand-border pt-5"
-            >
-              <input type="hidden" name="campaign_id" value={campaign.id} />
-              <p className="text-sm font-bold text-brand-navy">
-                Tambah dokumentasi
-              </p>
-              <FormField
-                label="Berkas dokumentasi"
-                htmlFor="media"
-                hint="Boleh lebih dari satu. Total maksimal 29 MB per pengiriman. Keterangan, album, dan teks alternatif di bawah berlaku untuk semua berkas."
-                required
-              >
-                <Input
-                  id="media"
-                  name="media"
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp,image/avif,video/mp4"
-                  multiple
-                  required
-                />
-              </FormField>
-              <FormField label="Keterangan" htmlFor="caption">
-                <Input
-                  id="caption"
-                  name="caption"
-                  placeholder="Serah terima bantuan"
-                />
-              </FormField>
-              <FormField label="Album" htmlFor="album_label">
-                <Input
-                  id="album_label"
-                  name="album_label"
-                  placeholder="Nama album galeri"
-                />
-              </FormField>
-              <FormField label="Teks alternatif" htmlFor="media_alt_text">
-                <Input
-                  id="media_alt_text"
-                  name="alt_text"
-                  placeholder="Deskripsi singkat gambar"
-                />
-              </FormField>
-              <SubmitButton
-                pendingLabel="Mengunggah..."
-                className="h-10 bg-brand-blue px-5 font-bold text-white hover:bg-brand-blue-hover"
-              >
-                Tambah dokumentasi
-              </SubmitButton>
-            </form>
+            <DocumentationUploader campaignId={campaign.id} />
           </CardContent>
         </Card>
       </div>

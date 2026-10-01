@@ -47,6 +47,8 @@ const publicCampaignStatuses: CampaignStatus[] = [
   "reported",
 ];
 const maxCreateUploadBytes = 29_000_000;
+const maxDocumentationFileBytes = 5 * 1024 * 1024;
+const documentationTooLargeError = "Ukuran berkas dokumentasi maksimal 5 MB.";
 
 function revalidateCampaignSurfaces(slug?: string | null) {
   revalidatePath("/admin/program");
@@ -182,6 +184,14 @@ function validateCampaignFiles(
 
   if (totalBytes > maxCreateUploadBytes) {
     return "Total ukuran sampul dan dokumentasi maksimal 29 MB.";
+  }
+
+  const oversized = documentation.find(
+    (file) => file.size > maxDocumentationFileBytes,
+  );
+
+  if (oversized) {
+    return `${oversized.name}: ${documentationTooLargeError}`;
   }
 
   for (const file of files) {
@@ -736,33 +746,48 @@ export async function addCampaignMedia(formData: FormData) {
   const admin = await requireAdmin();
   const campaignId = readText(formData, "campaign_id");
   const redirectBase = `/admin/program/${campaignId}`;
-  const files = formData.getAll("media").filter(isUploadPresent);
+  // The browser uploads straight to Storage (DocumentationUploader) to stay
+  // under Vercel's ~4.5 MB request limit; this action only records the paths.
+  const folder = `campaigns/${campaignId}/`;
+  const paths = Array.from(new Set(formData.getAll("storage_path").map(String)));
 
-  if (!campaignId || files.length === 0) {
+  if (!campaignId || paths.length === 0) {
     redirect(
       `${redirectBase}${encodeNotice({ error: "Pilih berkas dokumentasi terlebih dahulu." })}`,
     );
   }
 
-  const totalBytes = files.reduce((total, file) => total + file.size, 0);
-
-  if (totalBytes > maxCreateUploadBytes) {
+  if (
+    paths.some(
+      (path) =>
+        !path.startsWith(folder) ||
+        !/^[\w-]+\.[a-z0-9]{1,8}$/.test(path.slice(folder.length)),
+    )
+  ) {
     redirect(
-      `${redirectBase}${encodeNotice({ error: "Total ukuran dokumentasi maksimal 29 MB per pengiriman." })}`,
+      `${redirectBase}${encodeNotice({ error: "Lokasi berkas dokumentasi tidak valid." })}`,
     );
   }
 
-  for (const file of files) {
-    const fileError = validateUpload(BUCKETS.publicMedia, file);
+  const supabase = await createClient();
+  const uploadedObjects = paths.map((path) => ({
+    bucket: BUCKETS.publicMedia,
+    path,
+  }));
+  const infos = await Promise.all(
+    paths.map((path) => supabase.storage.from(BUCKETS.publicMedia).info(path)),
+  );
+  const fileError = infos.some(({ data }) => !data)
+    ? "Sebagian berkas dokumentasi tidak ditemukan. Unggah ulang."
+    : infos.some(({ data }) => (data?.size ?? 0) > maxDocumentationFileBytes)
+      ? documentationTooLargeError
+      : null;
 
-    if (fileError) {
-      redirect(
-        `${redirectBase}${encodeNotice({ error: `${file.name}: ${fileError}` })}`,
-      );
-    }
+  if (fileError) {
+    await removeStorageObjects(uploadedObjects);
+    redirect(`${redirectBase}${encodeNotice({ error: fileError })}`);
   }
 
-  const supabase = await createClient();
   const { data: campaign } = await supabase
     .from("hog_admin_campaigns")
     .select("title")
@@ -784,10 +809,6 @@ export async function addCampaignMedia(formData: FormData) {
     "Dokumentasi program";
   const sharedAlbum = readOptionalText(formData, "album_label");
 
-  const uploadedObjects: Array<{
-    bucket: typeof BUCKETS.publicMedia;
-    path: string;
-  }> = [];
   const mediaIds: string[] = [];
 
   const rollbackBatch = async () => {
@@ -800,25 +821,14 @@ export async function addCampaignMedia(formData: FormData) {
 
   let addedCount = 0;
 
-  for (const [index, file] of files.entries()) {
-    const upload = await uploadToBucket(
-      BUCKETS.publicMedia,
-      `campaigns/${campaignId}`,
-      file,
-    );
-
-    if ("error" in upload) {
-      await rollbackBatch();
-      redirect(`${redirectBase}${encodeNotice({ error: upload.error })}`);
-    }
-
-    uploadedObjects.push({ bucket: BUCKETS.publicMedia, path: upload.path });
+  for (const [index, path] of paths.entries()) {
+    const contentType = infos[index].data?.contentType ?? "";
     const { data: media, error: mediaError } = await supabase
       .from("hog_admin_media_assets")
       .insert({
-        media_type: file.type.startsWith("video/") ? "video" : "image",
+        media_type: contentType.startsWith("video/") ? "video" : "image",
         storage_bucket: BUCKETS.publicMedia,
-        storage_path: upload.path,
+        storage_path: path,
         caption: sharedCaption,
         alt_text: sharedAltText,
         album_label: sharedAlbum,

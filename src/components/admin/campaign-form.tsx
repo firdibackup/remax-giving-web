@@ -208,7 +208,7 @@ function CampaignForm({ campaign }: { campaign?: CampaignRow }) {
               <FormField
                 label="Berkas dokumentasi"
                 htmlFor="documentation"
-                hint="Satu JPG, PNG, WebP, AVIF, atau MP4. Maksimal 25 MB. Tambah lagi lewat halaman edit program."
+                hint="Satu JPG, PNG, WebP, AVIF, atau MP4. Maksimal 5 MB. Tambah lagi lewat halaman edit program."
               >
                 <Input
                   id="documentation"
