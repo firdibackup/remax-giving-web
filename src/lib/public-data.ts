@@ -25,8 +25,8 @@ import type {
 const FALLBACK_CAMPAIGN_IMAGE = "/photos/community-01-web.jpg";
 const FALLBACK_BLOG_IMAGE = "/photos/community-03-web.jpg";
 
-function throwPublicDataError(operation: string): never {
-  console.error(`[public-data] ${operation} failed.`);
+function throwPublicDataError(operation: string, error: unknown): never {
+  console.error(`[public-data] ${operation} failed.`, error);
   throw new Error("Data publik tidak dapat dimuat. Silakan coba lagi nanti.");
 }
 
@@ -246,7 +246,7 @@ export const getPublicCtaConfig = cache(async (): Promise<PublicCtaConfig> => {
     .maybeSingle();
 
   if (error) {
-    console.error("[public-data] WhatsApp CTA configuration failed.");
+    console.error("[public-data] WhatsApp CTA configuration failed.", error);
   }
 
   const raw = error ? null : data?.value;
@@ -281,7 +281,7 @@ export const getPublicCampaigns = cache(
       .order("published_at", { ascending: false });
 
     if (error) {
-      throwPublicDataError("campaign list");
+      throwPublicDataError("campaign list", error);
     }
 
     return (data || [])
@@ -302,7 +302,7 @@ export const getPublicSiteStats = cache(async (): Promise<SiteStatsRow> => {
     .maybeSingle();
 
   if (error) {
-    throwPublicDataError("site statistics");
+    throwPublicDataError("site statistics", error);
   }
 
   return (
@@ -325,7 +325,7 @@ export const getPublicDonations = cache(
       .order("donated_on", { ascending: false });
 
     if (error) {
-      throwPublicDataError("donation ledger");
+      throwPublicDataError("donation ledger", error);
     }
 
     return (data || []).map(mapDonation);
@@ -340,7 +340,7 @@ export const getPublicReports = cache(async () => {
     .order("published_at", { ascending: false });
 
   if (error) {
-    throwPublicDataError("report list");
+    throwPublicDataError("report list", error);
   }
 
   return (data || []).map((row) => ({
@@ -357,7 +357,7 @@ export const getPublicBlogPosts = cache(async (): Promise<PublicBlogItem[]> => {
     .order("published_at", { ascending: false });
 
   if (error) {
-    throwPublicDataError("blog post list");
+    throwPublicDataError("blog post list", error);
   }
 
   const posts = (data || []).map(mapBlog);
@@ -377,7 +377,7 @@ export const getPublicGallery = cache(
       .order("sort_order", { ascending: true });
 
     if (error) {
-      throwPublicDataError("gallery");
+      throwPublicDataError("gallery", error);
     }
 
     const uniqueRows = new Map<string, PublicGalleryMediaRow>();
@@ -451,7 +451,7 @@ export const getPublicAnnualGoal = cache(
       .maybeSingle();
 
     if (error) {
-      throwPublicDataError("annual goal");
+      throwPublicDataError("annual goal", error);
     }
 
     return data?.target_amount_idr ?? null;
@@ -467,7 +467,7 @@ export const getPublicCampaignDetail = cache(async (slug: string) => {
     .maybeSingle();
 
   if (error) {
-    throwPublicDataError("campaign detail");
+    throwPublicDataError("campaign detail", error);
   }
 
   if (!campaignRow) {
@@ -504,7 +504,13 @@ export const getPublicCampaignDetail = cache(async (slug: string) => {
     reportsResult.error ||
     allocationsResult.error
   ) {
-    throwPublicDataError("campaign related data");
+    throwPublicDataError(
+      "campaign related data",
+      donationsResult.error ||
+        mediaResult.error ||
+        reportsResult.error ||
+        allocationsResult.error,
+    );
   }
 
   const media = (mediaResult.data || []).flatMap(

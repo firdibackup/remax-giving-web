@@ -55,7 +55,7 @@ export default function TentangPage() {
         side={
           <div className="relative h-[240px] w-full overflow-hidden rounded-3xl border border-brand-border shadow-brand-card sm:h-[320px]">
             <Image
-              src={`${BASE_PATH}/photos/community-04-web.jpg`}
+              src={`${BASE_PATH}/photos/community-04-web.JPG`}
               alt="Kegiatan sosial REMAX Home of Giving"
               fill
               sizes="(max-width: 1024px) 100vw, 45vw"
