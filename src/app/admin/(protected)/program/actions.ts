@@ -18,15 +18,14 @@ import {
   toFriendlyError,
   type ActionState,
 } from "@/lib/admin/form";
+import { documentationMaxBytes } from "@/lib/admin/buckets";
 import {
   BUCKETS,
   isManagedBucket,
-  isUploadPresent,
   removeStorageObjects,
-  uploadToBucket,
-  validateUpload,
+  verifyStagedUpload,
 } from "@/lib/admin/storage";
-import type { BucketName } from "@/lib/admin/storage";
+import type { BucketName, StagedUpload } from "@/lib/admin/storage";
 import { formatNumber } from "@/lib/format";
 import type { CampaignStatus } from "@/lib/supabase/database.types";
 
@@ -46,9 +45,6 @@ const publicCampaignStatuses: CampaignStatus[] = [
   "disbursed",
   "reported",
 ];
-const maxCreateUploadBytes = 29_000_000;
-const maxDocumentationFileBytes = 5 * 1024 * 1024;
-const documentationTooLargeError = "Ukuran berkas dokumentasi maksimal 5 MB.";
 
 function revalidateCampaignSurfaces(slug?: string | null) {
   revalidatePath("/admin/program");
@@ -162,47 +158,35 @@ function buildCampaignPayload(
   };
 }
 
-function campaignFiles(formData: FormData): {
-  cover: File | null;
-  documentation: File[];
-} {
-  const coverValue = formData.get("cover");
-  const cover = isUploadPresent(coverValue) ? coverValue : null;
-  const documentation = formData
-    .getAll("documentation")
-    .filter(isUploadPresent);
+// All-or-nothing: if any staged file fails, the ones that passed are removed too.
+async function verifyMediaUploads(
+  folder: string,
+  uploads: Array<{ path: string; maxBytes?: number }>,
+): Promise<StagedUpload[] | { error: string }> {
+  const results = await Promise.all(
+    uploads.map(({ path, maxBytes }) =>
+      verifyStagedUpload(BUCKETS.publicMedia, folder, path, maxBytes),
+    ),
+  );
+  const verified = results.filter(
+    (result): result is StagedUpload => "path" in result,
+  );
+  const failed = results.find((result) => "error" in result);
 
-  return { cover, documentation };
+  if (failed && "error" in failed) {
+    await removeStorageObjects(
+      verified.map(({ path }) => ({ bucket: BUCKETS.publicMedia, path })),
+    );
+    return { error: failed.error };
+  }
+
+  return verified;
 }
 
-function validateCampaignFiles(
-  cover: File | null,
-  documentation: File[],
-): string | null {
-  const files = cover ? [cover, ...documentation] : documentation;
-  const totalBytes = files.reduce((total, file) => total + file.size, 0);
-
-  if (totalBytes > maxCreateUploadBytes) {
-    return "Total ukuran sampul dan dokumentasi maksimal 29 MB.";
-  }
-
-  const oversized = documentation.find(
-    (file) => file.size > maxDocumentationFileBytes,
-  );
-
-  if (oversized) {
-    return `${oversized.name}: ${documentationTooLargeError}`;
-  }
-
-  for (const file of files) {
-    const error = validateUpload(BUCKETS.publicMedia, file);
-
-    if (error) {
-      return `${file.name}: ${error}`;
-    }
-  }
-
-  return null;
+function readPaths(formData: FormData, key: string): string[] {
+  return Array.from(
+    new Set(formData.getAll(key).map((value) => String(value).trim())),
+  ).filter(Boolean);
 }
 
 async function clearOtherFeaturedCampaigns(currentId?: string) {
@@ -225,23 +209,33 @@ export async function createCampaign(
 ): Promise<ActionState> {
   const admin = await requireAdmin();
   const payload = buildCampaignPayload(formData);
-  const files = campaignFiles(formData);
 
   if ("error" in payload) {
     return { error: payload.error };
   }
 
-  const fileError = validateCampaignFiles(files.cover, files.documentation);
+  const coverPath = readText(formData, "cover_path");
+  const staged = await verifyMediaUploads("campaigns", [
+    ...(coverPath ? [{ path: coverPath }] : []),
+    ...readPaths(formData, "documentation_path").map((path) => ({
+      path,
+      maxBytes: documentationMaxBytes,
+    })),
+  ]);
 
-  if (fileError) {
-    return { error: fileError };
+  if ("error" in staged) {
+    return { error: staged.error };
   }
 
+  const files = {
+    cover: coverPath ? staged[0] : null,
+    documentation: coverPath ? staged.slice(1) : staged,
+  };
   const supabase = await createClient();
-  const uploadedObjects: Array<{
-    bucket: typeof BUCKETS.publicMedia;
-    path: string;
-  }> = [];
+  const uploadedObjects = staged.map(({ path }) => ({
+    bucket: BUCKETS.publicMedia,
+    path,
+  }));
   const mediaIds: string[] = [];
   let campaignId: string | null = null;
   let previousFeaturedIds: string[] = [];
@@ -286,6 +280,7 @@ export async function createCampaign(
       .single();
 
     if (campaignError || !campaign) {
+      await rollback();
       return {
         error: toFriendlyError(
           campaignError?.message,
@@ -298,24 +293,14 @@ export async function createCampaign(
     let coverMediaId: string | null = null;
 
     if (files.cover) {
-      const upload = await uploadToBucket(
-        BUCKETS.publicMedia,
-        `campaigns/${campaign.id}`,
-        files.cover,
-      );
-
-      if ("error" in upload) {
-        await rollback();
-        return { error: upload.error };
-      }
-
-      uploadedObjects.push({ bucket: BUCKETS.publicMedia, path: upload.path });
       const { data: media, error: mediaError } = await supabase
         .from("hog_admin_media_assets")
         .insert({
-          media_type: files.cover.type.startsWith("video/") ? "video" : "image",
+          media_type: files.cover.contentType.startsWith("video/")
+            ? "video"
+            : "image",
           storage_bucket: BUCKETS.publicMedia,
-          storage_path: upload.path,
+          storage_path: files.cover.path,
           alt_text:
             readOptionalText(formData, "cover_alt_text") || payload.title,
           is_published: true,
@@ -337,18 +322,6 @@ export async function createCampaign(
     }
 
     for (const [index, file] of files.documentation.entries()) {
-      const upload = await uploadToBucket(
-        BUCKETS.publicMedia,
-        `campaigns/${campaign.id}`,
-        file,
-      );
-
-      if ("error" in upload) {
-        await rollback();
-        return { error: upload.error };
-      }
-
-      uploadedObjects.push({ bucket: BUCKETS.publicMedia, path: upload.path });
       const documentationCaption = readOptionalText(
         formData,
         "documentation_caption",
@@ -356,9 +329,9 @@ export async function createCampaign(
       const { data: media, error: mediaError } = await supabase
         .from("hog_admin_media_assets")
         .insert({
-          media_type: file.type.startsWith("video/") ? "video" : "image",
+          media_type: file.contentType.startsWith("video/") ? "video" : "image",
           storage_bucket: BUCKETS.publicMedia,
-          storage_path: upload.path,
+          storage_path: file.path,
           caption: documentationCaption,
           alt_text:
             readOptionalText(formData, "documentation_alt_text") ||
@@ -673,19 +646,19 @@ export async function updateCampaignAllocations(formData: FormData) {
 export async function uploadCampaignCover(formData: FormData) {
   const admin = await requireAdmin();
   const campaignId = readText(formData, "campaign_id");
-  const file = formData.get("cover");
+  const coverPath = readText(formData, "cover_path");
   const redirectBase = `/admin/program/${campaignId}`;
 
-  if (!campaignId || !isUploadPresent(file)) {
+  if (!campaignId || !coverPath) {
     redirect(
       `${redirectBase}${encodeNotice({ error: "Pilih berkas sampul terlebih dahulu." })}`,
     );
   }
 
-  const upload = await uploadToBucket(
+  const upload = await verifyStagedUpload(
     BUCKETS.publicMedia,
     `campaigns/${campaignId}`,
-    file,
+    coverPath,
   );
 
   if ("error" in upload) {
@@ -696,7 +669,7 @@ export async function uploadCampaignCover(formData: FormData) {
   const { data: media, error: mediaError } = await supabase
     .from("hog_admin_media_assets")
     .insert({
-      media_type: file.type.startsWith("video/") ? "video" : "image",
+      media_type: upload.contentType.startsWith("video/") ? "video" : "image",
       storage_bucket: BUCKETS.publicMedia,
       storage_path: upload.path,
       alt_text: readOptionalText(formData, "alt_text"),
@@ -746,10 +719,9 @@ export async function addCampaignMedia(formData: FormData) {
   const admin = await requireAdmin();
   const campaignId = readText(formData, "campaign_id");
   const redirectBase = `/admin/program/${campaignId}`;
-  // The browser uploads straight to Storage (DocumentationUploader) to stay
-  // under Vercel's ~4.5 MB request limit; this action only records the paths.
-  const folder = `campaigns/${campaignId}/`;
-  const paths = Array.from(new Set(formData.getAll("storage_path").map(String)));
+  // DocumentationUploader already stored the files via uploadChunk; this
+  // action only records the returned paths.
+  const paths = readPaths(formData, "storage_path");
 
   if (!campaignId || paths.length === 0) {
     redirect(
@@ -757,37 +729,20 @@ export async function addCampaignMedia(formData: FormData) {
     );
   }
 
-  if (
-    paths.some(
-      (path) =>
-        !path.startsWith(folder) ||
-        !/^[\w-]+\.[a-z0-9]{1,8}$/.test(path.slice(folder.length)),
-    )
-  ) {
-    redirect(
-      `${redirectBase}${encodeNotice({ error: "Lokasi berkas dokumentasi tidak valid." })}`,
-    );
+  const staged = await verifyMediaUploads(
+    `campaigns/${campaignId}`,
+    paths.map((path) => ({ path, maxBytes: documentationMaxBytes })),
+  );
+
+  if ("error" in staged) {
+    redirect(`${redirectBase}${encodeNotice({ error: staged.error })}`);
   }
 
   const supabase = await createClient();
-  const uploadedObjects = paths.map((path) => ({
+  const uploadedObjects = staged.map(({ path }) => ({
     bucket: BUCKETS.publicMedia,
     path,
   }));
-  const infos = await Promise.all(
-    paths.map((path) => supabase.storage.from(BUCKETS.publicMedia).info(path)),
-  );
-  const fileError = infos.some(({ data }) => !data)
-    ? "Sebagian berkas dokumentasi tidak ditemukan. Unggah ulang."
-    : infos.some(({ data }) => (data?.size ?? 0) > maxDocumentationFileBytes)
-      ? documentationTooLargeError
-      : null;
-
-  if (fileError) {
-    await removeStorageObjects(uploadedObjects);
-    redirect(`${redirectBase}${encodeNotice({ error: fileError })}`);
-  }
-
   const { data: campaign } = await supabase
     .from("hog_admin_campaigns")
     .select("title")
@@ -821,14 +776,13 @@ export async function addCampaignMedia(formData: FormData) {
 
   let addedCount = 0;
 
-  for (const [index, path] of paths.entries()) {
-    const contentType = infos[index].data?.contentType ?? "";
+  for (const [index, file] of staged.entries()) {
     const { data: media, error: mediaError } = await supabase
       .from("hog_admin_media_assets")
       .insert({
-        media_type: contentType.startsWith("video/") ? "video" : "image",
+        media_type: file.contentType.startsWith("video/") ? "video" : "image",
         storage_bucket: BUCKETS.publicMedia,
-        storage_path: path,
+        storage_path: file.path,
         caption: sharedCaption,
         alt_text: sharedAltText,
         album_label: sharedAlbum,

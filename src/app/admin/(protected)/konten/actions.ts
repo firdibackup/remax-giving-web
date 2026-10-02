@@ -14,7 +14,7 @@ import {
   slugify,
   toFriendlyError,
 } from "@/lib/admin/form";
-import { BUCKETS, isUploadPresent, uploadToBucket } from "@/lib/admin/storage";
+import { BUCKETS, verifyStagedUpload } from "@/lib/admin/storage";
 import type { ContentStatus, MediaSpan } from "@/lib/supabase/database.types";
 
 function revalidateContent(kind: "blog" | "media") {
@@ -26,7 +26,7 @@ function revalidateContent(kind: "blog" | "media") {
 }
 
 async function uploadPublicMedia(
-  file: File,
+  path: string,
   folder: string,
   adminId: string,
   metadata: {
@@ -39,7 +39,7 @@ async function uploadPublicMedia(
     published?: boolean;
   },
 ) {
-  const upload = await uploadToBucket(BUCKETS.publicMedia, folder, file);
+  const upload = await verifyStagedUpload(BUCKETS.publicMedia, folder, path);
 
   if ("error" in upload) {
     return upload;
@@ -49,7 +49,7 @@ async function uploadPublicMedia(
   const { data, error } = await supabase
     .from("hog_admin_media_assets")
     .insert({
-      media_type: file.type.startsWith("video/") ? "video" : "image",
+      media_type: upload.contentType.startsWith("video/") ? "video" : "image",
       storage_bucket: BUCKETS.publicMedia,
       storage_path: upload.path,
       caption: metadata.caption ?? null,
@@ -78,7 +78,7 @@ export async function saveBlogPost(formData: FormData) {
   const title = readText(formData, "title");
   const slug = slugify(readText(formData, "slug") || title);
   const status = (readText(formData, "status") || "draft") as ContentStatus;
-  const file = formData.get("cover");
+  const coverPath = readText(formData, "cover_path");
 
   if (!title || !slug || !isValidSlug(slug)) {
     redirect(`/admin/konten/blog${encodeNotice({ error: "Judul dan slug tulisan wajib valid." })}`);
@@ -86,8 +86,8 @@ export async function saveBlogPost(formData: FormData) {
 
   let coverMediaId = readOptionalText(formData, "cover_media_id");
 
-  if (isUploadPresent(file)) {
-    const media = await uploadPublicMedia(file, `blog/${slug}`, admin.userId, {
+  if (coverPath) {
+    const media = await uploadPublicMedia(coverPath, "blog", admin.userId, {
       altText: readOptionalText(formData, "cover_alt_text") || title,
       published: status === "published",
     });
@@ -174,13 +174,13 @@ export async function createBlogCategory(formData: FormData) {
 
 export async function uploadMediaAsset(formData: FormData) {
   const admin = await requireAdmin();
-  const file = formData.get("media");
+  const mediaPath = readText(formData, "media_path");
 
-  if (!isUploadPresent(file)) {
+  if (!mediaPath) {
     redirect(`/admin/konten/media${encodeNotice({ error: "Pilih berkas media terlebih dahulu." })}`);
   }
 
-  const media = await uploadPublicMedia(file, "gallery", admin.userId, {
+  const media = await uploadPublicMedia(mediaPath, "gallery", admin.userId, {
     caption: readOptionalText(formData, "caption"),
     altText: readOptionalText(formData, "alt_text"),
     albumLabel: readOptionalText(formData, "album_label"),

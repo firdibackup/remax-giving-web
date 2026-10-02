@@ -12,21 +12,16 @@ import { addCampaignMedia } from "@/app/admin/(protected)/program/actions";
 import { FormField } from "@/components/admin/form-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  BUCKETS,
+  bucketLimits,
+  documentationMaxBytes,
+} from "@/lib/admin/buckets";
+import { uploadInChunks } from "@/lib/admin/chunked-upload";
 import { formatNumber } from "@/lib/format";
-import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
-// Mirrors BUCKETS.publicMedia and the 5 MB check in program/actions.ts
-// (lib/admin/storage.ts is server-only).
-const bucket = "home-of-giving-public-media";
-const acceptedTypes = [
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "image/avif",
-  "video/mp4",
-];
-const maxFileBytes = 5 * 1024 * 1024;
+const acceptedTypes = bucketLimits[BUCKETS.publicMedia].mimeTypes;
 
 type UploadItem = {
   id: string;
@@ -34,6 +29,7 @@ type UploadItem = {
   status: "ready" | "uploading" | "done" | "failed" | "invalid";
   error?: string;
   path?: string;
+  progress?: number;
 };
 
 const statusLabel: Record<UploadItem["status"], string> = {
@@ -53,16 +49,15 @@ function rejectReason(file: File): string | undefined {
     return "Tipe berkas tidak didukung.";
   }
 
-  if (file.size > maxFileBytes) {
+  if (file.size === 0) {
+    return "Berkas kosong.";
+  }
+
+  if (file.size > documentationMaxBytes) {
     return `Ukuran ${formatSize(file.size)}, maksimal 5 MB.`;
   }
 
   return undefined;
-}
-
-function extension(fileName: string): string {
-  const match = /\.([a-zA-Z0-9]{1,8})$/.exec(fileName);
-  return match ? match[1].toLowerCase() : "bin";
 }
 
 function DocumentationUploader({ campaignId }: { campaignId: string }) {
@@ -98,11 +93,7 @@ function DocumentationUploader({ campaignId }: { campaignId: string }) {
   }
 
   function removeItem(item: UploadItem) {
-    if (item.path) {
-      // Uploaded but not yet recorded, so nothing else points at it.
-      void createClient().storage.from(bucket).remove([item.path]);
-    }
-
+    // ponytail: an uploaded-but-unsaved file stays in storage unreferenced.
     setItems((prev) => prev.filter((other) => other.id !== item.id));
   }
 
@@ -111,34 +102,27 @@ function DocumentationUploader({ campaignId }: { campaignId: string }) {
     const formData = new FormData(event.currentTarget);
 
     startTransition(async () => {
-      const supabase = createClient();
-      // ponytail: objects uploaded here are orphaned if the tab closes before
-      // addCampaignMedia runs; add a storage sweep if that ever piles up.
       const results = await Promise.all(
         uploadable.map(async (item) => {
           if (item.status === "done" && item.path) {
             return item.path;
           }
 
-          const path = `campaigns/${campaignId}/${Date.now()}-${crypto.randomUUID()}.${extension(item.file.name)}`;
-          updateItem(item.id, { status: "uploading", error: undefined });
-          const { error } = await supabase.storage
-            .from(bucket)
-            .upload(path, item.file, {
-              contentType: item.file.type,
-              upsert: false,
-            });
+          updateItem(item.id, { status: "uploading", error: undefined, progress: 0 });
+          const result = await uploadInChunks(
+            item.file,
+            BUCKETS.publicMedia,
+            `campaigns/${campaignId}`,
+            (progress) => updateItem(item.id, { progress }),
+          );
 
-          if (error) {
-            updateItem(item.id, {
-              status: "failed",
-              error: "Gagal diunggah. Periksa koneksi lalu coba lagi.",
-            });
+          if ("error" in result) {
+            updateItem(item.id, { status: "failed", error: result.error });
             return null;
           }
 
-          updateItem(item.id, { status: "done", path });
-          return path;
+          updateItem(item.id, { status: "done", path: result.path });
+          return result.path;
         }),
       );
 
@@ -254,7 +238,11 @@ function DocumentationUploader({ campaignId }: { campaignId: string }) {
                     item.error ? "text-brand-red" : "text-brand-text-body",
                   )}
                 >
-                  {formatSize(item.file.size)} · {item.error ?? statusLabel[item.status]}
+                  {formatSize(item.file.size)} ·{" "}
+                  {item.error ??
+                    (item.status === "uploading"
+                      ? `Mengunggah ${Math.round((item.progress ?? 0) * 100)}%...`
+                      : statusLabel[item.status])}
                 </p>
               </div>
               <Button

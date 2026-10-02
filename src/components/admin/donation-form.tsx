@@ -4,9 +4,11 @@ import { useActionState } from "react";
 import { createDonation } from "@/app/admin/(protected)/donasi/actions";
 import { AdminNotice } from "@/components/admin/admin-notice";
 import { FormField } from "@/components/admin/form-field";
+import { StagedFileInput } from "@/components/admin/staged-file-input";
 import { SubmitButton } from "@/components/admin/submit-button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
+import { BUCKETS } from "@/lib/admin/buckets";
 import type { CampaignRow } from "@/lib/supabase/database.types";
 
 function DonationForm({
@@ -69,11 +71,11 @@ function DonationForm({
             htmlFor="evidence"
             hint="Opsional. JPG, PNG, WebP, atau PDF. Maksimal 10 MB."
           >
-            <Input
+            <StagedFileInput
               id="evidence"
-              name="evidence"
-              type="file"
-              accept="image/jpeg,image/png,image/webp,application/pdf"
+              name="evidence_path"
+              bucket={BUCKETS.donationEvidence}
+              folder="donations"
             />
           </FormField>
         </div>

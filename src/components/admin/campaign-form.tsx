@@ -8,10 +8,12 @@ import {
 import { AdminNotice } from "@/components/admin/admin-notice";
 import { FormField } from "@/components/admin/form-field";
 import { RichTextEditor } from "@/components/admin/rich-text-editor";
+import { StagedFileInput } from "@/components/admin/staged-file-input";
 import { SubmitButton } from "@/components/admin/submit-button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { BUCKETS, documentationMaxBytes } from "@/lib/admin/buckets";
 import { storyParagraphsToHtml } from "@/lib/story";
 import type { CampaignRow } from "@/lib/supabase/database.types";
 
@@ -181,8 +183,8 @@ function CampaignForm({ campaign }: { campaign?: CampaignRow }) {
             Media awal
           </legend>
           <p className="text-sm leading-6 text-brand-text-body">
-            Opsional. Total seluruh berkas pada form ini maksimal 29 MB agar
-            dapat dikirim dengan aman.
+            Opsional. Berkas langsung diunggah begitu dipilih; tunggu hingga
+            selesai sebelum menyimpan program.
           </p>
           <div className="grid gap-5 md:grid-cols-2">
             <FormField
@@ -190,11 +192,11 @@ function CampaignForm({ campaign }: { campaign?: CampaignRow }) {
               htmlFor="cover"
               hint="Satu JPG, PNG, WebP, AVIF, atau MP4. Maksimal 25 MB."
             >
-              <Input
+              <StagedFileInput
                 id="cover"
-                name="cover"
-                type="file"
-                accept="image/jpeg,image/png,image/webp,image/avif,video/mp4"
+                name="cover_path"
+                bucket={BUCKETS.publicMedia}
+                folder="campaigns"
               />
             </FormField>
             <FormField label="Teks alternatif sampul" htmlFor="cover_alt_text">
@@ -210,11 +212,12 @@ function CampaignForm({ campaign }: { campaign?: CampaignRow }) {
                 htmlFor="documentation"
                 hint="Satu JPG, PNG, WebP, AVIF, atau MP4. Maksimal 5 MB. Tambah lagi lewat halaman edit program."
               >
-                <Input
+                <StagedFileInput
                   id="documentation"
-                  name="documentation"
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp,image/avif,video/mp4"
+                  name="documentation_path"
+                  bucket={BUCKETS.publicMedia}
+                  folder="campaigns"
+                  maxBytes={documentationMaxBytes}
                 />
               </FormField>
             </div>

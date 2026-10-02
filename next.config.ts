@@ -6,13 +6,10 @@ const supabaseHost = supabaseUrl ? new URL(supabaseUrl) : null;
 const nextConfig: NextConfig = {
   basePath: "/giving",
   experimental: {
-    // proxy.ts runs on /admin/*, so Next.js buffers the request body for it
-    // and silently truncates anything over this limit (default 10 MB). A
-    // truncated multipart upload fails with "Unexpected end of form", so keep
-    // this in step with serverActions.bodySizeLimit below.
-    proxyClientMaxBodySize: "30mb",
     serverActions: {
-      bodySizeLimit: "30mb",
+      // Files go through uploadChunk in ~750 KB pieces (the remax.co.id proxy
+      // may reject bodies over 1 MB), so no action needs a larger body.
+      bodySizeLimit: "2mb",
       // The site is served through the remax.co.id reverse proxy, so the
       // browser Origin (remax.co.id) differs from the Vercel host
       // (remax-giving.vercel.app). Without whitelisting the proxy domain,

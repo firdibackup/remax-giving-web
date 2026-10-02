@@ -4,12 +4,14 @@ import { useState } from "react";
 import { Pencil, Plus, X } from "lucide-react";
 import { saveBlogPost } from "@/app/admin/(protected)/konten/actions";
 import { FormField } from "@/components/admin/form-field";
+import { StagedFileInput } from "@/components/admin/staged-file-input";
 import { SubmitButton } from "@/components/admin/submit-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { BUCKETS } from "@/lib/admin/buckets";
 import type {
   BlogCategoryRow,
   BlogPostRow,
@@ -139,11 +141,12 @@ function BlogPostEditor({
               </Select>
             </FormField>
             <FormField label="Sampul" htmlFor="blog_cover">
-              <Input
+              <StagedFileInput
                 id="blog_cover"
-                name="cover"
-                type="file"
-                accept="image/jpeg,image/png,image/webp,image/avif"
+                name="cover_path"
+                bucket={BUCKETS.publicMedia}
+                folder="blog"
+                accept={["image/jpeg", "image/png", "image/webp", "image/avif"]}
               />
             </FormField>
           </div>

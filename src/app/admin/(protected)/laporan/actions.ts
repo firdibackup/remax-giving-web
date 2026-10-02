@@ -13,10 +13,9 @@ import {
 import {
   BUCKETS,
   isReportBucket,
-  isUploadPresent,
   moveReportObject,
   removeStorageObjects,
-  uploadToBucket,
+  verifyStagedUpload,
 } from "@/lib/admin/storage";
 import type { ReportBucketName } from "@/lib/admin/storage";
 import type { ReportKind } from "@/lib/supabase/database.types";
@@ -38,7 +37,7 @@ export async function createReport(formData: FormData) {
   const kind = (readText(formData, "kind") || "campaign") as ReportKind;
   const campaignId = readOptionalText(formData, "campaign_id");
   const externalUrl = readOptionalText(formData, "external_url");
-  const file = formData.get("report");
+  const reportPath = readText(formData, "report_path");
 
   if (!title) {
     redirect(
@@ -58,7 +57,7 @@ export async function createReport(formData: FormData) {
     );
   }
 
-  if (!externalUrl && !isUploadPresent(file)) {
+  if (!externalUrl && !reportPath) {
     redirect(
       `/admin/laporan${encodeNotice({ error: "Tambahkan berkas PDF atau tautan eksternal." })}`,
     );
@@ -66,11 +65,11 @@ export async function createReport(formData: FormData) {
 
   let storagePath: string | null = null;
 
-  if (isUploadPresent(file)) {
-    const upload = await uploadToBucket(
+  if (reportPath) {
+    const upload = await verifyStagedUpload(
       BUCKETS.privateReports,
-      campaignId ? `campaigns/${campaignId}` : "periodic",
-      file,
+      "reports",
+      reportPath,
     );
 
     if ("error" in upload) {

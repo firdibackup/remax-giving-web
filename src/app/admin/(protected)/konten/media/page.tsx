@@ -5,13 +5,14 @@ import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { ConfirmSubmitButton } from "@/components/admin/confirm-submit-button";
 import { FormField } from "@/components/admin/form-field";
 import { MediaEditor } from "@/components/admin/media-editor";
+import { StagedFileInput } from "@/components/admin/staged-file-input";
 import { SubmitButton } from "@/components/admin/submit-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
-import { resolveMediaUrl } from "@/lib/admin/storage";
+import { BUCKETS, resolveMediaUrl } from "@/lib/admin/storage";
 import { formatShortDate } from "@/lib/format";
 import { listMediaAssets } from "@/lib/admin/queries";
 
@@ -28,7 +29,7 @@ export default async function AdminMediaPage({ searchParams }: PageProps<"/admin
         <CardHeader className="border-b border-brand-border px-5 py-5 sm:px-6"><CardTitle className="font-bold text-brand-navy">Unggah media</CardTitle></CardHeader>
         <CardContent className="p-5 sm:p-6">
           <form action={uploadMediaAsset} className="grid gap-5 md:grid-cols-2">
-            <FormField label="Berkas" htmlFor="media" required><Input id="media" name="media" type="file" accept="image/jpeg,image/png,image/webp,image/avif,video/mp4" required /></FormField>
+            <FormField label="Berkas" htmlFor="media" hint="JPG, PNG, WebP, AVIF, atau MP4. Maksimal 25 MB." required><StagedFileInput id="media" name="media_path" bucket={BUCKETS.publicMedia} folder="gallery" required /></FormField>
             <FormField label="Keterangan" htmlFor="caption"><Input id="caption" name="caption" /></FormField>
             <FormField label="Teks alternatif" htmlFor="alt_text"><Input id="alt_text" name="alt_text" /></FormField>
             <FormField label="Album" htmlFor="album_label"><Input id="album_label" name="album_label" /></FormField>

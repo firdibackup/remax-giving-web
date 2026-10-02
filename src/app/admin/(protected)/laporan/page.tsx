@@ -10,6 +10,7 @@ import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { ConfirmSubmitButton } from "@/components/admin/confirm-submit-button";
 import { EmptyState } from "@/components/admin/empty-state";
 import { FormField } from "@/components/admin/form-field";
+import { StagedFileInput } from "@/components/admin/staged-file-input";
 import { SubmitButton } from "@/components/admin/submit-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -115,11 +116,11 @@ export default async function ReportsPage({
               htmlFor="report"
               hint="Maksimal 25 MB."
             >
-              <Input
+              <StagedFileInput
                 id="report"
-                name="report"
-                type="file"
-                accept="application/pdf"
+                name="report_path"
+                bucket={BUCKETS.privateReports}
+                folder="reports"
               />
             </FormField>
             <div className="md:col-span-2">

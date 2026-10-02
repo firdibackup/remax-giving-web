@@ -15,6 +15,7 @@ import { CampaignForm } from "@/components/admin/campaign-form";
 import { ConfirmSubmitButton } from "@/components/admin/confirm-submit-button";
 import { DocumentationUploader } from "@/components/admin/documentation-uploader";
 import { FormField } from "@/components/admin/form-field";
+import { StagedFileInput } from "@/components/admin/staged-file-input";
 import { SubmitButton } from "@/components/admin/submit-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,7 +28,7 @@ import {
   listCampaignAllocations,
   listCampaignDocumentation,
 } from "@/lib/admin/queries";
-import { resolveMediaUrl } from "@/lib/admin/storage";
+import { BUCKETS, resolveMediaUrl } from "@/lib/admin/storage";
 import { campaignStatusPresentation } from "@/lib/status";
 
 export default async function CampaignDetailPage({
@@ -213,11 +214,11 @@ export default async function CampaignDetailPage({
                 hint="JPG, PNG, WebP, AVIF, atau MP4. Maksimal 25 MB."
                 required
               >
-                <Input
+                <StagedFileInput
                   id="cover"
-                  name="cover"
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp,image/avif,video/mp4"
+                  name="cover_path"
+                  bucket={BUCKETS.publicMedia}
+                  folder={`campaigns/${campaign.id}`}
                   required
                 />
               </FormField>

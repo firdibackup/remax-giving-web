@@ -1,39 +1,14 @@
 import "server-only";
 
+import { BUCKETS, bucketLimits, type BucketName } from "@/lib/admin/buckets";
 import { requireAdmin } from "@/lib/auth/admin";
 import { createClient } from "@/lib/supabase/server";
 
-export const BUCKETS = {
-  publicMedia: "home-of-giving-public-media",
-  publicReports: "home-of-giving-public-reports",
-  privateReports: "home-of-giving-private-reports",
-  donationEvidence: "home-of-giving-private-donation-evidence",
-} as const;
-
-export type BucketName = (typeof BUCKETS)[keyof typeof BUCKETS];
+export { BUCKETS, type BucketName };
 export type ReportBucketName = typeof BUCKETS.publicReports | typeof BUCKETS.privateReports;
 
 export const MANAGED_BUCKETS: BucketName[] = Object.values(BUCKETS);
 export const REPORT_BUCKETS: ReportBucketName[] = [BUCKETS.publicReports, BUCKETS.privateReports];
-
-const bucketLimits: Record<BucketName, { maxBytes: number; mimeTypes: string[] }> = {
-  [BUCKETS.publicMedia]: {
-    maxBytes: 26_214_400,
-    mimeTypes: ["image/jpeg", "image/png", "image/webp", "image/avif", "video/mp4"],
-  },
-  [BUCKETS.publicReports]: {
-    maxBytes: 26_214_400,
-    mimeTypes: ["application/pdf"],
-  },
-  [BUCKETS.privateReports]: {
-    maxBytes: 26_214_400,
-    mimeTypes: ["application/pdf"],
-  },
-  [BUCKETS.donationEvidence]: {
-    maxBytes: 10_485_760,
-    mimeTypes: ["image/jpeg", "image/png", "image/webp", "application/pdf"],
-  },
-};
 
 export function isManagedBucket(bucket: string | null | undefined): bucket is BucketName {
   return MANAGED_BUCKETS.includes(bucket as BucketName);
@@ -43,7 +18,7 @@ export function isReportBucket(bucket: string | null | undefined): bucket is Rep
   return REPORT_BUCKETS.includes(bucket as ReportBucketName);
 }
 
-function safeExtension(fileName: string): string {
+export function safeExtension(fileName: string): string {
   const match = /\.([a-zA-Z0-9]{1,8})$/.exec(fileName);
   return match ? match[1].toLowerCase() : "bin";
 }
@@ -59,52 +34,47 @@ function collisionSafePath(sourcePath: string): string {
   return `${folder}${Date.now()}-${crypto.randomUUID()}.${safeExtension(sourcePath)}`;
 }
 
-export function isUploadPresent(file: unknown): file is File {
-  return file instanceof File && file.size > 0;
-}
+export type StagedUpload = { path: string; size: number; contentType: string };
 
-export function validateUpload(bucket: BucketName, file: File): string | null {
-  const limits = bucketLimits[bucket];
-
-  if (file.size > limits.maxBytes) {
-    const maxMb = Math.floor(limits.maxBytes / 1_048_576);
-    return `Ukuran berkas melebihi batas ${maxMb} MB.`;
-  }
-
-  if (!file.type || !limits.mimeTypes.includes(file.type)) {
-    return "Tipe berkas tidak diizinkan untuk penyimpanan ini.";
-  }
-
-  return null;
-}
-
-export async function uploadToBucket(
+// Forms submit the path that uploadChunk (admin/(protected)/upload-actions.ts)
+// returned, not the file. Re-check it so a form can only attach an object from
+// its own folder, within its own size and type limits.
+export async function verifyStagedUpload(
   bucket: BucketName,
   folder: string,
-  file: File,
-): Promise<{ path: string } | { error: string }> {
+  path: string,
+  maxBytes = bucketLimits[bucket].maxBytes,
+): Promise<StagedUpload | { error: string }> {
   await requireAdmin();
 
-  const validationError = validateUpload(bucket, file);
+  const prefix = `${folder}/`;
 
-  if (validationError) {
-    return { error: validationError };
+  if (!path.startsWith(prefix) || !/^[\w-]+\.[a-z0-9]{1,8}$/.test(path.slice(prefix.length))) {
+    return { error: "Lokasi berkas tidak valid." };
   }
 
   const supabase = await createClient();
-  const safeFolder = folder.replace(/[^a-zA-Z0-9/_-]/g, "").replace(/^\/+|\/+$/g, "") || "umum";
-  const path = `${safeFolder}/${Date.now()}-${crypto.randomUUID()}.${safeExtension(file.name)}`;
+  const { data } = await supabase.storage.from(bucket).info(path);
 
-  const { error } = await supabase.storage.from(bucket).upload(path, file, {
-    contentType: file.type,
-    upsert: false,
-  });
-
-  if (error) {
-    return { error: "Berkas gagal diunggah ke penyimpanan." };
+  if (!data) {
+    return { error: "Berkas tidak ditemukan di penyimpanan. Unggah ulang." };
   }
 
-  return { path };
+  const size = data.size ?? 0;
+  const contentType = baseMimeType(data.contentType ?? "");
+  const error =
+    size > maxBytes
+      ? `Ukuran berkas melebihi batas ${Math.floor(maxBytes / 1_048_576)} MB.`
+      : !bucketLimits[bucket].mimeTypes.includes(contentType)
+        ? "Tipe berkas tidak diizinkan untuk penyimpanan ini."
+        : null;
+
+  if (error) {
+    await removeStorageObjects([{ bucket, path }]);
+    return { error };
+  }
+
+  return { path, size, contentType };
 }
 
 export type RemoveStorageObjectsResult = { success: true } | { error: string };

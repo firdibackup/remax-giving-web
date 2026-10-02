@@ -15,10 +15,8 @@ import {
 import {
   BUCKETS,
   isManagedBucket,
-  isUploadPresent,
   removeStorageObjects,
-  uploadToBucket,
-  validateUpload,
+  verifyStagedUpload,
 } from "@/lib/admin/storage";
 import type { BucketName } from "@/lib/admin/storage";
 import { formatNumber, todayInJakarta } from "@/lib/format";
@@ -42,8 +40,7 @@ export async function createDonation(
   const fullName = readText(formData, "full_name");
   const amount = readAmount(formData, "amount_idr");
   const donatedOn = readText(formData, "donated_on");
-  const evidenceValue = formData.get("evidence");
-  const evidence = isUploadPresent(evidenceValue) ? evidenceValue : null;
+  const evidence = readText(formData, "evidence_path");
 
   if (!campaignId) {
     return { error: "Pilih program tujuan donasi." };
@@ -61,20 +58,12 @@ export async function createDonation(
     return { error: "Tanggal donasi tidak valid atau melewati hari ini." };
   }
 
-  if (evidence) {
-    const validationError = validateUpload(BUCKETS.donationEvidence, evidence);
-
-    if (validationError) {
-      return { error: validationError };
-    }
-  }
-
   let evidencePath: string | null = null;
 
   if (evidence) {
-    const upload = await uploadToBucket(
+    const upload = await verifyStagedUpload(
       BUCKETS.donationEvidence,
-      `donations/${campaignId}`,
+      "donations",
       evidence,
     );
 
