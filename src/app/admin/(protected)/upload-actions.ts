@@ -56,9 +56,11 @@ export async function uploadChunk(formData: FormData): Promise<UploadChunkResult
   const storage = (await createClient()).storage.from(bucket);
   const partPaths = Array.from({ length: total - 1 }, (_, i) => `tmp/${uploadId}/${i}`);
 
+  // storage-js ignores the contentType option for Blob bodies and sends the
+  // Blob's own type, and a sliced chunk arrives as application/octet-stream,
+  // which the bucket's MIME allow-list rejects. Re-type it with the checked type.
   if (index < total - 1) {
-    const { error } = await storage.upload(partPaths[index], chunk, {
-      contentType: type,
+    const { error } = await storage.upload(partPaths[index], new Blob([chunk], { type }), {
       upsert: true,
     });
 
@@ -80,7 +82,7 @@ export async function uploadChunk(formData: FormData): Promise<UploadChunkResult
 
   const file = new Blob([...parts.map(({ data }) => data as Blob), chunk], { type });
   const path = `${folder}/${Date.now()}-${crypto.randomUUID()}.${safeExtension(readText(formData, "name"))}`;
-  const { error } = await storage.upload(path, file, { contentType: type, upsert: false });
+  const { error } = await storage.upload(path, file, { upsert: false });
   await cleanup();
 
   return error ? { error: "Berkas gagal diunggah ke penyimpanan." } : { path };
