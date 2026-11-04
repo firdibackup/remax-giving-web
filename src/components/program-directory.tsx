@@ -129,7 +129,7 @@ function ProgramDirectory({
           )}
         </div>
       </section>
-      <section className="bg-brand-bg-soft px-5 py-16 sm:px-8 sm:py-24">
+      {/* <section className="bg-brand-bg-soft px-5 py-16 sm:px-8 sm:py-24">
         <div className="mx-auto max-w-[1200px]">
           <div className="mb-10">
             <div className="font-hand text-2xl leading-none font-bold text-brand-red sm:text-[32px]">
@@ -162,7 +162,7 @@ function ProgramDirectory({
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
       <section className="bg-brand-blue px-5 py-16 text-white sm:px-8 sm:py-24">
         <div className="mx-auto max-w-[880px] text-center">
           <div className="font-hand text-2xl leading-none font-bold opacity-85 sm:text-[32px]">
