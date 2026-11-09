@@ -13,12 +13,21 @@ const originalEnv = { ...process.env };
 const requests = [];
 let connections = 0;
 let status = 200;
+let failureMode = null;
 
 try {
   process.env.NEXT_PUBLIC_SUPABASE_URL = "https://public-client-test.supabase.co";
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_test";
   globalThis.fetch = async (url, options) => {
     requests.push({ url: String(url), headers: new Headers(options.headers) });
+    if (failureMode === "network") {
+      throw new TypeError("fetch failed", { cause: Object.assign(new Error("connect timed out"), { code: "UND_ERR_CONNECT_TIMEOUT" }) });
+    }
+    if (failureMode === "hang") {
+      return new Promise((resolve, reject) => {
+        options.signal.addEventListener("abort", () => reject(options.signal.reason), { once: true });
+      });
+    }
     return new Response(
       JSON.stringify(status === 200 ? [{ id: "published-campaign" }] : { message: "Unavailable" }),
       { status, headers: { "Content-Type": "application/json" } },
@@ -54,7 +63,20 @@ try {
     assert.equal(request.headers.get("cookie"), null);
     assert.equal(request.headers.get("authorization"), "Bearer sb_publishable_test");
   }
-  console.log("Public client checks passed: anonymous queries, no Auth requests, request-time data, explicit failures.");
+  failureMode = "network";
+  const networkFailure = await client.from("hog_campaigns").select("id");
+  assert.equal(networkFailure.status, 0);
+  assert.match(networkFailure.error.details, /UND_ERR_CONNECT_TIMEOUT/);
+  assert.equal(requests.length, 3, "Connection failures must not trigger automatic retries");
+
+  failureMode = "hang";
+  const started = Date.now();
+  const timeoutFailure = await client.from("hog_campaigns").select("id");
+  assert.equal(timeoutFailure.status, 0);
+  assert.ok(timeoutFailure.error);
+  assert.ok(Date.now() - started < 12000, "Stalled requests must stop after the configured timeout");
+  assert.equal(requests.length, 4, "Timed-out requests must not be retried");
+  console.log("Public client checks passed: anonymous queries, no Auth requests, explicit failures, no automatic retries, bounded timeout.");
 } finally {
   globalThis.fetch = originalFetch;
   process.env = originalEnv;

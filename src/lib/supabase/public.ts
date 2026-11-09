@@ -12,6 +12,8 @@ export async function createClient() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
+      // Fail promptly; the error page provides an explicit user-triggered retry.
+      db: { timeout: 8000, retry: false },
       auth: {
         persistSession: false,
         autoRefreshToken: false,
