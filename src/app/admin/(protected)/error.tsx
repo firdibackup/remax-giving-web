@@ -5,10 +5,10 @@ import { AlertTriangle, RotateCw } from "lucide-react";
 
 export default function AdminError({
   error,
-  reset,
+  retry,
 }: {
   error: Error & { digest?: string };
-  reset: () => void;
+  retry: () => void;
 }) {
   useEffect(() => {
     console.error("[admin] render error:", error);
@@ -34,7 +34,7 @@ export default function AdminError({
         )}
         <button
           type="button"
-          onClick={reset}
+          onClick={retry}
           className="mt-6 inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-brand-blue px-5 font-bold text-white transition-colors hover:bg-brand-blue-hover"
         >
           <RotateCw className="size-4" />

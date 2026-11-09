@@ -2,7 +2,7 @@ import "server-only";
 
 import { cache } from "react";
 import { isCampaignExpired } from "@/lib/campaign-status";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/public";
 import {
   formatCurrency,
   formatDateRange,
