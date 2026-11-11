@@ -55,7 +55,7 @@ export default function TentangPage() {
         side={
           <div className="relative h-[240px] w-full overflow-hidden rounded-3xl border border-brand-border shadow-brand-card sm:h-[320px]">
             <Image
-              src={`${BASE_PATH}/photos/community-04-web.JPG`}
+              src={`${BASE_PATH}/photos/community-04-web.webp`}
               alt="Kegiatan sosial REMAX Home of Giving"
               fill
               sizes="(max-width: 1024px) 100vw, 45vw"
@@ -71,7 +71,7 @@ export default function TentangPage() {
           <Reveal>
             <div className="relative h-[300px] w-full overflow-hidden rounded-3xl border border-brand-border bg-brand-tint-blue shadow-brand-card sm:h-[420px]">
               <Image
-                src={`${BASE_PATH}/photos/community-02-web.jpg`}
+                src={`${BASE_PATH}/photos/community-02-web.webp`}
                 alt="Berbagi bersama keluarga besar REMAX"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -192,9 +192,10 @@ export default function TentangPage() {
       <section className="relative overflow-hidden bg-brand-navy px-5 py-20 sm:px-8 sm:py-28">
         <div className="pointer-events-none absolute -right-14 bottom-10 hidden h-[300px] w-[240px] overflow-hidden rounded-3xl opacity-50 sm:block">
           <Image
-            src={`${BASE_PATH}/photos/community-03-web.jpg`}
+            src={`${BASE_PATH}/photos/community-03-web.webp`}
             alt=""
             fill
+            sizes="240px"
             className="object-cover"
           />
         </div>

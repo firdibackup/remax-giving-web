@@ -1,6 +1,7 @@
 import "server-only";
 
 import { cache } from "react";
+import { BASE_PATH } from "@/lib/base-path";
 import { isCampaignExpired } from "@/lib/campaign-status";
 import { createClient } from "@/lib/supabase/public";
 import {
@@ -22,8 +23,8 @@ import type {
   SiteStatsRow,
 } from "@/lib/supabase/database.types";
 
-const FALLBACK_CAMPAIGN_IMAGE = "/photos/community-01-web.jpg";
-const FALLBACK_BLOG_IMAGE = "/photos/community-03-web.jpg";
+const FALLBACK_CAMPAIGN_IMAGE = `${BASE_PATH}/photos/community-01-web.webp`;
+const FALLBACK_BLOG_IMAGE = `${BASE_PATH}/photos/community-03-web.webp`;
 
 function throwPublicDataError(operation: string, error: unknown): never {
   console.error(`[public-data] ${operation} failed.`, error);

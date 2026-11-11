@@ -22,6 +22,15 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 
 ## Learn More
 
+### Photo optimization
+
+- Public photo uploads produce a WebP display copy (quality 80, longest side at most 1920 px), with EXIF orientation applied and no upscaling. Animated images and already-small files that would grow retain their original format.
+- Original converted uploads are retained under the same folder's `originals/` subdirectory. These are recovery copies in the **public** media bucket; they are not private archives and are not removed when the display copy is deleted.
+- Videos, documents, and donation evidence bypass photo compression.
+- Regenerate the local display photos with `node --experimental-strip-types scripts/optimize-local-images.mjs` (Node >= 22.6). Original JPEG files are preserved.
+- Existing Storage images need to be re-uploaded through the admin forms to produce optimized copies and update their references. Deploying this code alone does not rewrite existing Storage objects.
+- Test compression with `node --experimental-strip-types --test src/lib/admin/optimize-image.test.ts`.
+
 To learn more about Next.js, take a look at the following resources:
 
 - [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.

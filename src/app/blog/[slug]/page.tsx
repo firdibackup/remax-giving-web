@@ -76,10 +76,10 @@ export default async function BlogDetailPage({
               src={post.image}
               alt={post.imageAlt}
               fill
-              sizes="800px"
+              sizes="(max-width: 639px) calc(100vw - 40px), (max-width: 863px) calc(100vw - 64px), 800px"
               className="object-cover"
               style={{ objectPosition: post.imagePos }}
-              priority
+              preload
             />
           </div>
           <p className="mb-6 text-lg leading-relaxed font-semibold text-brand-navy sm:text-xl">
@@ -112,6 +112,7 @@ export default async function BlogDetailPage({
                       src={item.image}
                       alt={item.imageAlt}
                       fill
+                      sizes="80px"
                       className="object-cover"
                       style={{ objectPosition: item.imagePos }}
                     />

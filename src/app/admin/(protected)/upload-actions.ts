@@ -1,6 +1,7 @@
 "use server";
 
-import { bucketLimits, uploadChunkBytes } from "@/lib/admin/buckets";
+import { BUCKETS, bucketLimits, uploadChunkBytes } from "@/lib/admin/buckets";
+import { optimizePublicImage } from "@/lib/admin/optimize-image";
 import { readText } from "@/lib/admin/form";
 import { isManagedBucket, safeExtension } from "@/lib/admin/storage";
 import { requireAdmin } from "@/lib/auth/admin";
@@ -32,6 +33,7 @@ export async function uploadChunk(formData: FormData): Promise<UploadChunkResult
     !folderPattern.test(folder) ||
     !uploadIdPattern.test(uploadId) ||
     !(chunk instanceof Blob) ||
+    chunk.size === 0 ||
     chunk.size > uploadChunkBytes ||
     !Number.isInteger(index) ||
     !Number.isInteger(total) ||
@@ -81,9 +83,36 @@ export async function uploadChunk(formData: FormData): Promise<UploadChunkResult
   }
 
   const file = new Blob([...parts.map(({ data }) => data as Blob), chunk], { type });
-  const path = `${folder}/${Date.now()}-${crypto.randomUUID()}.${safeExtension(readText(formData, "name"))}`;
-  const { error } = await storage.upload(path, file, { upsert: false });
-  await cleanup();
+  const stem = `${Date.now()}-${crypto.randomUUID()}`;
+  const extension = safeExtension(readText(formData, "name"));
+  try {
+    if (file.size > limits.maxBytes) {
+      return { error: "Ukuran berkas melebihi batas penyimpanan." };
+    }
 
-  return error ? { error: "Berkas gagal diunggah ke penyimpanan." } : { path };
+    if (bucket === BUCKETS.publicMedia && type.startsWith("image/")) {
+      const optimized = await optimizePublicImage(Buffer.from(await file.arrayBuffer()));
+      if (optimized) {
+        // shortcut: originals are retained for recovery; add a retention policy when storage grows.
+        const original = await storage.upload(`${folder}/originals/${stem}.${extension}`, file, { upsert: false });
+        if (original.error) return { error: "Berkas asli gagal disimpan. Coba lagi." };
+
+        const path = `${folder}/${stem}.webp`;
+        const { error } = await storage.upload(path, optimized, {
+          contentType: "image/webp",
+          cacheControl: "31536000",
+          upsert: false,
+        });
+        return error ? { error: "Gambar teroptimasi gagal disimpan. Coba lagi." } : { path };
+      }
+    }
+
+    const path = `${folder}/${stem}.${extension}`;
+    const { error } = await storage.upload(path, file, { upsert: false });
+    return error ? { error: "Berkas gagal diunggah ke penyimpanan." } : { path };
+  } catch {
+    return { error: "Berkas gagal diproses. Gunakan gambar valid maksimal 50 megapiksel, lalu coba lagi." };
+  } finally {
+    await cleanup();
+  }
 }

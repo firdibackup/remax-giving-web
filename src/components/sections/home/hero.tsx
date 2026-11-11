@@ -39,13 +39,14 @@ function Hero({ featured }: { featured: PublicCampaignCard | null }) {
         <div className="relative">
           <div className="h-[320px] overflow-hidden rounded-3xl bg-brand-tint-blue shadow-brand-card sm:h-[490px]">
             <Image
-              src={`${BASE_PATH}/photos/community-01-web.jpg`}
+              src={`${BASE_PATH}/photos/community-01-web.webp`}
               alt="Relawan Home of Giving bersama anak penerima manfaat"
               width={800}
               height={980}
+              sizes="(max-width: 639px) calc(100vw - 40px), (max-width: 1023px) calc(100vw - 64px), (max-width: 1263px) calc((100vw - 128px) / 2.02), 563px"
               className="h-full w-full object-cover"
               style={{ objectPosition: "52% 42%" }}
-              priority
+              preload
             />
           </div>
           {featured && (

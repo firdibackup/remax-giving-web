@@ -90,9 +90,10 @@ export default async function ProjectDetailPage({
             src={campaign.image}
             alt=""
             fill
+            sizes="100vw"
             className="object-cover opacity-40"
             style={{ objectPosition: campaign.imagePos }}
-            priority
+            preload
           />
         </div>
         <div className="relative mx-auto max-w-[1200px] px-5 py-12 text-white sm:px-8 sm:py-[60px]">

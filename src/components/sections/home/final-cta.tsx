@@ -6,18 +6,18 @@ import { Reveal } from "@/components/brand/reveal";
 // Decorative photo collage framing the CTA. `reveal` gates each tile per
 // breakpoint so smaller desktops stay light and only wide screens fill in.
 const decorTiles = [
-  { src: "community-03-web.jpg", tile: "top-20 left-[-48px] h-[250px] w-[190px] -rotate-6 opacity-60", reveal: "sm:block" },
-  { src: "community-02-web.jpg", tile: "bottom-14 right-[-48px] h-[270px] w-[205px] rotate-6 opacity-60", reveal: "sm:block" },
-  { src: "community-05-web.JPG", tile: "bottom-16 left-6 h-[160px] w-[128px] rotate-3 opacity-50", reveal: "xl:block" },
-  { src: "community-01-web.jpg", tile: "top-16 right-8 h-[160px] w-[128px] -rotate-3 opacity-50", reveal: "xl:block" },
-  { src: "community-07-web.JPG", tile: "top-12 left-[150px] h-[120px] w-[96px] rotate-6 opacity-45", reveal: "2xl:block" },
-  { src: "community-06-web.JPG", tile: "bottom-10 right-[150px] h-[120px] w-[96px] -rotate-6 opacity-45", reveal: "2xl:block" },
+  { src: "community-03-web.webp", sizes: "190px", tile: "top-20 left-[-48px] h-[250px] w-[190px] -rotate-6 opacity-60", reveal: "sm:block" },
+  { src: "community-02-web.webp", sizes: "205px", tile: "bottom-14 right-[-48px] h-[270px] w-[205px] rotate-6 opacity-60", reveal: "sm:block" },
+  { src: "community-05-web.webp", sizes: "128px", tile: "bottom-16 left-6 h-[160px] w-[128px] rotate-3 opacity-50", reveal: "xl:block" },
+  { src: "community-01-web.webp", sizes: "128px", tile: "top-16 right-8 h-[160px] w-[128px] -rotate-3 opacity-50", reveal: "xl:block" },
+  { src: "community-07-web.webp", sizes: "96px", tile: "top-12 left-[150px] h-[120px] w-[96px] rotate-6 opacity-45", reveal: "2xl:block" },
+  { src: "community-06-web.webp", sizes: "96px", tile: "bottom-10 right-[150px] h-[120px] w-[96px] -rotate-6 opacity-45", reveal: "2xl:block" },
 ];
 
 function FinalCta() {
   return (
     <section className="relative overflow-hidden bg-brand-navy px-5 py-20 sm:px-8 sm:py-28">
-      {decorTiles.map(({ src, tile, reveal }) => (
+      {decorTiles.map(({ src, sizes, tile, reveal }) => (
         <div
           key={src}
           aria-hidden
@@ -27,6 +27,7 @@ function FinalCta() {
             src={`${BASE_PATH}/photos/${src}`}
             alt=""
             fill
+            sizes={sizes}
             className="object-cover"
           />
         </div>
