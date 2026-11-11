@@ -19,6 +19,7 @@ import {
   type ActionState,
 } from "@/lib/admin/form";
 import { documentationMaxBytes } from "@/lib/admin/buckets";
+import { deleteCampaignMediaAsset } from "@/lib/admin/delete-campaign-media";
 import {
   BUCKETS,
   isManagedBucket,
@@ -835,6 +836,29 @@ export async function addCampaignMedia(formData: FormData) {
   redirect(
     `${redirectBase}${encodeNotice({ success: `${formatNumber(addedCount)} dokumentasi ditambahkan.` })}`,
   );
+}
+
+export async function deleteCampaignMedia(formData: FormData) {
+  await requireAdmin();
+  const campaignId = readText(formData, "campaign_id");
+  const mediaId = readText(formData, "media_id");
+  const role = readText(formData, "role");
+  const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!uuid.test(campaignId) || !uuid.test(mediaId) || (role !== "cover" && role !== "documentation")) {
+    redirect(`/admin/program${encodeNotice({ error: "Permintaan hapus gambar tidak valid." })}`);
+  }
+  const result = await deleteCampaignMediaAsset(await createClient(), campaignId, mediaId, role);
+  revalidateCampaignSurfaces();
+  revalidatePath("/admin/program/[id]", "page");
+  revalidatePath("/program/[slug]", "page");
+  revalidatePath("/admin/konten/media");
+  revalidatePath("/admin/konten/blog");
+  revalidatePath("/galeri");
+  revalidatePath("/blog");
+  revalidatePath("/blog/[slug]", "page");
+  redirect(`/admin/program/${campaignId}${encodeNotice(result.error
+    ? { error: result.error }
+    : { success: "Gambar, aset, dan berkas penyimpanannya dihapus permanen." })}`);
 }
 
 export async function bulkUpdateCampaignMedia(formData: FormData) {

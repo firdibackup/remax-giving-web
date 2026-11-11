@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ExternalLink } from "lucide-react";
 import {
   deleteCampaigns,
+  deleteCampaignMedia,
   uploadCampaignCover,
 } from "@/app/admin/(protected)/program/actions";
 import { AdminNotice } from "@/components/admin/admin-notice";
@@ -206,6 +207,16 @@ export default async function CampaignDetailPage({
                 Belum ada sampul untuk program ini.
               </p>
             )}
+            {cover && (
+              <form action={deleteCampaignMedia}>
+                <input type="hidden" name="campaign_id" value={campaign.id} />
+                <input type="hidden" name="media_id" value={cover.id} />
+                <input type="hidden" name="role" value="cover" />
+                <ConfirmSubmitButton variant="destructive" confirmMessage="Hapus sampul ini permanen beserta aset, berkas Storage, dan salinan aslinya? Jika aset yang sama dipakai di tempat lain, gambar tersebut juga akan dihapus dari sana.">
+                  Hapus sampul permanen
+                </ConfirmSubmitButton>
+              </form>
+            )}
             <form action={uploadCampaignCover} className="space-y-4">
               <input type="hidden" name="campaign_id" value={campaign.id} />
               <FormField
@@ -249,6 +260,7 @@ export default async function CampaignDetailPage({
           <CardContent className="space-y-4 p-5 sm:p-6">
             {documentationItems.length > 0 ? (
               <CampaignDocumentationEditor
+                key={documentationItems.map((item) => item.id).join(",")}
                 campaignId={campaign.id}
                 items={documentationItems}
               />

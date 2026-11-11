@@ -25,7 +25,7 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 ### Photo optimization
 
 - Public photo uploads produce a WebP display copy (quality 80, longest side at most 1920 px), with EXIF orientation applied and no upscaling. Animated images and already-small files that would grow retain their original format.
-- Original converted uploads are retained under the same folder's `originals/` subdirectory. These are recovery copies in the **public** media bucket; they are not private archives and are not removed when the display copy is deleted.
+- Original converted uploads are retained under the same folder's `originals/` subdirectory. These are recovery copies in the **public** media bucket, not private archives. Permanent image deletion from a program's cover/documentation also removes matching originals and the media asset record. If that asset is shared, its other cover/documentation references are cleared too. External URLs must be deleted at their source provider.
 - Videos, documents, and donation evidence bypass photo compression.
 - Regenerate the local display photos with `node --experimental-strip-types scripts/optimize-local-images.mjs` (Node >= 22.6). Original JPEG files are preserved.
 - Existing Storage images need to be re-uploaded through the admin forms to produce optimized copies and update their references. Deploying this code alone does not rewrite existing Storage objects.

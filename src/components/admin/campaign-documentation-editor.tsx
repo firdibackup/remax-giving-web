@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { bulkUpdateCampaignMedia } from "@/app/admin/(protected)/program/actions";
+import { bulkUpdateCampaignMedia, deleteCampaignMedia } from "@/app/admin/(protected)/program/actions";
+import { ConfirmSubmitButton } from "@/components/admin/confirm-submit-button";
 import { FormField } from "@/components/admin/form-field";
 import { SubmitButton } from "@/components/admin/submit-button";
 import { Input } from "@/components/ui/input";
@@ -127,6 +127,18 @@ function CampaignDocumentationEditor({
                     {item.caption || "Tanpa keterangan"}
                   </span>
                 </label>
+                <form action={deleteCampaignMedia} className="mt-2">
+                  <input type="hidden" name="campaign_id" value={campaignId} />
+                  <input type="hidden" name="media_id" value={item.id} />
+                  <input type="hidden" name="role" value="documentation" />
+                  <ConfirmSubmitButton
+                    variant="destructive"
+                    className="w-full text-xs"
+                    confirmMessage="Hapus dokumentasi ini permanen beserta aset, berkas Storage, dan salinan aslinya? Jika aset yang sama dipakai di tempat lain, gambar tersebut juga akan dihapus dari sana."
+                  >
+                    Hapus permanen
+                  </ConfirmSubmitButton>
+                </form>
               </li>
             );
           })}
